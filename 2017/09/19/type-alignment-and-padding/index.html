@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="数据对齐现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
+<meta name="description" content="现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
 <meta name="keywords" content="struct,alignment,padding">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Type alignment and padding">
 <meta property="og:url" content="http://benx.io/2017/09/19/type-alignment-and-padding/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="数据对齐现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
+<meta property="og:description" content="现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-09-20T13:31:04.000Z">
+<meta property="og:updated_time" content="2017-09-20T13:37:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Type alignment and padding">
-<meta name="twitter:description" content="数据对齐现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
+<meta name="twitter:description" content="现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
 
 
 
@@ -321,7 +321,7 @@
       
 
       
-        <h4 id="数据对齐"><a href="#数据对齐" class="headerlink" title="数据对齐"></a>数据对齐</h4><p>现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率</p>
+        <p>现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率</p>
 <p>以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数</p>
 <a id="more"></a>
 <h4 id="对齐原则："><a href="#对齐原则：" class="headerlink" title="对齐原则："></a>对齐原则：</h4><ul>
@@ -531,7 +531,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据对齐"><span class="nav-number">1.</span> <span class="nav-text">数据对齐</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#对齐原则："><span class="nav-number">2.</span> <span class="nav-text">对齐原则：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Golang代码实验"><span class="nav-number">3.</span> <span class="nav-text">Golang代码实验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考:</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#对齐原则："><span class="nav-number">1.</span> <span class="nav-text">对齐原则：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Golang代码实验"><span class="nav-number">2.</span> <span class="nav-text">Golang代码实验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考:</span></a></li></ol></div>
             
 
           </div>

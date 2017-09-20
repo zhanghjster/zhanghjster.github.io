@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="Unicode在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的1">
+<meta name="description" content="在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的16-bit数字">
 <meta name="keywords" content="golang,utf8,unicode">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UTF8">
 <meta property="og:url" content="http://benx.io/2017/09/19/utf8/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="Unicode在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的1">
+<meta property="og:description" content="在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的16-bit数字">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-09-20T13:28:54.000Z">
+<meta property="og:updated_time" content="2017-09-20T13:38:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UTF8">
-<meta name="twitter:description" content="Unicode在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的1">
+<meta name="twitter:description" content="在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的16-bit数字">
 
 
 
@@ -321,9 +321,9 @@
       
 
       
-        <h3 id="Unicode"><a href="#Unicode" class="headerlink" title="Unicode"></a>Unicode</h3><p>在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的16-bit数字表示，最多能有65535个符号。</p>
+        <p>在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的16-bit数字表示，最多能有65535个符号。</p>
 <a id="more"></a>
-<p>在unicode里，一个字符映射到一个理论上的概念Code Point，它只是一个用来表示字符的16bit数字，并不代表真实的存储格式。</p>
+<p>在Unicode里，一个字符映射到一个理论上的概念Code Point，它只是一个用来表示字符的16bit数字，并不代表真实的存储格式。</p>
 <p>举个栗子, Hello 用code point 表示为:</p>
 <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">U+<span class="number">0048</span> U+<span class="number">0065</span> U+<span class="number">006</span>C U+<span class="number">006</span>C U+<span class="number">006</span>F</div></pre></td></tr></table></figure>
 <h4 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h4><p>在最早，人们直接用code point的值的方式进行编码，那么Hello的编码格式为</p>
@@ -580,7 +580,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Unicode"><span class="nav-number">1.</span> <span class="nav-text">Unicode</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编码"><span class="nav-number">1.1.</span> <span class="nav-text">编码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF8"><span class="nav-number">2.</span> <span class="nav-text">UTF8</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#详述"><span class="nav-number">2.1.</span> <span class="nav-text">详述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Golang里的string"><span class="nav-number">2.2.</span> <span class="nav-text">Golang里的string</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#for-range"><span class="nav-number">2.2.1.</span> <span class="nav-text">for range</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">2.3.</span> <span class="nav-text">参考</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#编码"><span class="nav-number">1.</span> <span class="nav-text">编码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UTF8"><span class="nav-number"></span> <span class="nav-text">UTF8</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#详述"><span class="nav-number">1.</span> <span class="nav-text">详述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Golang里的string"><span class="nav-number">2.</span> <span class="nav-text">Golang里的string</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#for-range"><span class="nav-number">2.1.</span> <span class="nav-text">for range</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
