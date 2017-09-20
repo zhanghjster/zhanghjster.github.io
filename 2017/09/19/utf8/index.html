@@ -77,7 +77,7 @@
 <meta property="og:site_name" content="笨哥小抄">
 <meta property="og:description" content="Unicode在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的1">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-09-19T15:24:08.000Z">
+<meta property="og:updated_time" content="2017-09-20T13:28:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UTF8">
 <meta name="twitter:description" content="Unicode在很久很久以前，计算机还处于中古时期的时候，人们用不多于127个数字就能表示所有用到的符号，用一个byte的7个bit就能完成此任务。其中 1-31 表示不可打印的字符，用于控制，比如7表示beep， 32-127为可打印。随着时间的推移，人们需要表示更多的符号，比如中文、日文、法文，但缺少统一的标准来规定哪个数字对应哪个符号。这样Unicode应运而生，将全世界的所有符号用统一的1">
@@ -177,16 +177,6 @@
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于
           </a>
         </li>
       
@@ -296,6 +286,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/09/19/utf8/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/09/19/utf8/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -324,11 +325,11 @@
 <a id="more"></a>
 <p>在unicode里，一个字符映射到一个理论上的概念Code Point，它只是一个用来表示字符的16bit数字，并不代表真实的存储格式。</p>
 <p>举个栗子, Hello 用code point 表示为:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">U+0048 U+0065 U+006C U+006C U+006F</div></pre></td></tr></table></figure>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">U+<span class="number">0048</span> U+<span class="number">0065</span> U+<span class="number">006</span>C U+<span class="number">006</span>C U+<span class="number">006</span>F</div></pre></td></tr></table></figure>
 <h4 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h4><p>在最早，人们直接用code point的值的方式进行编码，那么Hello的编码格式为</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">00 48 00 65 00 6C 00 6C 00 6F</div></pre></td></tr></table></figure>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">00 </span><span class="number">48</span> <span class="number">00</span> <span class="number">65</span> <span class="number">00</span> <span class="number">6</span>C <span class="number">00</span> <span class="number">6</span>C <span class="number">00</span> <span class="number">6</span>F</div></pre></td></tr></table></figure>
 <p>还可以</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">48 00 65 00 6C 00 6C 00 6F 00</div></pre></td></tr></table></figure>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">48 </span><span class="number">00</span> <span class="number">65</span> <span class="number">00</span> <span class="number">6</span>C <span class="number">00</span> <span class="number">6</span>C <span class="number">00</span> <span class="number">6</span>F <span class="number">00</span></div></pre></td></tr></table></figure>
 <p>分别对应大端和小端。这种编码格式名为UCS-2.人们为了区分大端和小端这两种格式，在字符串的开始加上FE FF或FF FE来做出分别。</p>
 <p>随着时间推移，65539个字符已经不够用了，UTF-16就出现了，它用一个或两个16-bit来表示。</p>
 <p>这种办法用了一段时间后，人们开始觉得不方便，一是很多的00没有意义，空增加了字符的长度，二是那些ASCII编码的字符还得进行转码才能兼容。</p>
@@ -387,10 +388,10 @@
 </table>
 <h4 id="Golang里的string"><a href="#Golang里的string" class="headerlink" title="Golang里的string"></a>Golang里的string</h4><p>在Go里，string是一个只读byte slice, 它里面存储的只是任意字节，并没有要求保存的是Unicode还是UTF8的文字还是其他预定义的格式</p>
 <p>用Go写的代码是utf8的，所以在go代码里定义的字符串通常情况下是UTF8格式的。但如果字符串包含破坏UTF8格式的转义字符，则字符串里的内容就不全是utf8的了。比如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">	var sample = &quot;\xbd\xb2\x3d\xbc\x20\xe2\x8c\x98&quot;</div><div class="line">	fmt.Printf(&quot;sample string : \t %s\n&quot;, sample)</div><div class="line">	fmt.Printf(&quot;sample  byte: \t% x\n&quot;, sample)</div><div class="line">	var in = `⌘`</div><div class="line">	fmt.Printf(&quot;⌘ quoted: %+q, byte: % x\n&quot;, in, in)</div><div class="line">&#125;</div><div class="line"></div><div class="line">localhost:run Ben$ go run main.go </div><div class="line">sample string :          ��=� ⌘</div><div class="line">sample  byte:   bd b2 3d bc 20 e2 8c 98</div><div class="line">⌘ quoted: &quot;\u2318&quot;, byte: e2 8c 98</div></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> sample = <span class="string">"\xbd\xb2\x3d\xbc\x20\xe2\x8c\x98"</span></div><div class="line">	fmt.Printf(<span class="string">"sample string : \t %s\n"</span>, sample)</div><div class="line">	fmt.Printf(<span class="string">"sample  byte: \t% x\n"</span>, sample)</div><div class="line">	<span class="keyword">var</span> in = <span class="string">`⌘`</span></div><div class="line">	fmt.Printf(<span class="string">"⌘ quoted: %+q, byte: % x\n"</span>, in, in)</div><div class="line">&#125;</div><div class="line"></div><div class="line">localhost:run Ben$ <span class="keyword">go</span> run main.<span class="keyword">go</span> </div><div class="line">sample <span class="keyword">string</span> :          ��=� ⌘</div><div class="line">sample  <span class="keyword">byte</span>:   bd b2 <span class="number">3d</span> bc <span class="number">20</span> e2 <span class="number">8</span>c <span class="number">98</span></div><div class="line">⌘ quoted: <span class="string">"\u2318"</span>, <span class="keyword">byte</span>: e2 <span class="number">8</span>c <span class="number">98</span></div></pre></td></tr></table></figure>
 <p>sample 字符串是乱码的，因为里面有部分转义字符破坏了字符utf8结构，无法解释</p>
 <h5 id="for-range"><a href="#for-range" class="headerlink" title="for range"></a>for range</h5><p>在用for range遍历字符串时候，golang解码utf8字符，每次读出一个有效的utf字符而不是一个byte</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import &quot;fmt&quot;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">	var sample = &quot;a中文&quot;</div><div class="line">	</div><div class="line">	// 每次遍历均解析出utf8的字符</div><div class="line">	// 如果遇到无法解析的就读取一个byte</div><div class="line">	for i, v := range sample &#123;</div><div class="line">		fmt.Printf(&quot;%d %#U\n&quot;, i, v)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	// 每次只遍历出一个字符</div><div class="line">	for i :=0; i&lt; len(sample); i++ &#123;</div><div class="line">		fmt.Printf(&quot;%d, % x\n&quot;, i, sample[i])</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">localhost:run Ben$ go run main.go </div><div class="line">0 U+0061 &apos;a&apos;</div><div class="line">1 U+4E2D &apos;中&apos;</div><div class="line">4 U+6587 &apos;文&apos;</div><div class="line">0,  61</div><div class="line">1,  e4</div><div class="line">2,  b8</div><div class="line">3,  ad</div><div class="line">4,  e6</div><div class="line">5,  96</div><div class="line">6,  87</div></pre></td></tr></table></figure>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> sample = <span class="string">"a中文"</span></div><div class="line">	</div><div class="line">	<span class="comment">// 每次遍历均解析出utf8的字符</span></div><div class="line">	<span class="comment">// 如果遇到无法解析的就读取一个byte</span></div><div class="line">	<span class="keyword">for</span> i, v := <span class="keyword">range</span> sample &#123;</div><div class="line">		fmt.Printf(<span class="string">"%d %#U\n"</span>, i, v)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 每次只遍历一个byte</span></div><div class="line">	<span class="keyword">for</span> i :=<span class="number">0</span>; i&lt; <span class="built_in">len</span>(sample); i++ &#123;</div><div class="line">		fmt.Printf(<span class="string">"%d, % x\n"</span>, i, sample[i])</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">localhost:run Ben$ <span class="keyword">go</span> run main.<span class="keyword">go</span> </div><div class="line"><span class="number">0</span> U+<span class="number">0061</span> <span class="string">'a'</span></div><div class="line"><span class="number">1</span> U+<span class="number">4E2</span>D <span class="string">'中'</span></div><div class="line"><span class="number">4</span> U+<span class="number">6587</span> <span class="string">'文'</span></div><div class="line"><span class="number">0</span>,  <span class="number">61</span></div><div class="line"><span class="number">1</span>,  e4</div><div class="line"><span class="number">2</span>,  b8</div><div class="line"><span class="number">3</span>,  ad</div><div class="line"><span class="number">4</span>,  e6</div><div class="line"><span class="number">5</span>,  <span class="number">96</span></div><div class="line"><span class="number">6</span>,  <span class="number">87</span></div></pre></td></tr></table></figure>
 <p>unicode/utf8 包提供了更多的utf8操作函数</p>
 <h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="https://blog.golang.org/strings" target="_blank" rel="external">https://blog.golang.org/strings</a></p>
 
@@ -437,6 +438,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2017/09/20/pow/" rel="prev" title="Power">
+                Power <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -464,6 +469,13 @@
 
           
   <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -511,7 +523,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -521,10 +533,10 @@
             
             
             <div class="site-state-item site-state-categories">
-              
+              <a href="/categories/index.html">
                 <span class="site-state-item-count">1</span>
                 <span class="site-state-item-name">分类</span>
-              
+              </a>
             </div>
           
 
@@ -532,10 +544,10 @@
             
             
             <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">11</span>
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
-              
+              </a>
             </div>
           
 
@@ -707,6 +719,26 @@
 
   
 
+    
+      <script id="dsq-count-scr" src="https://ben-ge-xiao-chao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://benx.io/2017/09/19/utf8/';
+          this.page.identifier = '2017/09/19/utf8/';
+          this.page.title = 'UTF8';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://ben-ge-xiao-chao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
 
 
 
@@ -719,10 +751,6 @@
   
 
 
-
-
-
-  
 
 
 

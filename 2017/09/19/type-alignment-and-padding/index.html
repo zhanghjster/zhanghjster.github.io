@@ -77,7 +77,7 @@
 <meta property="og:site_name" content="笨哥小抄">
 <meta property="og:description" content="数据对齐现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-09-19T13:59:52.000Z">
+<meta property="og:updated_time" content="2017-09-20T13:31:04.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Type alignment and padding">
 <meta name="twitter:description" content="数据对齐现代计算机中，每种数据类型都需要进行对齐操作，这是处理器结构决定的，而不是语言。因为计算机从内存读写数据，是按照’字长’（数据总线宽度）为单位的，将数据的地址设置为’字长’的倍数可以增加CPU读取数据的效率 以32位机器的一个整数为例，CPU每次读取的数据长度是4，如果整数地址在4的倍数，比如 8 则一个读取周期能够完成。否则，如果在14，则需要读取两次。如果64位机器则需要为 8 的倍数">
@@ -177,16 +177,6 @@
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
             
             首页
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
-            
-            关于
           </a>
         </li>
       
@@ -296,6 +286,17 @@
 
           
             
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/09/19/type-alignment-and-padding/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2017/09/19/type-alignment-and-padding/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
           
 
           
@@ -341,7 +342,7 @@
 <p> 结构体padding的原则就是要保证#2 和 #3</p>
 </li>
 </ul>
-<h4 id="Golang代码实验"><a href="#Golang代码实验" class="headerlink" title="Golang代码实验"></a>Golang代码实验</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div></pre></td><td class="code"><pre><div class="line">package main</div><div class="line"></div><div class="line">import (</div><div class="line">	&quot;fmt&quot;</div><div class="line">	&quot;unsafe&quot;</div><div class="line">)</div><div class="line"></div><div class="line">type A struct &#123;</div><div class="line">	c int8</div><div class="line">	s int16</div><div class="line">&#125;</div><div class="line"></div><div class="line">type B struct &#123;</div><div class="line">	s int16</div><div class="line">	c int8</div><div class="line">	i int</div><div class="line">&#125;</div><div class="line"></div><div class="line">type C struct &#123;</div><div class="line">	c int8</div><div class="line">	f float32</div><div class="line">	i int</div><div class="line">&#125;</div><div class="line"></div><div class="line">type D struct &#123;</div><div class="line">	f float32</div><div class="line">	i int</div><div class="line">	c int8</div><div class="line">&#125;</div><div class="line"></div><div class="line">type F struct &#123;</div><div class="line">	c int8</div><div class="line">	i int</div><div class="line">	cc int16</div><div class="line">&#125;</div><div class="line"></div><div class="line">type G struct &#123;</div><div class="line">	c int8</div><div class="line">	cc int16</div><div class="line">	i int</div><div class="line">&#125;</div><div class="line"></div><div class="line">func main() &#123;</div><div class="line">	var a = A&#123;&#125;</div><div class="line">	var b = B&#123;&#125;</div><div class="line">	var c = C&#123;&#125;</div><div class="line">	var d = D&#123;&#125;</div><div class="line"></div><div class="line">	// size of A = 4</div><div class="line">	// c: 1 字节 + 1 字节padding</div><div class="line">	// s: 2 字节</div><div class="line">	fmt.Printf(&quot;size of A = %d\n&quot;, unsafe.Sizeof(a))</div><div class="line"></div><div class="line">	// size of B = 16</div><div class="line">	// s: 2 字节</div><div class="line">	// c: 1 字节 + 5 字节padding</div><div class="line">	// i: 8 字节</div><div class="line">	fmt.Printf(&quot;size of B = %d\n&quot;, unsafe.Sizeof(b))</div><div class="line"></div><div class="line">	// size of c = 16</div><div class="line">	// c: 1 字节 + 3 字节padding</div><div class="line">	// f: 4 字节</div><div class="line">	// i: 8 字节</div><div class="line">	fmt.Printf(&quot;size of C = %d\n&quot;, unsafe.Sizeof(c))</div><div class="line"></div><div class="line">	// size of d = 24</div><div class="line">	// f: 4字节 + 4字节padding</div><div class="line">	// i: 8 字节</div><div class="line">	// c: 1字节 + 7 字节padding</div><div class="line">	// c的尾部padding的原因是要保证是结构体自身也是8bit对齐的</div><div class="line">	// 因为这样可以确保实现结构体数组时候里面每个元素也是对齐的</div><div class="line">	fmt.Printf(&quot;size of D = %d\n&quot;, unsafe.Sizeof(d))</div><div class="line"></div><div class="line"></div><div class="line">	// 由于有补齐，两个结构体即便有相同类型的字段，但前后顺序不同也可导致size不同</div><div class="line">	var f = F&#123;&#125;</div><div class="line">	var g = G&#123;&#125;</div><div class="line"></div><div class="line">	// size of f = 24</div><div class="line">	// c: 1字节 + 7字节padding</div><div class="line">	// i: 8字节</div><div class="line">	// cc: 2字节 + 4字节padding</div><div class="line">	fmt.Printf(&quot;size of F = %d\n&quot;, unsafe.Sizeof(f))</div><div class="line"></div><div class="line">	// size of g = 16</div><div class="line">	// c: 1字节 + 1字节padding</div><div class="line">	// cc: 2字节 + 4字节padding</div><div class="line">	// i: 8字节</div><div class="line">	fmt.Printf(&quot;size of G = %d\n&quot;, unsafe.Sizeof(g))</div><div class="line">	fmt.Printf(&quot;offset of g.cc = %d\n&quot;, unsafe.Offsetof(g.cc))</div><div class="line">	</div><div class="line">&#125;</div><div class="line"></div><div class="line">localhost:run Ben$ go run main.go </div><div class="line">size of A = 4</div><div class="line">size of B = 16</div><div class="line">size of C = 16</div><div class="line">size of D = 24</div><div class="line">size of F = 24</div><div class="line">size of G = 16</div><div class="line">offset of g.cc = 2</div></pre></td></tr></table></figure>
+<h4 id="Golang代码实验"><a href="#Golang代码实验" class="headerlink" title="Golang代码实验"></a>Golang代码实验</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">	<span class="string">"fmt"</span></div><div class="line">	<span class="string">"unsafe"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">type</span> A <span class="keyword">struct</span> &#123;</div><div class="line">	c <span class="keyword">int8</span></div><div class="line">	s <span class="keyword">int16</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> B <span class="keyword">struct</span> &#123;</div><div class="line">	s <span class="keyword">int16</span></div><div class="line">	c <span class="keyword">int8</span></div><div class="line">	i <span class="keyword">int</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> C <span class="keyword">struct</span> &#123;</div><div class="line">	c <span class="keyword">int8</span></div><div class="line">	f <span class="keyword">float32</span></div><div class="line">	i <span class="keyword">int</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> D <span class="keyword">struct</span> &#123;</div><div class="line">	f <span class="keyword">float32</span></div><div class="line">	i <span class="keyword">int</span></div><div class="line">	c <span class="keyword">int8</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> F <span class="keyword">struct</span> &#123;</div><div class="line">	c <span class="keyword">int8</span></div><div class="line">	i <span class="keyword">int</span></div><div class="line">	cc <span class="keyword">int16</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> G <span class="keyword">struct</span> &#123;</div><div class="line">	c <span class="keyword">int8</span></div><div class="line">	cc <span class="keyword">int16</span></div><div class="line">	i <span class="keyword">int</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> a = A&#123;&#125;</div><div class="line">	<span class="keyword">var</span> b = B&#123;&#125;</div><div class="line">	<span class="keyword">var</span> c = C&#123;&#125;</div><div class="line">	<span class="keyword">var</span> d = D&#123;&#125;</div><div class="line"></div><div class="line">	<span class="comment">// size of A = 4</span></div><div class="line">	<span class="comment">// c: 1 字节 + 1 字节padding</span></div><div class="line">	<span class="comment">// s: 2 字节</span></div><div class="line">	fmt.Printf(<span class="string">"size of A = %d\n"</span>, unsafe.Sizeof(a))</div><div class="line"></div><div class="line">	<span class="comment">// size of B = 16</span></div><div class="line">	<span class="comment">// s: 2 字节</span></div><div class="line">	<span class="comment">// c: 1 字节 + 5 字节padding</span></div><div class="line">	<span class="comment">// i: 8 字节</span></div><div class="line">	fmt.Printf(<span class="string">"size of B = %d\n"</span>, unsafe.Sizeof(b))</div><div class="line"></div><div class="line">	<span class="comment">// size of c = 16</span></div><div class="line">	<span class="comment">// c: 1 字节 + 3 字节padding</span></div><div class="line">	<span class="comment">// f: 4 字节</span></div><div class="line">	<span class="comment">// i: 8 字节</span></div><div class="line">	fmt.Printf(<span class="string">"size of C = %d\n"</span>, unsafe.Sizeof(c))</div><div class="line"></div><div class="line">	<span class="comment">// size of d = 24</span></div><div class="line">	<span class="comment">// f: 4字节 + 4字节padding</span></div><div class="line">	<span class="comment">// i: 8 字节</span></div><div class="line">	<span class="comment">// c: 1字节 + 7 字节padding</span></div><div class="line">	<span class="comment">// c的尾部padding的原因是要保证是结构体自身也是对齐的</span></div><div class="line">	<span class="comment">// 因为这样可以确保实现结构体数组时候里面每个元素也是对齐的</span></div><div class="line">	fmt.Printf(<span class="string">"size of D = %d\n"</span>, unsafe.Sizeof(d))</div><div class="line"></div><div class="line"></div><div class="line">	<span class="comment">// 由于有补齐，两个结构体即便有相同类型的字段，但前后顺序不同也可导致size不同</span></div><div class="line">	<span class="keyword">var</span> f = F&#123;&#125;</div><div class="line">	<span class="keyword">var</span> g = G&#123;&#125;</div><div class="line"></div><div class="line">	<span class="comment">// size of f = 24</span></div><div class="line">	<span class="comment">// c: 1字节 + 7字节padding</span></div><div class="line">	<span class="comment">// i: 8字节</span></div><div class="line">	<span class="comment">// cc: 2字节 + 4字节padding</span></div><div class="line">	fmt.Printf(<span class="string">"size of F = %d\n"</span>, unsafe.Sizeof(f))</div><div class="line"></div><div class="line">	<span class="comment">// size of g = 16</span></div><div class="line">	<span class="comment">// c: 1字节 + 1字节padding</span></div><div class="line">	<span class="comment">// cc: 2字节 + 4字节padding</span></div><div class="line">	<span class="comment">// i: 8字节</span></div><div class="line">	fmt.Printf(<span class="string">"size of G = %d\n"</span>, unsafe.Sizeof(g))</div><div class="line">	fmt.Printf(<span class="string">"offset of g.cc = %d\n"</span>, unsafe.Offsetof(g.cc))</div><div class="line">	</div><div class="line">&#125;</div><div class="line"></div><div class="line">localhost:run Ben$ <span class="keyword">go</span> run main.<span class="keyword">go</span> </div><div class="line">size of A = <span class="number">4</span></div><div class="line">size of B = <span class="number">16</span></div><div class="line">size of C = <span class="number">16</span></div><div class="line">size of D = <span class="number">24</span></div><div class="line">size of F = <span class="number">24</span></div><div class="line">size of G = <span class="number">16</span></div><div class="line">offset of g.cc = <span class="number">2</span></div></pre></td></tr></table></figure>
 <h4 id="参考"><a href="#参考" class="headerlink" title="参考:"></a>参考:</h4><p><a href="http://www.geeksforgeeks.org/structure-member-alignment-padding-and-data-packing/" target="_blank" rel="external">http://www.geeksforgeeks.org/structure-member-alignment-padding-and-data-packing/</a></p>
 <p><a href="http://www.catb.org/esr/structure-packing/#_structure_alignment_and_padding" target="_blank" rel="external">http://www.catb.org/esr/structure-packing/#_structure_alignment_and_padding</a></p>
 
@@ -420,6 +421,13 @@
           
   <div class="comments" id="comments">
     
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
   </div>
 
 
@@ -466,7 +474,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-count">6</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -476,10 +484,10 @@
             
             
             <div class="site-state-item site-state-categories">
-              
+              <a href="/categories/index.html">
                 <span class="site-state-item-count">1</span>
                 <span class="site-state-item-name">分类</span>
-              
+              </a>
             </div>
           
 
@@ -487,10 +495,10 @@
             
             
             <div class="site-state-item site-state-tags">
-              
-                <span class="site-state-item-count">11</span>
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">22</span>
                 <span class="site-state-item-name">标签</span>
-              
+              </a>
             </div>
           
 
@@ -662,6 +670,26 @@
 
   
 
+    
+      <script id="dsq-count-scr" src="https://ben-ge-xiao-chao.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://benx.io/2017/09/19/type-alignment-and-padding/';
+          this.page.identifier = '2017/09/19/type-alignment-and-padding/';
+          this.page.title = 'Type alignment and padding';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://ben-ge-xiao-chao.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
 
 
 
@@ -674,10 +702,6 @@
   
 
 
-
-
-
-  
 
 
 
