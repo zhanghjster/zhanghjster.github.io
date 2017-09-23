@@ -81,7 +81,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/serverstatus.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/terms1.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/leaderelection1.png">
-<meta property="og:updated_time" content="2017-09-23T13:26:47.000Z">
+<meta property="og:updated_time" content="2017-09-23T13:28:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raft">
 <meta name="twitter:description" content="对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法 Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现 Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法，">
@@ -347,11 +347,36 @@
 <p>每个server保存了他当前得到的term id，当与其他server(leader或candidate)交互时，会比较其他server的term id，更新为大的值，如果一个candidate或者leader发现自己的term id比其他server的小，则自动降级为follower(server之间交互的信息都带有term id)。</p>
 <p>server之间通过RPC协议进行交互，协议的负载只有RequestVoete和AppendEntries两种，</p>
 <h6 id="RequestVote-RPC"><a href="#RequestVote-RPC" class="headerlink" title="RequestVote RPC:"></a>RequestVote RPC:</h6><ul>
-<li><p>Arguments:</p>
-<p>  |    Field     |             Description             |<br>  | :———-: | :———————————: |<br>  |     term     |          candidates’ term           |<br>  | candidateId  |      dandidate requesting vote      |<br>  | lastLogIndex | index of candidate’s last log entry |<br>  | lastLogTerm  |  term of dadidate’s last log entry  |</p>
-</li>
-<li><p>Results:</p>
-</li>
+<li>Arguments:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Field</th>
+<th style="text-align:center">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">term</td>
+<td style="text-align:center">candidates’ term</td>
+</tr>
+<tr>
+<td style="text-align:center">candidateId</td>
+<td style="text-align:center">dandidate requesting vote</td>
+</tr>
+<tr>
+<td style="text-align:center">lastLogIndex</td>
+<td style="text-align:center">index of candidate’s last log entry</td>
+</tr>
+<tr>
+<td style="text-align:center">lastLogTerm</td>
+<td style="text-align:center">term of dadidate’s last log entry</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Results:</li>
 </ul>
 <table>
 <thead>
