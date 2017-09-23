@@ -72,7 +72,7 @@
 <meta name="description" content="对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法。 Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现 Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法">
 <meta name="keywords" content="distributed consensus">
 <meta property="og:type" content="article">
-<meta property="og:title" content="raft">
+<meta property="og:title" content="Raft">
 <meta property="og:url" content="http://benx.io/2017/09/22/raft/index.html">
 <meta property="og:site_name" content="笨哥小抄">
 <meta property="og:description" content="对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法。 Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现 Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法">
@@ -83,9 +83,9 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/vote.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/request.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/leaderelection.png">
-<meta property="og:updated_time" content="2017-09-23T01:30:00.000Z">
+<meta property="og:updated_time" content="2017-09-23T01:31:37.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="raft">
+<meta name="twitter:title" content="Raft">
 <meta name="twitter:description" content="对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法。 Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现 Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法">
 <meta name="twitter:image" content="http://owo5nif4b.bkt.clouddn.com/statemachine.png">
 
@@ -123,7 +123,7 @@
 
 
 
-  <title>raft | 笨哥小抄</title>
+  <title>Raft | 笨哥小抄</title>
   
 
 
@@ -276,7 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">raft</h1>
+          <h1 class="post-title" itemprop="name headline">Raft</h1>
         
 
         <div class="post-meta">
@@ -329,6 +329,7 @@
         <p>对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法。</p>
 <p>Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现</p>
 <p>Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法，它在容错和性能上与Paxos相当，但比Paxos更容易理解和实现</p>
+<a id="more"></a>
 <h4 id="一致性-consensus"><a href="#一致性-consensus" class="headerlink" title="一致性(consensus)"></a>一致性(consensus)</h4><p>一致性是分布式系统容错要解决的一个根本性问题，它要求集群中的多数server对数据的正确与否形成共识。典型的一致性算法要求在集群中大多数(过半)服务器可用时才会认为系统可用，比如一个5台server的集群在2台故障的情况下任然会被认为可靠，可以继续提供服务，但超过2台则停止服务</p>
 <p><a href="https://www.cs.cornell.edu/fbs/publications/SMSurvey.pdf" target="_blank" rel="external">复制状态机</a>是一致性算法产生的背景，它是集群容错的关键要素。在一个集群中每个server都有一个状态机和一个日志。状态机就是要进行容错的组件，比如hash table。 对于client来说他正在与一个唯一的可靠的状态机进行交互，即便有部分服务器出现故障。 每个状态机从log中拿到更新数据的指令，比如hash table可能就是设置一个key的‘x’的值为3。一致性算法的目的就是要让server中log保持一致，对于任意的状态机如果第n个命令是将hash table的x设置为3，没有其他的状态机的第n个命令是将x设置为其他值，这样做就使每个状态机处理相同的命令序列，产生相同的一些列结果并达到相同的状态。简单描述就是一致性算法要每台server上的状态机拿到相同顺序的指令以达到相同的状态结果的目的, 下图是复制状态机的架构图：</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/statemachine.png" alt="复制状态机"></p>
