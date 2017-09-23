@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="对于单节点的系统来说，保存一个数据并保持他的完整性是非常容易的。但对于多个节点来说，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxo和Raft便是这样的算法。 共识通常出现在复制状态机的上下环境中，它是构建容错系统的一般方法。每个server都有一个状态机和一个日志。状态机就是我们要进行容错的组件，比如hash table。 对于client来">
+<meta name="description" content="对于单节点的系统来说，保存一个数据并保持他的完整性是非常容易的。但对于多个节点来说，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxo和Raft便是这样的算法。">
 <meta name="keywords" content="distributed consensus">
 <meta property="og:type" content="article">
 <meta property="og:title" content="raft">
 <meta property="og:url" content="http://benx.io/2017/09/22/raft/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="对于单节点的系统来说，保存一个数据并保持他的完整性是非常容易的。但对于多个节点来说，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxo和Raft便是这样的算法。 共识通常出现在复制状态机的上下环境中，它是构建容错系统的一般方法。每个server都有一个状态机和一个日志。状态机就是我们要进行容错的组件，比如hash table。 对于client来">
+<meta property="og:description" content="对于单节点的系统来说，保存一个数据并保持他的完整性是非常容易的。但对于多个节点来说，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxo和Raft便是这样的算法。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-09-23T01:24:12.000Z">
+<meta property="og:updated_time" content="2017-09-23T01:27:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="raft">
-<meta name="twitter:description" content="对于单节点的系统来说，保存一个数据并保持他的完整性是非常容易的。但对于多个节点来说，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxo和Raft便是这样的算法。 共识通常出现在复制状态机的上下环境中，它是构建容错系统的一般方法。每个server都有一个状态机和一个日志。状态机就是我们要进行容错的组件，比如hash table。 对于client来">
+<meta name="twitter:description" content="对于单节点的系统来说，保存一个数据并保持他的完整性是非常容易的。但对于多个节点来说，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxo和Raft便是这样的算法。">
 
 
 
@@ -320,6 +320,7 @@
 
       
         <p>对于单节点的系统来说，保存一个数据并保持他的完整性是非常容易的。但对于多个节点来说，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxo和Raft便是这样的算法。</p>
+<a id="more"></a>
 <p>共识通常出现在复制状态机的上下环境中，它是构建容错系统的一般方法。每个server都有一个状态机和一个日志。状态机就是我们要进行容错的组件，比如hash table。 对于client来说他正在与一个唯一的可靠的状态机进行交互，即便有部分服务器出现故障。 每个状态机从log中拿到更新数据的指令，比如hash table可能就是设置一个key的‘x’的值为3。一致性算法的目的就是要让server中log保持一致，对于任意的状态机如果第n个命令是将hash table的x设置为3，没有其他的状态机的第n个命令是将x设置为其他值，这样做就使每个状态机处理相同的命令序列，产生相同的一些列结果并达到相同的状态</p>
 <p>Raft是基于Paxo的一致性算法，它在容错和性能上与Paxo相当，但它比Paxo更容易理解和实现（没有多少人能够理解Paxo，即便是Raft的作者团队前后用了一年时间才理解。Raft实现一致性算法的方法是首先选出一个唯一的leader,  然后由leader负责管理日志复制，leader负责从client哪里接收日志单元然后复制给其他server，并且告诉server是否能够把日志单元保存到状态机里。这种办法简化了日志的管理。这样Raft将一致性问题分解为三个问题 Leader election、log replication和Safty</p>
 <h4 id="Raft-Basic"><a href="#Raft-Basic" class="headerlink" title="Raft Basic"></a>Raft Basic</h4><p>一个Raft集群典型情况下有5个server，这样可以容忍两个server出现故障。server的状态可以为follower、cadidate或者leader。通常的情况下，只会存在一个leader，其余均为follower。follower不产生请求，只回应来自leader和candidate的请求。leader负责将处理来自client的所有请求（如果client是将请求发给follower，则follower需要将转发给leader。cadidate则是leader election过程的中间状态。</p>
