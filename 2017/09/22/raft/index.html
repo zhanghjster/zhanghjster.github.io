@@ -82,7 +82,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/terms1.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/leaderelection1.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/logs.png">
-<meta property="og:updated_time" content="2017-09-24T09:56:17.000Z">
+<meta property="og:updated_time" content="2017-09-24T11:59:12.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raft">
 <meta name="twitter:description" content="对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法 Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现 Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法，">
@@ -510,7 +510,8 @@
 <p>第一条特性通过同一leader在一个任期内在给定的日志索引位置最多创建一条日志条目，并且日志的索引不会改变。第二条特性通过AppendEntries的一致性检查实现，Append RPC的参数里包含leader最新条目之前的条目索引位置(preLogIndex)和term(preLogTerm)，如果follower没有在日志中找到相同索引和term，则拒绝新的日志条目，这种方式确保了AppendEntries返回成功时leader就知道follower和它的日志是一致的</p>
 <p>leader通过强制follower来复制他们的日志来处理他们之间的不一致, leader为每个follower维护一个nextIndex，它表示leader将要发送给follower的下一条日志条目的索引，当一个server成为leader时，它会将nextIndex设置为它的最新日志条目索引数+1，如果follower日志和leader的不同，会在AppendEntries一致性检查时返回失败，leader将nextIndex递减，然后重试AppendEntries RPC直至返回成功，follower上的冲突日志都移除，然后leader再从最后计算到的nextIndex开始逐步把日志同步给follower直至一致。</p>
 <h4 id="安全性-Safty"><a href="#安全性-Safty" class="headerlink" title="安全性(Safty)"></a>安全性(Safty)</h4><p>强制leader和follower之间的日志的复制还不能完全满足一致性，因为当出现leader的更替，如果新的leader是刚从故障恢复的follower里选上来的，那么它和上任leader之间可能会缺失很多日志条目，这样再强制follower和leader日志同步，他的follower从上任leader那里复制过来的日志会有一些被覆盖，因为日志条目录的index被新的leader同步到了之前的某个值</p>
-<p>这要求leader必须满足“存储全部已经提交的日志条目”这个条件，即Leader Completeness原则(一个已提交的日志条目，一定会出现在term更大的leader的日志中)，Raft通过选主环节的一些限制条件来实现这个目的。如果candidate的日志和大多数服务器上的一样新，那么他一定包含所有已提交的日志条目。因为如果一个日志条目是被提交的，他一定在大多数服务器上是保存的了。实现方法是：在RequestVote RPC时候，投票人如果发现自己的日志比候选人的日志新(比较最后日志条目的索引和term)，则拒绝投票请求</p>
+<p>这要求leader必须满足“存储全部已经提交的日志条目”这个条件，即Leader Completeness原则(一个已提交的日志条目，一定会出现在term更大的leader的日志中)，Raft通过选主环节的一些限制条件来实现这个目的。这个限制是，如果candidate的日志和大多数服务器上的一样新，那么他一定包含所有已提交的日志条目。因为如果一个日志条目是被提交的，他一定在大多数服务器上是保存的了。实现方法是：在RequestVote RPC时候，投票人如果发现自己的日志比候选人的日志新(比较最后日志条目的索引和term)，则拒绝投票请求</p>
+<p>如果follower活着candidate出现故障，leader在发送的RequestVote和AppendEntries RPC会失败，在恢复后，会再次受到leader发来的同一个RPC，直至日志与leader一致</p>
 <p>参考：</p>
 <p><a href="https://raft.github.io" target="_blank" rel="external">https://raft.github.io</a></p>
 <p><a href="https://raft.github.io/slides/uiuc2016.pdf" target="_blank" rel="external">https://raft.github.io/slides/uiuc2016.pdf</a></p>
