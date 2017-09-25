@@ -318,14 +318,15 @@
 
       
         
-          
-            <p>一次选美大赛，由N个评委投票来产生冠军，每个评委都将投票放到自己面前的小盒子里。在冠军的票数需要超过半数的情况下，实现算法从这N个小盒子里找出这个冠军。要求时间复杂度是O(n)，空间复杂度O(1)</p>
+          <p>一次选美大赛，由N个评委投票来产生冠军，每个评委都将投票放到自己面前的小盒子里。在冠军的票数需要超过半数的情况下，实现算法从这N个小盒子里找出这个冠军。要求时间复杂度是O(n)，空间复杂度O(1)</p>
 <p>这是一个经典的从数组中找出重复次数过半的元素的问题，可以使用Boyer–Moore投票算法解决，解决思想就是减掉两两不同的元素剩下的就是要求的</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">FindMajority</span><span class="params">(items []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> count = <span class="number">1</span></div><div class="line">    <span class="keyword">var</span> item = items[<span class="number">0</span>]</div><div class="line">    <span class="keyword">for</span> _, v := <span class="keyword">range</span> items[<span class="number">1</span>:]&#123; </div><div class="line">        <span class="keyword">if</span> item == v &#123;</div><div class="line">            count++</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">      	    count--</div><div class="line">            <span class="keyword">if</span> count == <span class="number">0</span> &#123;</div><div class="line">                count = <span class="number">1</span></div><div class="line">                item = v</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> item</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>参考：</p>
-<p><a href="https://en.wikipedia.org/wiki/Boyer–Moore_majority_vote_algorithm" target="_blank" rel="external">https://en.wikipedia.org/wiki/Boyer–Moore_majority_vote_algorithm</a></p>
-
-          
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/09/25/majority-item/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
