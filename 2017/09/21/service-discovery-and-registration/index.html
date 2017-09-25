@@ -78,7 +78,7 @@
 <meta property="og:description" content="对于一个分布式系统，会包含多种服务，并部署到不同的服务器上，为了实现服务之间的相互访问，需要有配置来描述不同的服务的IP和端口，在服务数量和服务器较少的情况下，手动维护配置文件就可以了。但如果成千上万，手动方式就成了不可能的任务，需要有系统来支持完成下面两个任务  服务注册,服务提供方将服务信息(如主机和端口)注册到存储系统 服务发现,服务消费方从存储系统中获得获取所需服务的信息  作为众多服务的">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://www.consul.io/assets/images/consul-arch-420ce04a.png">
-<meta property="og:updated_time" content="2017-09-24T13:21:47.000Z">
+<meta property="og:updated_time" content="2017-09-24T15:23:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Consul">
 <meta name="twitter:description" content="对于一个分布式系统，会包含多种服务，并部署到不同的服务器上，为了实现服务之间的相互访问，需要有配置来描述不同的服务的IP和端口，在服务数量和服务器较少的情况下，手动维护配置文件就可以了。但如果成千上万，手动方式就成了不可能的任务，需要有系统来支持完成下面两个任务  服务注册,服务提供方将服务信息(如主机和端口)注册到存储系统 服务发现,服务消费方从存储系统中获得获取所需服务的信息  作为众多服务的">
@@ -340,6 +340,8 @@
 <p>数据中心的每个node都会参与到gossip协议。这样做，一是不必为client配置server的地址，因为他们会被自动发现。二是对node的检测被分布到每个node上，不必由server来执行。三是作为gossip作为消息层来分发类似选主这种重要的事件。</p>
 <p>每个数据中的server通过选主过程来确定leader，来负责集群的管理事务，其他server则将收到的各种RPC请求转发到leader。</p>
 <p>server还负责与其他数据中心交互来处理跨数据中心的请求，当server收到这种请求它会将请求转发到相应的数据中心活本地的leader。</p>
+<h4 id="Raft-in-Consul"><a href="#Raft-in-Consul" class="headerlink" title="Raft in Consul"></a>Raft in Consul</h4><p>Consul使用Raft算法实现分布式存储的一致性，在consul集群里，只有server结点参与了Raft，所有的client结点将请求转发给server，原因是Raft集群的结点数量不能太多(在3-5)， 如果client也参与到Raft，那么随着集群结点数量增加，在Raft算法下集群效率会下降</p>
+<p>在一开始，单结点的Consule serveri进入到“bootstrap”模式，server自动升级为leader,之后其他server可以安全的一致性的加入到成员列表里。最终当新server数量增加到指定数量时“boostrap”模式结束。</p>
 <p>参考：</p>
 <p><a href="https://www.consul.io/docs/internals/consensus.html" target="_blank" rel="external">https://www.consul.io/docs/internals/consensus.html</a></p>
 
@@ -464,7 +466,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-count">9</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -486,7 +488,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">21</span>
+                <span class="site-state-item-count">24</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -521,7 +523,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ZooKeeper"><span class="nav-number">1.</span> <span class="nav-text">ZooKeeper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#etcd"><span class="nav-number">2.</span> <span class="nav-text">etcd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consul"><span class="nav-number">3.</span> <span class="nav-text">Consul</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#架构图"><span class="nav-number">3.0.1.</span> <span class="nav-text">架构图</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ZooKeeper"><span class="nav-number">1.</span> <span class="nav-text">ZooKeeper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#etcd"><span class="nav-number">2.</span> <span class="nav-text">etcd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consul"><span class="nav-number">3.</span> <span class="nav-text">Consul</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#架构图"><span class="nav-number">3.0.1.</span> <span class="nav-text">架构图</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Raft-in-Consul"><span class="nav-number">3.1.</span> <span class="nav-text">Raft in Consul</span></a></li></ol></li></ol></div>
             
 
           </div>
