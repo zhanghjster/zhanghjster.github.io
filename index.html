@@ -1072,7 +1072,7 @@
 
       
         
-          <p>在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算n的m次幂的方法。代码如下：</p>
+          <p>在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 $n^m$ 的方法。代码如下：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">hashStr</span><span class="params">(sep <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">uint32</span>, <span class="keyword">uint32</span>)</span></span> &#123;</div><div class="line">	....</div><div class="line">	<span class="keyword">var</span> pow, sq <span class="keyword">uint32</span> = <span class="number">1</span>, primeRK</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(sep); i &gt; <span class="number">0</span>; i &gt;&gt;= <span class="number">1</span> &#123;</div><div class="line">		<span class="keyword">if</span> i&amp;<span class="number">1</span> != <span class="number">0</span> &#123;</div><div class="line">			pow *= sq</div><div class="line">		&#125;</div><div class="line">		sq *= sq</div><div class="line">	&#125;</div><div class="line">	....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>发现它并不是简单的m次n的乘积得到，其中必有一些技巧的存在。</p>
           <!--noindex-->
