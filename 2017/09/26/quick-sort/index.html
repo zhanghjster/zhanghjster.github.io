@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="算法 - 排序 - quicksort," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="快速排序是一个分治法排序，由Tony Hoare在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 $O(nlogn)$  , 最坏情况下为$O(n^2)$ 算法的思想是取一个枢纽元“pivot”然后将数组元素以枢纽元为中心分割(partition)，递归执行。枢纽元可以从通过取第一个、取最后一个、随机、中位的办法从">
+<meta name="keywords" content="算法 - 排序 - quicksort">
+<meta property="og:type" content="article">
+<meta property="og:title" content="快速排序">
+<meta property="og:url" content="http://benx.io/2017/09/26/quick-sort/index.html">
+<meta property="og:site_name" content="笨哥小抄">
+<meta property="og:description" content="快速排序是一个分治法排序，由Tony Hoare在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 $O(nlogn)$  , 最坏情况下为$O(n^2)$ 算法的思想是取一个枢纽元“pivot”然后将数组元素以枢纽元为中心分割(partition)，递归执行。枢纽元可以从通过取第一个、取最后一个、随机、中位的办法从">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-28T13:09:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="快速排序">
+<meta name="twitter:description" content="快速排序是一个分治法排序，由Tony Hoare在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 $O(nlogn)$  , 最坏情况下为$O(n^2)$ 算法的思想是取一个枢纽元“pivot”然后将数组元素以枢纽元为中心分割(partition)，递归执行。枢纽元可以从通过取第一个、取最后一个、随机、中位的办法从">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://benx.io/2017/09/26/quick-sort/"/>
+
+
+
+
+
+  <title>快速排序 | 笨哥小抄</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20062311-4', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">笨哥小抄</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/09/26/quick-sort/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">快速排序</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-26T06:43:40+08:00">
+                2017-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p> 快速排序是一个分治法排序，由<a href="https://en.wikipedia.org/wiki/Tony_Hoare" target="_blank" rel="external">Tony Hoare</a>在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 $O(nlogn)$  , 最坏情况下为$O(n^2)$</p>
+<p>算法的思想是取一个枢纽元“pivot”然后将数组元素以枢纽元为中心分割(partition)，递归执行。枢纽元可以从通过取第一个、取最后一个、随机、中位的办法从数组里取得。其中关分割是算法的关键，在这个过程里要将数组里所有小于pivot的数放到它的前面，大于pivot的数放到它的后面</p>
+<p>递归调用的过程如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">QuickSort</span><span class="params">(a []<span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(a) &gt; <span class="number">1</span> &#123;</div><div class="line">		pi := partition(a)</div><div class="line">		QuickSort(a[:pi])</div><div class="line">		QuickSort(a[pi+<span class="number">1</span>:])</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="Lomuto-parition-schema"><a href="#Lomuto-parition-schema" class="headerlink" title="Lomuto parition schema"></a>Lomuto parition schema</h4><p>算法由 Nico Lomuto提出，用数组的最后一个元素作为枢纽元，用$j$ 遍历数组，用$i$ 记录当前比pivot小的元素的最大索引，当 $j$ 处元素小于pivot，则将$i+1$处元素与$j$处元素互换，最终达到数组被分成大于和小于pivot元素的两部分。当数组是预排序的或者是都是相等元素，时间复杂度是$O(n^2)$ </p>
+<p>下面是一段用go实现代码，注释部分模拟了每一步的数组状态：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">// 假设数组为 a = &#123;8，6，3，7，2，5，9，5&#125;</span></div><div class="line"><span class="comment">// 初始i = -1, p = 5</span></div><div class="line"><span class="comment">// 循环 j &lt;- 0 - len(a)-1</span></div><div class="line"><span class="comment">// j = 0: i = -1, (v = 8) &gt; 5, skip, 				a = &#123;8，6，3，7，2，5，9，5&#125;</span></div><div class="line"><span class="comment">// j = 1: i = -1, (v = 6) &gt; 5, skip, 				a = &#123;8，6，3，7，2，5，9，5&#125;</span></div><div class="line"><span class="comment">// j = 2: i = -1, (v = 3) &lt; 5, i=0, a[0] &lt;=&gt; a[2], 	a = &#123;3, 6，8，7，2，5，9，5&#125;</span></div><div class="line"><span class="comment">// j = 3: i = 0,  (v = 7) &gt; 5, skip				 	a = &#123;3, 6，8，7，2，5，9，5&#125;</span></div><div class="line"><span class="comment">// j = 4: i = 0,  (v = 2) &lt; 5, i=1, a[1] &lt;=&gt; a[4],  a = &#123;3, 2，8，7，6，5，9，5&#125;</span></div><div class="line"><span class="comment">// j = 5: i = 1,  (v = 5) = 5, i=2, a[2] &lt;=&gt; a[5],  a = &#123;3, 2，5，7，6，8，9，5&#125;</span></div><div class="line"><span class="comment">// j = 6: i = 2,  (v = 9) &gt; 5, skip					a = &#123;3, 2，5，7，6，8，9，5&#125;</span></div><div class="line"><span class="comment">// a[i+1] &lt;=&gt; a[len(a)-1], 							a = &#123;3, 2，5，5，6，8，9，7&#125;</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">LomutoPartition</span><span class="params">(a []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	<span class="comment">// i 为小于pivot的值的最大的索引</span></div><div class="line">	<span class="keyword">var</span> i <span class="keyword">int</span> = <span class="number">-1</span></div><div class="line"></div><div class="line">	<span class="keyword">var</span> h = <span class="built_in">len</span>(a) - <span class="number">1</span></div><div class="line">	<span class="comment">// 取最后一个元素为pivot</span></div><div class="line">	<span class="keyword">var</span> p = a[h]</div><div class="line"></div><div class="line">	<span class="comment">// j为要交换位置的元素的游标</span></div><div class="line">	<span class="keyword">for</span> j, v := <span class="keyword">range</span> a[:h] &#123;</div><div class="line">		<span class="keyword">if</span> v &lt;= p &#123;</div><div class="line">			i++</div><div class="line">			a[i], a[j] = a[j], a[i]</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// i为pivot的位置</span></div><div class="line">	i++</div><div class="line"></div><div class="line">	<span class="comment">// 将pivot从数组尾部交换到i</span></div><div class="line">	a[i], a[h] = a[h], a[i]</div><div class="line"></div><div class="line">	<span class="keyword">return</span> i</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="Hoare-partition-scheme"><a href="#Hoare-partition-scheme" class="headerlink" title="Hoare partition scheme"></a>Hoare partition scheme</h4><p>算法由Hoare提出，两个索引$i$和$j$ 分别从数组的数位开始相向而行，当$i$ 处元素大于pivot并且$j$处小于pivot，交换两处的值，然后两个索引继续前行， 直到互换位置，此时交换两个索引处的值</p>
+<p>下面是一段用go实现代码，注释部分模拟了每一步的数组状态：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 假设数组为 a = &#123;8，6，3，7，2，5，9，5&#125;</span></div><div class="line"><span class="comment">// 初始i, j = -1, 8</span></div><div class="line"><span class="comment">// p = 8</span></div><div class="line"><span class="comment">// for循环执行过程</span></div><div class="line"><span class="comment">//   1. i = 0, j=7, a[0]&lt;=&gt;a[7], a = &#123;5, 6, 3, 7, 2, 5, 9, 8&#125;</span></div><div class="line"><span class="comment">// 	 2. i = 1, j=5, a[1]&lt;=&gt;a[5], a = &#123;5, 5, 3, 7, 2, 6, 9, 8&#125;</span></div><div class="line"><span class="comment">//   3. i = 3, j=4, a[3]&lt;=&gt;a[4], a = &#123;5, 5, 3, 2, 7, 6, 9, 8&#125;</span></div><div class="line"><span class="comment">//   4. i = 4, j=3, return</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">HoarePartition</span><span class="params">(a []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> i, j = <span class="number">-1</span>, <span class="built_in">len</span>(a)</div><div class="line">  </div><div class="line">    <span class="comment">// 第一个元素为pivot</span></div><div class="line">	p := a[<span class="number">0</span>]</div><div class="line">	<span class="keyword">for</span> &#123;</div><div class="line">      	<span class="comment">// 遇到不小于pivot的值时i停止</span></div><div class="line">		<span class="keyword">for</span> i++;a[i] &lt; p; i++ &#123;&#125; </div><div class="line">      </div><div class="line">        <span class="comment">// 遇到不大于pivot的值时j停止</span></div><div class="line">		<span class="keyword">for</span> j--;a[j] &gt; p; j-- &#123;&#125;</div><div class="line">      </div><div class="line">        <span class="comment">// i越过j后返回</span></div><div class="line">		<span class="keyword">if</span> i &gt;= j &#123;</div><div class="line">			<span class="keyword">return</span> j</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		a[i], a[j] = a[j], a[i]</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>​    </p>
+<p>参考：</p>
+<p><a href="https://en.wikipedia.org/wiki/Quicksort" target="_blank" rel="external">https://en.wikipedia.org/wiki/Quicksort</a></p>
+<p><a href="http://www.geeksforgeeks.org/quick-sort/" target="_blank" rel="external">http://www.geeksforgeeks.org/quick-sort/</a></p>
+<p><a href="https://www.khanacademy.org/computing/computer-science/algorithms/quick-sort/a/analysis-of-quicksort" target="_blank" rel="external">https://www.khanacademy.org/computing/computer-science/algorithms/quick-sort/a/analysis-of-quicksort</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/算法-排序-quicksort/" rel="tag"># 算法 - 排序 - quicksort</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/25/majority-item/" rel="next" title="Find majority item">
+                <i class="fa fa-chevron-left"></i> Find majority item
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Benx</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Lomuto-parition-schema"><span class="nav-number">1.</span> <span class="nav-text">Lomuto parition schema</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hoare-partition-scheme"><span class="nav-number">2.</span> <span class="nav-text">Hoare partition scheme</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Benx</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
