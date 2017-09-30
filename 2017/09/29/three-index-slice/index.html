@@ -81,7 +81,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-struct.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-1.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-2-2.png">
-<meta property="og:updated_time" content="2017-09-30T14:25:22.000Z">
+<meta property="og:updated_time" content="2017-09-30T14:29:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Array and Slice">
 <meta name="twitter:description" content="Go提供了array(数组)和slice(切片)两种类型化数据序列，array类似于其他语言的数组，具有定长的性质，slice建立在数组之上，但提供了比array更强大的功能和便利">
@@ -326,10 +326,10 @@
       
         <p>Go提供了array(数组)和slice(切片)两种类型化数据序列，array类似于其他语言的数组，具有定长的性质，slice建立在数组之上，但提供了比array更强大的功能和便利</p>
 <a id="more"></a>
-<h4 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h4><p>数组通过指定长度和数据类型来定义，比如 ‘[4]int’定义了一个长度为4的整数数组。数组的长度是固定的，它的长度是类型的一部分([4]int和[5]int是不同类型)。数组索引采用通常办法，从0开始，s[n]访问它的第n个元素</p>
-<p>数组在内存里是连续存储的同类型数据的序列，比如[4]int在内存里如下表示:</p>
+<h4 id="Array"><a href="#Array" class="headerlink" title="Array"></a>Array</h4><p>array通过指定长度和数据类型来定义，比如 ‘[4]int’定义了一个长度为4的整数array。array的长度是固定的，它的长度是类型的一部分([4]int和[5]int是不同类型)。array索引采用通常办法，从0开始，s[n]访问它的第n个元素</p>
+<p>array在内存里是连续存储的同类型数据的序列，比如[4]int在内存里如下表示:</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-array.png" width="400"></p>
-<p>Go的数组是值，数组变量表示整个数组，它不像c那样表示指向数组第一个元素的指针。这意味着当赋值或传递一个数组时将复制其内容(为避免复制，可以传递指向数组的指针)。可以将数组看做成像结构体一样的固定长度复合值，但通过索引而不是字段名来访问里面元素</p>
+<p>Go的array是值，array变量表示整个array，它不像c那样表示指向数组第一个元素的指针。这意味着当赋值或传递一个array时将复制其内容(为避免复制，可以传递指向array的指针)。可以将array看做成像结构体一样的固定长度复合值，但通过索引而不是字段名来访问里面元素</p>
 <h4 id="Slice"><a href="#Slice" class="headerlink" title="Slice"></a>Slice</h4><p>slice的类型规范是’[]T’，T表示里面元素的类型，不同于array的一个显著特点是它没有指定长度。</p>
 <p>slice可以通过下面方法声明</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> slice = []<span class="keyword">byte</span>&#123;<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>,<span class="string">'d'</span>,<span class="string">'e'</span>&#125;</div></pre></td></tr></table></figure>
@@ -341,7 +341,7 @@
 <li>如果’a’是array，则 $i$ $j$取值范围是 $0&lt;=i&lt;=j&lt;=len(a)$,  $i$如果省略则默认值是0, $j$如果省略默认为$len(a)$, $cap(b)=len(a) - i$, $len(b) = j - i$</li>
 <li>如果’a’是slice，则$i$ $j$取值范围是$0&lt;=i&lt;=j&lt;=cap(a)$, $i$如果省略默认值是0，$j$如果省略默认值是$len(a)$ ,$cap(b) = cap(a) - i$, $len(b) = j - i$</li>
 </ul>
-<h4 id="Slice内部结构"><a href="#Slice内部结构" class="headerlink" title="Slice内部结构"></a>Slice内部结构</h4><p>slice实际上是数组的描述符，它包含指向数组的指针、段的长度和容量(段的最大长度)，如下图所示</p>
+<h4 id="Slice内部结构"><a href="#Slice内部结构" class="headerlink" title="Slice内部结构"></a>Slice内部结构</h4><p>slice实际上是一个描述符，它包含指向array的指针、段的长度和容量(段的最大长度)，如下图所示</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-struct.png" width="400"></p>
 <p>对于上文中定义的’slice’, 它的结构如下图</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-1.png" width="400"></p>
