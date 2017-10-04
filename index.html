@@ -318,7 +318,7 @@
 
       
         
-          <p>对于我们人类来说，认知正数或者负数是没有任何麻烦的，因为是我们发明了它，在一个数的前面有’-‘号就表示负数，前面有’+‘或者不加符号就表示正数，很简单不是吗? 但，这对于人类的另一个发明计算机来说，就不那么容易了，应为它们的大脑里只有‘0’和‘1’，没有加号和减号的概念。辣莫，怎么才能让它们能够识别正负数呢？</p>
+          <p>对于我们人类来说，认知正数或者负数是没有任何麻烦的，因为是我们发明了它，在一个数的前面有“-”号就表示负数，前面有“+”或者不加符号就表示正数，很简单不是吗? 但，这对于人类的另一个发明计算机来说，就不那么容易了，应为它们的大脑里只有“0”和“1”，没有加号和减号的概念。辣莫，怎么才能让它们能够识别正负数呢？</p>
 <p>自从计算机被发明以来，世界上的各种研究员、数学家、计算机科学都在殚精竭虑的寻找在二进制编码所限制的世界里表示负数。经过多年的求索与争吵产生了三种编码方法，但没有一个是完美的，各有优缺点。下面我们详细看一下每一种方法，感受一下他们的原理和使用场景</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -567,7 +567,7 @@
 
       
         
-          <p>插入排序是一种简单的适用于小数组的排序算法，时间复杂度为$O(n^2)$，逻辑类似玩扑克时把新拿到的牌按顺序插入到已有牌中，如下图：</p>
+          <p>插入排序是一种简单的适用于小数组的排序算法，时间复杂度为<span class="math inline">\(O(n^2)\)</span>，逻辑类似玩扑克时把新拿到的牌按顺序插入到已有牌中，如下图：</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/Insertion-Sort.jpg" width="400"></p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -692,7 +692,7 @@
 
       
         
-          <p> 快速排序是一个分治法排序，由<a href="https://en.wikipedia.org/wiki/Tony_Hoare" target="_blank" rel="external">Tony Hoare</a>在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 $O(nlogn)$  , 最坏情况下为$O(n^2)$</p>
+          <p>快速排序是一个分治法排序，由<a href="https://en.wikipedia.org/wiki/Tony_Hoare" target="_blank" rel="external">Tony Hoare</a>在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 <span class="math inline">\(O(nlogn)\)</span> , 最坏情况下为<span class="math inline">\(O(n^2)\)</span></p>
 <p>算法的思想是取一个枢纽元“pivot”然后将数组元素以枢纽元为中心分割(partition)，递归执行。枢纽元可以从通过取第一个、取最后一个、随机、中位的办法从数组里取得。其中关分割是算法的关键，在这个过程里要将数组里所有小于pivot的数放到它的前面，大于pivot的数放到它的后面</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -817,7 +817,7 @@
 
       
         
-          <p>一次选美大赛，由N个评委投票来产生冠军，每个评委都将投票放到自己面前的小盒子里。在冠军的票数需要超过半数的情况下，实现算法从这N个小盒子里找出这个冠军。要求时间复杂度是$O(n)$，空间复杂度$O(1)$</p>
+          <p>一次选美大赛，由N个评委投票来产生冠军，每个评委都将投票放到自己面前的小盒子里。在冠军的票数需要超过半数的情况下，实现算法从这N个小盒子里找出这个冠军。要求时间复杂度是<span class="math inline">\(O(n)\)</span>，空间复杂度<span class="math inline">\(O(1)\)</span></p>
 <p>这是一个经典的从数组中找出重复次数过半的元素的问题，可以使用Boyer–Moore投票算法解决，解决思想就是减掉两两不同的元素剩下的就是要求的</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1322,7 +1322,7 @@
       
         
           <p>‘百分号编码’是一种将URI编码的机制, 又叫URL编码。</p>
-<p>URI里允许的字符分为‘保留’和‘非保留’两种。‘保留’字符具有特殊的意义，比如’/‘用于分割URL. ‘非保留‘字符就没有这种意义。用‘百分号编码‘,‘保留’字符会被转化为特殊的字符串<br>
+<p>URI里允许的字符分为‘保留’和‘非保留’两种。‘保留’字符具有特殊的意义，比如’/’用于分割URL. ‘非保留‘字符就没有这种意义。用‘百分号编码‘,‘保留’字符会被转化为特殊的字符串
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/20/percent-encoding/#more" rel="contents">
@@ -1446,7 +1446,7 @@
 
       
         
-          <p>在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 $n^m$ 的方法。代码如下：</p>
+          <p>在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 <span class="math inline">\(n^m\)</span> 的方法。代码如下：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">hashStr</span><span class="params">(sep <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">uint32</span>, <span class="keyword">uint32</span>)</span></span> &#123;</div><div class="line">	....</div><div class="line">	<span class="keyword">var</span> pow, sq <span class="keyword">uint32</span> = <span class="number">1</span>, primeRK</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(sep); i &gt; <span class="number">0</span>; i &gt;&gt;= <span class="number">1</span> &#123;</div><div class="line">		<span class="keyword">if</span> i&amp;<span class="number">1</span> != <span class="number">0</span> &#123;</div><div class="line">			pow *= sq</div><div class="line">		&#125;</div><div class="line">		sq *= sq</div><div class="line">	&#125;</div><div class="line">	....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>发现它并不是简单的m次n的乘积得到，其中必有一些技巧的存在。</p>
           <!--noindex-->
