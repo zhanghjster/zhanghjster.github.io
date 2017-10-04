@@ -77,7 +77,7 @@
 <meta property="og:site_name" content="笨哥小抄">
 <meta property="og:description" content="对于我们人类来说，认知正数或者负数是没有任何麻烦的，因为是我们发明了它，在一个数的前面有’-‘号就表示负数，前面有’+‘或者不加符号就表示正数，很简单不是吗? 但，这对于人类的另一个发明计算机来说，就不那么容易了，应为它们的大脑里只有‘0’和‘1’，没有加号和减号的概念。辣莫，怎么才能让它们能够识别正负数呢？ 自从计算机被发明以来，世界上的各种研究员、数学家、计算机科学都在殚精竭虑的寻找在二进制编">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-04T02:57:29.000Z">
+<meta property="og:updated_time" content="2017-10-04T03:10:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Signed Integer">
 <meta name="twitter:description" content="对于我们人类来说，认知正数或者负数是没有任何麻烦的，因为是我们发明了它，在一个数的前面有’-‘号就表示负数，前面有’+‘或者不加符号就表示正数，很简单不是吗? 但，这对于人类的另一个发明计算机来说，就不那么容易了，应为它们的大脑里只有‘0’和‘1’，没有加号和减号的概念。辣莫，怎么才能让它们能够识别正负数呢？ 自从计算机被发明以来，世界上的各种研究员、数学家、计算机科学都在殚精竭虑的寻找在二进制编">
@@ -417,7 +417,7 @@
 <p>可见结果一定是个最高位是‘1’的 <span class="math inline">\(n+1\)</span> 位数，执行第三步实际相当于</p>
 <p>​ $x - y + b^n -b^n = x -y $</p>
 <p>对于 <span class="math inline">\(x - y\)</span>不到 <span class="math inline">\(n\)</span> 位的情况，第三步相当于 <span class="math inline">\(e_1…e_n\)</span> 里有 <span class="math inline">\(e_1..e_j (j &lt;=n)\)</span>， 第三部的去掉‘0’的过程即是处理这种情况</p>
-<p>##### 补码</p>
+<h5 id="补码-1">补码</h5>
 <p>从补数法我们可以知道，在二进制(<span class="math inline">\(b=2\)</span>)的情况下，减法也可以用加法实现，并且上文中的第三步正好和计算机里丢弃溢出位有相同的效果</p>
 <p>由于 <span class="math inline">\(a - b = a + (-b)\)</span> ，所以在计算机里 <span class="math inline">\(-b\)</span> 可以用 <span class="math inline">\(b\)</span> 的 ‘补数’ 来替代，如果 <span class="math inline">\(b\)</span> &gt; 0，则 <span class="math inline">\(b\)</span> 补数就可以表示它的负数，所以有符号数就可以用’<strong>补码</strong>’来表示了, 方法如下</p>
 <ul>
@@ -628,7 +628,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#原码signed-magnitude-representation"><span class="nav-number">1.</span> <span class="nav-text">原码(Signed Magnitude Representation)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#反码ones-complement"><span class="nav-number">2.</span> <span class="nav-text">反码(one’s complement)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#补码"><span class="nav-number">3.</span> <span class="nav-text">补码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#基数radix"><span class="nav-number">3.1.</span> <span class="nav-text">基数(Radix)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#基数补radix-complements"><span class="nav-number">3.2.</span> <span class="nav-text">基数补(Radix Complements)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#减量基数补diminished-radix-complement"><span class="nav-number">3.3.</span> <span class="nav-text">减量基数补(Diminished Radix Complement)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#补数法"><span class="nav-number">3.4.</span> <span class="nav-text">补数法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#原码signed-magnitude-representation"><span class="nav-number">1.</span> <span class="nav-text">原码(Signed Magnitude Representation)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#反码ones-complement"><span class="nav-number">2.</span> <span class="nav-text">反码(one’s complement)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#补码"><span class="nav-number">3.</span> <span class="nav-text">补码</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#基数radix"><span class="nav-number">3.1.</span> <span class="nav-text">基数(Radix)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#基数补radix-complements"><span class="nav-number">3.2.</span> <span class="nav-text">基数补(Radix Complements)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#减量基数补diminished-radix-complement"><span class="nav-number">3.3.</span> <span class="nav-text">减量基数补(Diminished Radix Complement)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#补数法"><span class="nav-number">3.4.</span> <span class="nav-text">补数法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#补码-1"><span class="nav-number">3.5.</span> <span class="nav-text">补码</span></a></li></ol></li></ol></div>
             
 
           </div>
