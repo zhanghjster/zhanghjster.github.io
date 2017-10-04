@@ -81,7 +81,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-struct.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-1.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/go-slices-usage-and-internals_slice-2-2.png">
-<meta property="og:updated_time" content="2017-09-30T14:29:21.000Z">
+<meta property="og:updated_time" content="2017-10-04T12:33:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Array and Slice">
 <meta name="twitter:description" content="Go提供了array(数组)和slice(切片)两种类型化数据序列，array类似于其他语言的数组，具有定长的性质，slice建立在数组之上，但提供了比array更强大的功能和便利">
@@ -340,7 +340,7 @@
 <p>slice还可以从已经存在的slice或array‘切片’得来，通过使用冒号分隔两个索引指定半开范围(half-open)来完成，主表达式如下</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">b = a[i:j] <span class="comment">// 结果'b'由'a'从i开始j-i元素组成</span></div></pre></td></tr></table></figure>
 <ul>
-<li>如果’a’是array，则 <span class="math inline">\(i\)</span> <span class="math inline">\(j\)</span>取值范围是 <span class="math inline">\(0&lt;=i&lt;=j&lt;=len(a)\)</span>, <span class="math inline">\(i\)</span>如果省略则默认值是0, <span class="math inline">\(j\)</span>如果省略默认为<span class="math inline">\(len(a)\)</span>, <span class="math inline">\(cap(b)=len(a) - i\)</span>, <span class="math inline">\(len(b) = j - i\)</span></li>
+<li>如果’a’是array，则 <span class="math inline">\(i\)</span> <span class="math inline">\(j\)</span>取值范围是 <span class="math inline">\(0&lt;=i&lt;=j&lt;=len(a)\)</span>, <span class="math inline">\(i\)</span>如果省略则默认值是0, <span class="math inline">\(j\)</span>如果省略默认为<span class="math inline">\(len(a)\)</span>, $cap(b)=j-i $ , <span class="math inline">\(len(b) = j - i\)</span></li>
 <li>如果’a’是slice，则<span class="math inline">\(i\)</span> <span class="math inline">\(j\)</span>取值范围是<span class="math inline">\(0&lt;=i&lt;=j&lt;=cap(a)\)</span>, <span class="math inline">\(i\)</span>如果省略默认值是0，<span class="math inline">\(j\)</span>如果省略默认值是<span class="math inline">\(len(a)\)</span> ,<span class="math inline">\(cap(b) = cap(a) - i\)</span>, <span class="math inline">\(len(b) = j - i\)</span></li>
 </ul>
 <h4 id="slice内部结构">Slice内部结构</h4>
