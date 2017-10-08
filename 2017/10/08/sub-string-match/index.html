@@ -73,7 +73,7 @@
 <meta name="keywords" content="go,brute force,rabin-karp,rolling hash">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Sub-string match">
-<meta property="og:url" content="http://benx.io/2017/10/05/sub-string-match/index.html">
+<meta property="og:url" content="http://benx.io/2017/10/08/sub-string-match/index.html">
 <meta property="og:site_name" content="笨哥小抄">
 <meta property="og:description" content="字符串匹配是IT们经常要遇到的问题，虽然很多现代语言和库来都提供了函数来处理，但研究一下他们的工作机理还是有必要的">
 <meta property="og:locale" content="zh-Hans">
@@ -81,7 +81,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/kp2.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/kp3.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/kp4.png">
-<meta property="og:updated_time" content="2017-10-08T12:40:57.000Z">
+<meta property="og:updated_time" content="2017-10-08T12:44:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Sub-string match">
 <meta name="twitter:description" content="字符串匹配是IT们经常要遇到的问题，虽然很多现代语言和库来都提供了函数来处理，但研究一下他们的工作机理还是有必要的">
@@ -115,7 +115,7 @@
 
 
 
-  <link rel="canonical" href="http://benx.io/2017/10/05/sub-string-match/"/>
+  <link rel="canonical" href="http://benx.io/2017/10/08/sub-string-match/"/>
 
 
 
@@ -257,7 +257,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/05/sub-string-match/">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/08/sub-string-match/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Benx">
@@ -286,8 +286,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-05T21:15:50+08:00">
-                2017-10-05
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-08T21:15:50+08:00">
+                2017-10-08
               </time>
             
 
@@ -368,8 +368,6 @@
 <p>算法的基本逻辑如下面伪码：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">function RabinKarp(<span class="keyword">string</span> t[<span class="number">0.</span>.n], <span class="keyword">string</span> p[<span class="number">0.</span>.m])</div><div class="line">	hp := hash(p[<span class="number">0.</span>.m])</div><div class="line">	<span class="keyword">for</span> i from <span class="number">0</span> to n-m</div><div class="line">		hs := hash(s[i..i+m])</div><div class="line">		<span class="keyword">if</span> hs == hp and s[i..i+m] == p[<span class="number">0.</span>.m]</div><div class="line">			<span class="keyword">return</span> i</div><div class="line">	<span class="keyword">return</span> not found</div></pre></td></tr></table></figure>
 <p>从上面的逻辑可以看到，算法的关键之处是hash函数，由于子串<span class="math inline">\(s[i+1..i+m]\)</span> hash运算需要时间复杂度是<span class="math inline">\(O(m)\)</span> ，所以如果对每个子串都进行hash，则程序的总的时间复杂度会到<span class="math inline">\(O(n-m+1)m\)</span> ，与暴力匹配相当。为了更快的计算速度，hash函数的时间必须是恒定时间的，为此Rabin-Karp使用了巧妙的hash函数(Rolling hash)，其基本逻辑就是下一次的hash运算用到了上一次的的结果</p>
-<h4 id="rolling-hash">Rolling hash</h4>
-<p>滚动哈希，也叫递归哈希</p>
 
       
     </div>
@@ -547,7 +545,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#brute-force"><span class="nav-number">1.</span> <span class="nav-text">Brute Force</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rabin-karp"><span class="nav-number">2.</span> <span class="nav-text">Rabin-Karp</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rolling-hash"><span class="nav-number">3.</span> <span class="nav-text">Rolling hash</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#brute-force"><span class="nav-number">1.</span> <span class="nav-text">Brute Force</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rabin-karp"><span class="nav-number">2.</span> <span class="nav-text">Rabin-Karp</span></a></li></ol></div>
             
 
           </div>
