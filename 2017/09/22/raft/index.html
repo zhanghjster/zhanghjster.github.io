@@ -53,7 +53,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="distributed consensus," />
+  <meta name="keywords" content="distributed consensus,分布式一致," />
 
 
 
@@ -70,7 +70,7 @@
 
 
 <meta name="description" content="对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法 Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现 Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法，">
-<meta name="keywords" content="distributed consensus">
+<meta name="keywords" content="distributed consensus,分布式一致">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Raft">
 <meta property="og:url" content="http://benx.io/2017/09/22/raft/index.html">
@@ -82,7 +82,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/terms1.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/leaderelection1.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/logs.png">
-<meta property="og:updated_time" content="2017-09-24T15:23:00.000Z">
+<meta property="og:updated_time" content="2017-10-07T01:28:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raft">
 <meta name="twitter:description" content="对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法 Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现 Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法，">
@@ -297,6 +297,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -550,6 +572,8 @@
           
             <a href="/tags/distributed-consensus/" rel="tag"># distributed consensus</a>
           
+            <a href="/tags/分布式一致/" rel="tag"># 分布式一致</a>
+          
         </div>
       
 
@@ -561,7 +585,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/21/service-discovery-and-registration/" rel="next" title="Consul">
+              <a href="/2017/09/21/consul/" rel="next" title="Consul">
                 <i class="fa fa-chevron-left"></i> Consul
               </a>
             
@@ -649,7 +673,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">13</span>
+                <span class="site-state-item-count">14</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -660,7 +684,7 @@
             
             <div class="site-state-item site-state-categories">
               <a href="/categories/index.html">
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">5</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
