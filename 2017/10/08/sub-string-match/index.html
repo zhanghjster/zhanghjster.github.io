@@ -82,7 +82,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/kp3.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/kp4.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/lp8.png">
-<meta property="og:updated_time" content="2017-10-10T16:00:51.000Z">
+<meta property="og:updated_time" content="2017-10-10T16:03:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Sub-string match">
 <meta name="twitter:description" content="字符串匹配是IT们经常要遇到的问题，虽然很多现代语言和库都提供了函数来处理，但研究一下他们的工作机理还是有必要的">
@@ -398,13 +398,12 @@
 <p>$$\(a\times b) \mod q = ((a \mod q)\times(b\mod q))\mod q$$</p>
 <p>$$\(a + b) \mod q = (a + (b \mod q)) \mod q$$</p>
 <p>$$\(a\times b)\mod q = (a \times  (b\mod q)) \mod q$$</p>
-<h6 id="不同类型整数同余"><a href="#不同类型整数同余" class="headerlink" title="不同类型整数同余"></a>不同类型整数同余</h6><p>假设，$n$位有符号整数$a, b, c, q$ ，其中$a &lt; b$， 且有关系  $c \equiv (a - b) \mod q $， 那么它们是无符号整型时，这个同余关系还满足吗？</p>
-<p>答案是看情况</p>
+<h6 id="不同类型整数同余"><a href="#不同类型整数同余" class="headerlink" title="不同类型整数同余"></a>不同类型整数同余</h6><p>假设，$n$位有符号整数$a, b, c, q$ ，其中$a &lt; b$， 且有关系  $c \equiv (a - b) \mod q $， 那么它们是无符号整型时，这个同余关系还满足吗？答案是，看情况</p>
 <p>因为在有符号整数情况下 </p>
 <p>$$\(a - b) \mod q = (-(b-a)) \mod q $$</p>
-<p>在有无符号整数情况下，因为 $a &lt; b$ 导致溢出使得 $a -b = 2^n - (b - a)$ 所以</p>
+<p>在有无符号整数情况下， $a &lt; b$ 导致溢出使得 $a -b = 2^n - (b - a)$ 所以</p>
 <p>$$\(a - b) \mod q = (2^n - (b - a)) \mod q$$</p>
-<p>所以当 $2^n \mod q = 0$ 时，同于关系才会满足，否则不成立</p>
+<p>所以当 $2^n \mod q = 0$ 时，同余关系才会满足，否则不成立</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> a, b, c, q <span class="keyword">int8</span></div><div class="line">	a, b = <span class="number">1</span>, <span class="number">2</span></div><div class="line"></div><div class="line">	<span class="keyword">var</span> A, B, C, Q <span class="keyword">uint8</span></div><div class="line">	A, B = <span class="number">1</span>, <span class="number">2</span></div><div class="line"></div><div class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> []<span class="keyword">int8</span>&#123;<span class="number">7</span>, <span class="number">8</span>&#125; &#123;</div><div class="line">		q = <span class="keyword">int8</span>(v)</div><div class="line">		Q = <span class="keyword">uint8</span>(v)</div><div class="line"></div><div class="line">		c = (a-b)%q + q <span class="comment">// + q使余数为正</span></div><div class="line">		C = (A - B) % Q</div><div class="line"></div><div class="line">		fmt.Printf(<span class="string">"mod %d:\n"</span>, v)</div><div class="line">		fmt.Printf(<span class="string">"\ta-b = %d (%b), (a-b)%%q = %d\n"</span>, a-b, <span class="keyword">byte</span>(a-b), c)</div><div class="line">		fmt.Printf(<span class="string">"\tA-B = %d (%b), (A-B)%%Q = %d\n"</span>, A-B, A-B, C)</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>运行结果，可以看到当 q = 8 能够整除$2^n$时，同余成立</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ go run main.go </div><div class="line">mod 7:</div><div class="line">        a-b = -1 (11111111), (a-b)%q = 6</div><div class="line">        A-B = 255 (11111111), (A-B)%Q = 3</div><div class="line">mod 8:</div><div class="line">        a-b = -1 (11111111), (a-b)%q = 7</div><div class="line">        A-B = 255 (11111111), (A-B)%Q = 7</div></pre></td></tr></table></figure>
