@@ -53,7 +53,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="垃圾回收,gc,garbage collection,tricolor,三色标记,引用计数,标记清除," />
+  <meta name="keywords" content="cookie,无状态协议," />
 
 
 
@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="对于高级语言，往往都带有一个机制来回收被遗弃不用的内存，称为‘垃圾回收’, 常见的回收机制包括 引用计数、分代收集、标记清除、三色标记。">
-<meta name="keywords" content="垃圾回收,gc,garbage collection,tricolor,三色标记,引用计数,标记清除">
+<meta name="description" content="HTTP是一种无状态的协议，服务器与客户端之间的每次交互式是独立的事务，它不要求服务器和客户端保存前后事务之间的关系。比如，服务器处理的前后两次客户端页面的请求，它不记录也不关心前后两次的客户端或页面是否是相同的。与无状态协议相反的有状态协议则是视前后两次交互处理的事务是有联系的，交互双方需保存一定信息来记录这种联系，比如TCP协议，它要求通信双方在每次传输后都要知道从对方接受了多少数据、是否收到">
+<meta name="keywords" content="cookie,无状态协议">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Garbage Collection">
-<meta property="og:url" content="http://benx.io/2017/09/20/garbage-collection/index.html">
+<meta property="og:title" content="Http Cookie">
+<meta property="og:url" content="http://benx.io/2017/10/11/http-cookie/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="对于高级语言，往往都带有一个机制来回收被遗弃不用的内存，称为‘垃圾回收’, 常见的回收机制包括 引用计数、分代收集、标记清除、三色标记。">
+<meta property="og:description" content="HTTP是一种无状态的协议，服务器与客户端之间的每次交互式是独立的事务，它不要求服务器和客户端保存前后事务之间的关系。比如，服务器处理的前后两次客户端页面的请求，它不记录也不关心前后两次的客户端或页面是否是相同的。与无状态协议相反的有状态协议则是视前后两次交互处理的事务是有联系的，交互双方需保存一定信息来记录这种联系，比如TCP协议，它要求通信双方在每次传输后都要知道从对方接受了多少数据、是否收到">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-07T01:35:28.000Z">
+<meta property="og:updated_time" content="2017-10-11T16:46:04.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Garbage Collection">
-<meta name="twitter:description" content="对于高级语言，往往都带有一个机制来回收被遗弃不用的内存，称为‘垃圾回收’, 常见的回收机制包括 引用计数、分代收集、标记清除、三色标记。">
+<meta name="twitter:title" content="Http Cookie">
+<meta name="twitter:description" content="HTTP是一种无状态的协议，服务器与客户端之间的每次交互式是独立的事务，它不要求服务器和客户端保存前后事务之间的关系。比如，服务器处理的前后两次客户端页面的请求，它不记录也不关心前后两次的客户端或页面是否是相同的。与无状态协议相反的有状态协议则是视前后两次交互处理的事务是有联系的，交互双方需保存一定信息来记录这种联系，比如TCP协议，它要求通信双方在每次传输后都要知道从对方接受了多少数据、是否收到">
 
 
 
@@ -110,13 +110,13 @@
 
 
 
-  <link rel="canonical" href="http://benx.io/2017/09/20/garbage-collection/"/>
+  <link rel="canonical" href="http://benx.io/2017/10/11/http-cookie/"/>
 
 
 
 
 
-  <title>Garbage Collection | 笨哥小抄</title>
+  <title>Http Cookie | 笨哥小抄</title>
   
 
 
@@ -252,7 +252,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/09/20/garbage-collection/">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/11/http-cookie/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Benx">
@@ -269,7 +269,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Garbage Collection</h1>
+          <h1 class="post-title" itemprop="name headline">Http Cookie</h1>
         
 
         <div class="post-meta">
@@ -281,8 +281,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-20T20:59:55+08:00">
-                2017-09-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-11T21:29:58+08:00">
+                2017-10-11
               </time>
             
 
@@ -341,34 +341,48 @@
       
 
       
-        <p>对于高级语言，往往都带有一个机制来回收被遗弃不用的内存，称为‘垃圾回收’, 常见的回收机制包括 引用计数、分代收集、标记清除、三色标记。</p>
-<a id="more"></a>
-<h4 id="引用计数法reference-counting">引用计数法（reference counting）</h4>
-<p>针对每个对象，维护一个引用计数，当引用该对象的对象被销毁，被引用的对象引用计数减一，当被其他对象引用时，计数加一，当计数为零时，则回收对象</p>
-<p>这个方法逻辑和实现简单，并且内存回收及时，对于内存比较紧张和实时性要求比较高的系统，应用比较广泛早期的java，php，python都采用了这种办法。</p>
-<p>这个办法的缺点是，频繁更新引用影响性能以及循环引用的问题。</p>
-<h4 id="分代收集">分代收集</h4>
-<p>在面向兑现的语言中，绝大多数对象生命周期非常短，分代的思想是将堆氛围两个或多个代的空间，新创建的放到新生代，随着垃圾回收的重复执行，生命周期长的放到老年代中。新生代的回收速度快于老年代。</p>
-<h4 id="标记清除法-mark-and-sweep">标记清除法 （mark and sweep)</h4>
-<p>该方法分为两步，</p>
-<pre><code>1. 标记：从根变量开始采用深度优先的办法迭代找出所有被引用的对象，标记为‘被引用’
-2. 清除：清除Heap中所有未标记的对象</code></pre>
-<p>这个办法优点是根据引用关系找到所有需要保留的对象，避免了循环引用的问题。缺点是，在标记阶段需要停掉程序的运行(Stop the World)避免在gc过程中引用关系的变化, 另一个缺点是经过多轮处理后会流线很多小的离散的内存区</p>
-<h4 id="三色标记法-tricolor-marking">三色标记法 （Tricolor marking)</h4>
-<p>这个办法只是一个概念，在实现过程中并不是把对象标成三个颜色。标记的过程是并发的，不必STW。标记的过程逻辑如下，初始所有对象都是白色的。</p>
-<pre><code>1. 将所有根变量引用的对象标记为灰色。根变量包括 全局变量，函数的局部变量、参数
-2. 将灰色区域的变量引用的白色对象也标记为灰色，然后将引用的灰色对象标记为黑色
-3. 循环反复直到灰色区域没有对象</code></pre>
-<p>这个标记过程可以和程序并行运行，即便在标记线程停顿情况下，如果有引用的变化或者新对象被引用，只要保证黑色对象没有对白色对象的引用就能保证最终能遍历到所有需要保留的对象。为了保证这个特性，需要在程序编译环节实现 write-barrie，当出现对象被引用的操作时，将其标记为灰色。为什么不将新的引用直接标黑呢？因为如果标黑就不能保证将被引用的新的对象所引用的对象被标记，因为标记只会在灰色区域里拿下一个要标记的对象。</p>
-<p>实现过程通常是一个栈保存所有要mark的对象，对应概念的灰色区域，mark后对象就进入到黑色区域，轮循不到的则遗留在白色区域，write barrie是向栈中增加一条要mark的对象。</p>
-<h4 id="golang的垃圾回收演进">Golang的垃圾回收演进</h4>
-<p>1.5之前使用mark and sweep，有明显的STW，这需要程序员手动的对程序进行优化，比如减少对象的使用。</p>
-<p>1.5 后使用tricolor的办法并发的， 但也会出现短时间的STW，在1.7后又进行了一次优化减少了STW点， 最后优化的1.9时候STW就不是一个困扰golang程序员的问题了。</p>
-<p>但为了减少垃圾回收过程中的压力，还是尽可能的减少小对象的引用。</p>
-<p>参考资料：</p>
-<p>http://newhtml.net/v8-garbage-collection/</p>
-<p>https://en.wikipedia.org/wiki/Tracing_garbage_collection</p>
-<p>https://github.com/golang/proposal/blob/master/design/17503-eliminate-rescan.md</p>
+        <p>HTTP是一种无状态的协议，服务器与客户端之间的每次交互式是独立的事务，它不要求服务器和客户端保存前后事务之间的关系。比如，服务器处理的前后两次客户端页面的请求，它不记录也不关心前后两次的客户端或页面是否是相同的。与无状态协议相反的有状态协议则是视前后两次交互处理的事务是有联系的，交互双方需保存一定信息来记录这种联系，比如TCP协议，它要求通信双方在每次传输后都要知道从对方接受了多少数据、是否收到了最后一个数据包，也就是它要求交保存前后事务产生的状态变化</p>
+<p>HTTP的无状态特性在交互式WEB应用出现后遇到了问题，因为这些应用往往要求保存前后请求的状态，比如，用户在一个页面上登录后，之后所有的请求都要求是登录状态。于是用于HTTP协议保持状态的技术产生了，一个是用于服务器端的Session，另一个则是用户客户端的Cookie</p>
+<p>Cookie是客户端保存服务器返回信息的小型纯文本，客户端按一定规则保存这些信息后，在接下来的请求中会将这些信息返回给服务器，服务器就可以利用这些信息来识别客户端的状态。比如，将用户登录的状态保存到cookie里，服务器就可以根据它来判定每个页面请求是否是登录状态</p>
+<h4 id="cookie创建">Cookie创建</h4>
+<p>服务器通过在返回给客户端的HTTP header里的<strong>Set-Cookie</strong>字段来告诉客户端保存cookie信息，它的格式如下(中括号里为可选)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set-Cookie: NAME=VALUE[;expires=DATE][; path=PATH][; domain=DOMAIN_NAME][; secure][;HttpOnly]</div></pre></td></tr></table></figure>
+<h5 id="namevalue"><strong><em>NAME=VALUE</em></strong></h5>
+<p>它由分号、逗号、空格之外的字符组成，表示cookie的名称和值。它为唯一的必选项，在之后的所有发送给服务器的请求中都要包含到请求的Header中，而可选项则不会再发送给服务器</p>
+<p>cookie的值一般情况下推荐要进行URL编码，但不是必须的，不过几乎所有实现都对cookie进行了编码。通常对<strong><em>NAME</em></strong> 和 <strong><em>VALUE</em></strong>分别进行编码，而 <strong><em>=</em></strong> 不编码</p>
+<p>由于cookie存在着数量的限制，开发者门使用subcookies的办法来增加cookie的存储量，方法就是在<strong><em>VALUE</em></strong>中存储一些 <strong><em>name-value</em></strong>对，如下格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NAME1=foo=bar&amp;foo1=bar1&amp;foo2=bar2</div></pre></td></tr></table></figure>
+<p>不过这种格式需要开发者自定义解析方式</p>
+<h5 id="expiresdate"><strong><em>expires=DATE</em></strong></h5>
+<p>通过这个选项设置cookie的过期时间，一旦到达了这个时间，cookie就不在有效，应该删除，格式如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Wdy, DD-Mon-YYYY HH:MM:SS GMT</div></pre></td></tr></table></figure>
+<p>它为可选项，当不设置时，用户的session结束(关闭浏览器)时候就失效</p>
+<h5 id="domaindomain_name"><strong><em>domain=DOMAIN_NAME</em></strong></h5>
+<p>当客户端需要选择发送给服务器的cookie时，通过将这个字段与要访问的URL的域名做尾部匹配来做判断。尾部匹配是指 <strong><em>DOMAIN_NAME</em></strong>与URL的全域名尾部匹配，比如 <strong><em>domain=benx.io</em></strong>的<strong><em>benx.io</em></strong>与 “<strong><em>www.benx.io</em></strong>” “<strong><em>wap.benx.io</em></strong>”都匹配，那么在访问这些域名的URL时也有可能将cookie发送给服务器，说‘可能’是因为还需要进行<strong><em>PATH</em></strong>的匹配，两个都通过才会发送</p>
+<p>如果不设置，默认被设置成返回这个cookie的服务器的域名</p>
+<h5 id="pathpath"><strong><em>path=PATH</em></strong></h5>
+<p>用于指定一个于cookie有效的path。如果cookie已经通过了<strong><em>domain</em></strong>的匹配，则进行path部分的匹配，采用的办法是前缀匹配，如果访问url里的path开头包含<strong><em>PATH</em></strong>, 则通过。比如 ‘/blog’ 与 ‘/blog/archive’匹配</p>
+<p>如果不设置，默认被设置成header里对应URL的path部分</p>
+<h5 id="secure"><strong><em>secure</em></strong></h5>
+<p>它只是一个标记，没有值，当请求通过SSL或HTTPS创建时，cookie才会被发送到服务器，默认情况下，HTTPS链接上传输的cookie都自动有这个选项</p>
+<p><strong><em>http-only</em></strong></p>
+<p>这个选项是微软在IE6 SP1里引入的，而原始的Cookie说明文档里并没有，后来被更多的浏览器所接受。这个选项的目的是控制 <strong><em>document.cookie</em></strong>的访问，防止javasciprt发起跨站攻击窃取cookie。同<strong><em>secure</em></strong>一样，它也只是一个标记，被设置后，<strong><em>document.cookie</em></strong>将不能防问该cookie</p>
+<h4 id="cookie发送">Cookie发送</h4>
+<p>当客户端想服务器请求一个URL，需要对cookie进行<strong><em>domain</em></strong> <strong><em>path</em></strong>的匹配，符合条件的cookie的 <strong><em>name=value</em></strong>对会被包含进HTTP请求的中，格式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Cookie: NAME1=OPAQUE_STRING1; NAME2=OPAQUE_STRING2 ...</div></pre></td></tr></table></figure>
+<p>发送的内容为set-cookie时的原始内容，不需要做任何处理</p>
+<h4 id="cookie更新">Cookie更新</h4>
+<p>一个cookie的唯一性由 <strong><em>NAME-DOMAIN-PATH-secure</em></strong>共同决定，要想修改一个cookie，必须发送另一个这四个值相同的cookie，比如</p>
+<p>如果原cookie是通过如下设置的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set-Cookie: NAME1=benx; domain=benx.io; path=/</div></pre></td></tr></table></figure>
+<p>则需要用如下方法来更新</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set-Cookie: NAME1=lee; domain=benx.io; path=/</div></pre></td></tr></table></figure>
+<p>由于过期时间是可选项，所以如果更新cookie时不带过期时间，则不会更新过期时间</p>
+<p>参考：</p>
+<p>https://curl.haxx.se/rfc/cookie_spec.html</p>
+<p>https://www.nczonline.net/blog/2009/05/05/http-cookies-explained/</p>
+<p>https://stackoverflow.com/questions/19899236/is-tcp-protocol-stateless-or-not</p>
+<p>https://en.wikipedia.org/wiki/Stateless_protocol</p>
 
       
     </div>
@@ -386,19 +400,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/垃圾回收/" rel="tag"># 垃圾回收</a>
+            <a href="/tags/cookie/" rel="tag"># cookie</a>
           
-            <a href="/tags/gc/" rel="tag"># gc</a>
-          
-            <a href="/tags/garbage-collection/" rel="tag"># garbage collection</a>
-          
-            <a href="/tags/tricolor/" rel="tag"># tricolor</a>
-          
-            <a href="/tags/三色标记/" rel="tag"># 三色标记</a>
-          
-            <a href="/tags/引用计数/" rel="tag"># 引用计数</a>
-          
-            <a href="/tags/标记清除/" rel="tag"># 标记清除</a>
+            <a href="/tags/无状态协议/" rel="tag"># 无状态协议</a>
           
         </div>
       
@@ -411,8 +415,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/20/percent-encoding/" rel="next" title="Percent Encoding">
-                <i class="fa fa-chevron-left"></i> Percent Encoding
+              <a href="/2017/10/08/sub-string-match/" rel="next" title="Sub-string match">
+                <i class="fa fa-chevron-left"></i> Sub-string match
               </a>
             
           </div>
@@ -420,10 +424,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/09/21/consul/" rel="prev" title="Consul">
-                Consul <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -556,7 +556,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#引用计数法reference-counting"><span class="nav-number">1.</span> <span class="nav-text">引用计数法（reference counting）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分代收集"><span class="nav-number">2.</span> <span class="nav-text">分代收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#标记清除法-mark-and-sweep"><span class="nav-number">3.</span> <span class="nav-text">标记清除法 （mark and sweep)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三色标记法-tricolor-marking"><span class="nav-number">4.</span> <span class="nav-text">三色标记法 （Tricolor marking)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#golang的垃圾回收演进"><span class="nav-number">5.</span> <span class="nav-text">Golang的垃圾回收演进</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#cookie创建"><span class="nav-number">1.</span> <span class="nav-text">Cookie创建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#namevalue"><span class="nav-number">1.1.</span> <span class="nav-text">NAME=VALUE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#expiresdate"><span class="nav-number">1.2.</span> <span class="nav-text">expires=DATE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#domaindomain_name"><span class="nav-number">1.3.</span> <span class="nav-text">domain=DOMAIN_NAME</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#pathpath"><span class="nav-number">1.4.</span> <span class="nav-text">path=PATH</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#secure"><span class="nav-number">1.5.</span> <span class="nav-text">secure</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cookie发送"><span class="nav-number">2.</span> <span class="nav-text">Cookie发送</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cookie更新"><span class="nav-number">3.</span> <span class="nav-text">Cookie更新</span></a></li></ol></div>
             
 
           </div>
