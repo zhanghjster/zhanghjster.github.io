@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="unsafe,go,pointer," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Golang的unsafe.Pointer表示指向任意类型的指针，它有其他类型不具备的四种特殊操作  一个任意类型的指针可以转化成Pointer 一个Pointer可以转化成任意类型的指针 一个uintptr可以转换成Pointer 一个Pointer可以转换成uintptr  通过使用Pointer可以让程序绕过类型系统，做到对任意内存地址的读取，但需要非常小心。下面介绍他的有效使用方式，除这些">
+<meta name="keywords" content="unsafe,go,pointer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang unsafe Pointer">
+<meta property="og:url" content="http://benx.io/2017/10/13/golang-pointer/index.html">
+<meta property="og:site_name" content="笨哥小抄">
+<meta property="og:description" content="Golang的unsafe.Pointer表示指向任意类型的指针，它有其他类型不具备的四种特殊操作  一个任意类型的指针可以转化成Pointer 一个Pointer可以转化成任意类型的指针 一个uintptr可以转换成Pointer 一个Pointer可以转换成uintptr  通过使用Pointer可以让程序绕过类型系统，做到对任意内存地址的读取，但需要非常小心。下面介绍他的有效使用方式，除这些">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-10-13T16:20:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Golang unsafe Pointer">
+<meta name="twitter:description" content="Golang的unsafe.Pointer表示指向任意类型的指针，它有其他类型不具备的四种特殊操作  一个任意类型的指针可以转化成Pointer 一个Pointer可以转化成任意类型的指针 一个uintptr可以转换成Pointer 一个Pointer可以转换成uintptr  通过使用Pointer可以让程序绕过类型系统，做到对任意内存地址的读取，但需要非常小心。下面介绍他的有效使用方式，除这些">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://benx.io/2017/10/13/golang-pointer/"/>
+
+
+
+
+
+  <title>Golang unsafe Pointer | 笨哥小抄</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20062311-4', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">笨哥小抄</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/13/golang-pointer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Golang unsafe Pointer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-13T11:37:31+08:00">
+                2017-10-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/基础/" itemprop="url" rel="index">
+                    <span itemprop="name">基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Golang的unsafe.Pointer表示指向任意类型的指针，它有其他类型不具备的四种特殊操作</p>
+<ul>
+<li>一个任意类型的指针可以转化成Pointer</li>
+<li>一个Pointer可以转化成任意类型的指针</li>
+<li>一个uintptr可以转换成Pointer</li>
+<li>一个Pointer可以转换成uintptr</li>
+</ul>
+<p>通过使用Pointer可以让程序绕过类型系统，做到对任意内存地址的读取，但需要非常小心。下面介绍他的有效使用方式，除这些外其他均为无效的，即便是有效的模式，也有重要的注意事项</p>
+<h5 id="将-T1-转换成-T2"><a href="#将-T1-转换成-T2" class="headerlink" title="将 T1 转换成 T2"></a>将 <em>T1 转换成 </em>T2</h5><p>假设T2的长度不大于T1，并且两者共享等效的内部布局，通过这个转换可以将一种类型数据重新解释为其他类型数据，比如math.Float64bits将float64类型数据转换成uint64</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Float64bits</span><span class="params">(f <span class="keyword">float64</span>)</span> <span class="title">uint64</span></span> &#123;</div><div class="line">	<span class="keyword">return</span> *(*<span class="keyword">uint64</span>)(unsafe.Pointer(&amp;f))</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>如果T1的长度小于T2，会出现截断，大于T2是无效的会出现不可预期的结果， 比如下面的实验：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">type</span> A <span class="keyword">struct</span> &#123;</div><div class="line">  v <span class="keyword">uint16</span></div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> a = &amp;A&#123;v: <span class="number">314</span>&#125; <span class="comment">// 314 = 58 + 256</span></div><div class="line"></div><div class="line"><span class="comment">// 将a从A结构体指针转换成uint16，</span></div><div class="line"><span class="comment">// 由于unit16长度与A的长度相同</span></div><div class="line"><span class="comment">// 转化后的值与a.v相同， 为 314</span></div><div class="line">p8 := *(*<span class="keyword">uint16</span>)(unsafe.Pointer(a))</div><div class="line">fmt.Printf(<span class="string">"A =&gt; uint16 \t[0x%08x] %v\n"</span>, p8,  p8)</div><div class="line"></div><div class="line"><span class="comment">// 将a从A结构体指针转换成uint8,</span></div><div class="line"><span class="comment">// 由于uint8的长度小于A的长度</span></div><div class="line"><span class="comment">// 转化后出现截断，结果为 a.v%2^8, 为58</span></div><div class="line">p16 := *(*<span class="keyword">uint8</span>)(unsafe.Pointer(a))</div><div class="line">fmt.Printf(<span class="string">"A =&gt; uint8 \t[0x%08x] %v\n"</span>, p16,  p16)</div><div class="line"></div><div class="line"><span class="comment">// 将a从A结构体转换成int</span></div><div class="line"><span class="comment">// 由于int32的长度大于A，转化后的结果不可预知</span></div><div class="line">p32 := *(*<span class="keyword">uint32</span>)(unsafe.Pointer(a))</div><div class="line">fmt.Printf(<span class="string">"A =&gt; uint32 \t[0x%08x] %d\n"</span>, p32,  p32)</div><div class="line"><span class="comment">// 目前go1.9 用go vet还没有检测上面这行的错误用法，但不保证将来</span></div></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">A =&gt; uint16     [0x0000013a] 314</div><div class="line">A =&gt; uint8      [0x0000003a] 58</div><div class="line">A =&gt; uint32     [0xbf30013a] 3207594298</div></pre></td></tr></table></figure>
+<p>从实验结果看， 第二行可见转化后是出现截断，第三行可见最终结果不可预测</p>
+<h5 id="将Pointer转化为uintptr"><a href="#将Pointer转化为uintptr" class="headerlink" title="将Pointer转化为uintptr"></a>将Pointer转化为uintptr</h5><p>将Pointer转化为uintptr后会产生一个保存Pointer指向的内存地址的整数值。通常情况下直接把uintptr转换为Pointer是无效的。当GC要删除对象时，不会更新uintptr里的值，所以uintprt所保存的地址已经不是原有内容了</p>
+<p>接下列举几个唯一有效的将uintptr转换为Pointer的模式</p>
+<h5 id="结合计算进行Pointer和uintptr之间互相转换"><a href="#结合计算进行Pointer和uintptr之间互相转换" class="headerlink" title="结合计算进行Pointer和uintptr之间互相转换"></a>结合计算进行Pointer和uintptr之间互相转换</h5><p>如果 p 指向一个分配的对象，他可以通过转换为uintptr后再加上一个偏移量，然后转化为Pointer实现指针的移动。比如</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p = unsafe.Pointer(<span class="keyword">uintptr</span>(p) + offset)</div></pre></td></tr></table></figure>
+<p>这个办法通常用在访问一个struct的字段或者array的元素，如下面</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> b = &amp;<span class="keyword">struct</span>&#123;m,n <span class="keyword">int</span>&#125;&#123;<span class="number">1</span>, <span class="number">2</span>&#125;</div><div class="line"><span class="comment">// 与 p = unsafe.Pointer(&amp;b.n)相同</span></div><div class="line">p := unsafe.Pointer(<span class="keyword">uintptr</span>(unsafe.Pointer(b)) + <span class="keyword">uintptr</span>(unsafe.Sizeof(b.m)))</div><div class="line">fmt.Printf(<span class="string">"b addr %p, p addr %p, b.n addr %p\n"</span>, b, p, &amp;b.n)</div></pre></td></tr></table></figure>
+<p>运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">b addr 0xc420014080, p addr 0xc420014088, b.n addr 0xc420014088</div></pre></td></tr></table></figure>
+<p>通过增加或减少偏移量来实现指针移动都是有效的，但不能超过原始分配空间的边界，否则无效，比如</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> s = []<span class="keyword">int</span>&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;</div><div class="line"><span class="comment">// p 超出了s分配空间的大小，无效</span></div><div class="line">p := unsafe.Pointer(<span class="keyword">uintptr</span>(unsafe.Pointer(&amp;s[<span class="number">0</span>])) + <span class="number">3</span> * unsafe.Sizeof(<span class="keyword">int</span>(<span class="number">0</span>)))</div><div class="line">*(*<span class="keyword">int</span>)(p) = <span class="number">123</span></div><div class="line">fmt.Printf(<span class="string">"p is %d\n"</span>, *(*<span class="keyword">int</span>)(p))</div><div class="line"><span class="comment">// 目前go1.9 用go vet没有检测这种错误用法，但不能保证将来是否会</span></div></pre></td></tr></table></figure>
+<p>从Pointer到uintptr经过计算互转应该放到一个表达式里，不要将uintptr保存到一个变量里，比如下面用法</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">u := <span class="keyword">uintptr</span>(p)</div><div class="line">p = unsafe.Pointer(u + offset) </div><div class="line"><span class="comment">// 目前go1.9 用go vet还不能检查出来这种错误用法，但不保证将来是否会</span></div></pre></td></tr></table></figure>
+<h5 id="调用syscall-Syscall时将Pointer转换成uintptr"><a href="#调用syscall-Syscall时将Pointer转换成uintptr" class="headerlink" title="调用syscall.Syscall时将Pointer转换成uintptr"></a>调用syscall.Syscall时将Pointer转换成uintptr</h5><p>Syscall函数直接将uiniptr参数传给操作系统，系统命令的实现会隐式的将其转换为Pointer，如果一个Pointer参数必须转化为uintptr作为参数，转化必须在表达式里，如下面所示：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">syscall.Syscall(SYS_READ, <span class="keyword">uintptr</span>(fd), <span class="keyword">uintptr</span>(unsafe.Pointer(p)), <span class="keyword">uintptr</span>(n))</div></pre></td></tr></table></figure>
+<p>下面这种方式则是无效的</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">u := <span class="keyword">uintptr</span>(unsafe.Pointer(p))</div><div class="line">syscall.Syscall(SYS_READ, <span class="keyword">uintptr</span>(fd), u, <span class="keyword">uintptr</span>(n))</div></pre></td></tr></table></figure>
+<h5 id="将reflect-Value-Pointer-or-reflect-Value-UnsafeAddr从UIuintptr转化为Pointer"><a href="#将reflect-Value-Pointer-or-reflect-Value-UnsafeAddr从UIuintptr转化为Pointer" class="headerlink" title="将reflect.Value.Pointer or reflect.Value.UnsafeAddr从UIuintptr转化为Pointer"></a>将reflect.Value.Pointer or reflect.Value.UnsafeAddr从UIuintptr转化为Pointer</h5><p>reflect.Value的方法Pointer和UnsafeAddr返回了uintptr而不是unsafe.Pointer，目的是让调用者必须显示的导入unsafe包才能将返回结果转化成其他类型，但这要求在调用这连个方法时候立即将结果转化成Pointer, 如下</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">p := (*<span class="keyword">int</span>)(unsafe.Pointer(reflect.ValueOf(<span class="built_in">new</span>(<span class="keyword">int</span>)).Pointer()))</div></pre></td></tr></table></figure>
+<p>同样，也不能先把uintptr保存到一个变量之后再转换，下面方法无效</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">u := reflect.ValueOf(<span class="built_in">new</span>(<span class="keyword">int</span>)).Pointer()</div><div class="line">p := (*<span class="keyword">int</span>)(unsafe.Pointer(u))</div></pre></td></tr></table></figure>
+<h5 id="将reflect-SliceHader或reflect-StringHeader的Data字段转化成Pointer"><a href="#将reflect-SliceHader或reflect-StringHeader的Data字段转化成Pointer" class="headerlink" title="将reflect.SliceHader或reflect.StringHeader的Data字段转化成Pointer"></a>将reflect.SliceHader或reflect.StringHeader的Data字段转化成Pointer</h5><p>如上面情况类似，relfect.Sliceheader和refelect.Stringheader的Data字段是一个uintptr类型，目的是让调用者必须显示的导入unsafe才能将其转化成其他类型。然而这意味着SliceHeader和StringHeader只有在实际解析slice或者string时才有效</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">p := (*<span class="keyword">int</span>)(unsafe.Pointer(reflect.ValueOf(<span class="built_in">new</span>(<span class="keyword">int</span>)).Pointer()))</div><div class="line">*p = <span class="number">99</span> <span class="comment">// 'c'</span></div><div class="line"></div><div class="line"><span class="keyword">var</span> s <span class="keyword">string</span></div><div class="line">hdr := (*reflect.StringHeader)(unsafe.Pointer(&amp;s))</div><div class="line">hdr.Data = <span class="keyword">uintptr</span>(unsafe.Pointer(p))</div><div class="line">hdr.Len = <span class="number">1</span></div><div class="line">fmt.Println(<span class="string">"s =&gt; "</span>, s,<span class="string">", len =&gt; "</span>, <span class="built_in">len</span>(s))</div><div class="line"><span class="comment">// 输出结果为 s =&gt;  c , len =&gt;  1</span></div></pre></td></tr></table></figure>
+<p>通常 reflect.StringHeader和reflect.SliceHeader只能以<em>refelect.Sliceheader和 </em>reflect.StringHeader方式来使用，不能用作结果体</p>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>unsafe是用于Go compiler而不是Go runtime，使用它的时候必须小心并且遵循unsafe的说明文档</p>
+<p>参考：</p>
+<p><a href="https://golang.org/pkg/unsafe/" target="_blank" rel="external">https://golang.org/pkg/unsafe/</a></p>
+<p><a href="https://golang.org/cmd/vet/" target="_blank" rel="external">https://golang.org/cmd/vet/</a></p>
+<p><a href="http://www.tapirgames.com/blog/golang-unsafe" target="_blank" rel="external">http://www.tapirgames.com/blog/golang-unsafe</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/unsafe/" rel="tag"># unsafe</a>
+          
+            <a href="/tags/go/" rel="tag"># go</a>
+          
+            <a href="/tags/pointer/" rel="tag"># pointer</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/10/11/http-cookie/" rel="next" title="HTTP Cookie">
+                <i class="fa fa-chevron-left"></i> HTTP Cookie
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Benx</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">46</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#将-T1-转换成-T2"><span class="nav-number">1.</span> <span class="nav-text">将 T1 转换成 T2</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#将Pointer转化为uintptr"><span class="nav-number">2.</span> <span class="nav-text">将Pointer转化为uintptr</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#结合计算进行Pointer和uintptr之间互相转换"><span class="nav-number">3.</span> <span class="nav-text">结合计算进行Pointer和uintptr之间互相转换</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#调用syscall-Syscall时将Pointer转换成uintptr"><span class="nav-number">4.</span> <span class="nav-text">调用syscall.Syscall时将Pointer转换成uintptr</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#将reflect-Value-Pointer-or-reflect-Value-UnsafeAddr从UIuintptr转化为Pointer"><span class="nav-number">5.</span> <span class="nav-text">将reflect.Value.Pointer or reflect.Value.UnsafeAddr从UIuintptr转化为Pointer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#将reflect-SliceHader或reflect-StringHeader的Data字段转化成Pointer"><span class="nav-number">6.</span> <span class="nav-text">将reflect.SliceHader或reflect.StringHeader的Data字段转化成Pointer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Benx</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
