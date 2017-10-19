@@ -53,7 +53,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="buffer,bytes," />
+  <meta name="keywords" content="buffer,bytes,注释," />
 
 
 
@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结">
-<meta name="keywords" content="buffer,bytes">
+<meta name="description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBu">
+<meta name="keywords" content="buffer,bytes,注释">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bytes Buffer">
 <meta property="og:url" content="http://benx.io/2017/10/19/bytes-buffer/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结">
+<meta property="og:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-19T13:15:06.000Z">
+<meta property="og:updated_time" content="2017-10-19T13:16:03.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bytes Buffer">
-<meta name="twitter:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结">
+<meta name="twitter:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBu">
 
 
 
@@ -342,7 +342,6 @@
 
       
         <p>bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结</p>
-<a id="more"></a>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buf bytes.buffer</div></pre></td></tr></table></figure>
 <h4 id="func-newbuffer">func NewBuffer</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBuffer</span><span class="params">(buf []<span class="keyword">byte</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
@@ -351,6 +350,7 @@
 <h4 id="func-newbufferstring">func NewBufferString</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewStringBuffer</span><span class="params">(s <span class="keyword">string</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
 <p>使用s作为初始内容生成一个Buffer，可以用来创建一个用于读取一个字符串的Buffer</p>
+<a id="more"></a>
 <h4 id="func-buffer-bytes">func (*Buffer) Bytes()</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Bytes</span><span class="params">()</span> []<span class="title">byte</span></span></div></pre></td></tr></table></figure>
 <p>返回长度为b.Len()的slice，为buffer里还没有被读出的内容。slice会一直有效到再次对buffer进行 Write、Read、Reset、Truncate等更新操作，所以更新slice会影响到将来的read操作</p>
@@ -462,6 +462,8 @@
             <a href="/tags/buffer/" rel="tag"># buffer</a>
           
             <a href="/tags/bytes/" rel="tag"># bytes</a>
+          
+            <a href="/tags/注释/" rel="tag"># 注释</a>
           
         </div>
       
@@ -580,7 +582,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">51</span>
+                <span class="site-state-item-count">52</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
