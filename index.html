@@ -345,7 +345,7 @@
 <h4 id="func-newbuffer">func NewBuffer</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBuffer</span><span class="params">(buf []<span class="keyword">byte</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
 <p>使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBuffer可以创建一个缓冲区来读取现有内容(buff)。或者初始化写入的大小，但buff应该用所需的capacity和为0的length来初始化</p>
-<p>通常情况下使用new(Buffer)或者直接声明Buffer变量就可以搞笑的初始化一个Buffer</p>
+<p>通常情况下使用new(Buffer)或者直接声明Buffer变量就可以高效的初始化一个Buffer</p>
 <h4 id="func-newbufferstring">func NewBufferString</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewStringBuffer</span><span class="params">(s <span class="keyword">string</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
 <p>使用s作为初始内容生成一个Buffer，可以用来创建一个用于读取一个字符串的Buffer</p>
