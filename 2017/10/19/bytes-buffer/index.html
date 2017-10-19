@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者">
+<meta name="description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer">
 <meta name="keywords" content="buffer,bytes,注释">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bytes Buffer">
 <meta property="og:url" content="http://benx.io/2017/10/19/bytes-buffer/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者">
+<meta property="og:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-19T13:19:18.000Z">
+<meta property="og:updated_time" content="2017-10-19T13:21:28.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bytes Buffer">
-<meta name="twitter:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者">
+<meta name="twitter:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer">
 
 
 
@@ -343,6 +343,7 @@
       
         <p>bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buf bytes.buffer</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <h4 id="func-newbuffer">func NewBuffer</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBuffer</span><span class="params">(buf []<span class="keyword">byte</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
 <p>使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBuffer可以创建一个缓冲区来读取现有内容(buff)。或者初始化写入的大小，但buff应该用所需的capacity和为0的length来初始化</p>
@@ -350,7 +351,6 @@
 <h4 id="func-newbufferstring">func NewBufferString</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewStringBuffer</span><span class="params">(s <span class="keyword">string</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
 <p>使用s作为初始内容生成一个Buffer，可以用来创建一个用于读取一个字符串的Buffer</p>
-<a id="more"></a>
 <h4 id="func-buffer-bytes">func (*Buffer) Bytes()</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Bytes</span><span class="params">()</span> []<span class="title">byte</span></span></div></pre></td></tr></table></figure>
 <p>返回长度为b.Len()的slice，为buffer里还没有被读出的内容。slice会一直有效到再次对buffer进行 Write、Read、Reset、Truncate等更新操作，所以更新slice会影响到将来的read操作</p>
@@ -476,8 +476,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/10/17/kmp/" rel="next" title="String Match - KMP">
-                <i class="fa fa-chevron-left"></i> String Match - KMP
+              <a href="/2017/10/17/rabin-karp/" rel="next" title="String Match - Rabin Karp">
+                <i class="fa fa-chevron-left"></i> String Match - Rabin Karp
               </a>
             
           </div>
@@ -560,7 +560,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">18</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
