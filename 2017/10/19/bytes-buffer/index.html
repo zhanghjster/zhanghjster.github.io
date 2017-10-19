@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBu">
+<meta name="description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者">
 <meta name="keywords" content="buffer,bytes,注释">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Bytes Buffer">
 <meta property="og:url" content="http://benx.io/2017/10/19/bytes-buffer/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBu">
+<meta property="og:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-10-19T13:16:29.000Z">
+<meta property="og:updated_time" content="2017-10-19T13:19:18.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bytes Buffer">
-<meta name="twitter:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBu">
+<meta name="twitter:description" content="bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解 1var buf bytes.buffer func NewBuffer 1func NewBuffer(buf []byte) *Buffer 使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者">
 
 
 
@@ -341,7 +341,7 @@
       
 
       
-        <p>bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，用了多次，本文将部分注释拎出来做个总结</p>
+        <p>bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个开箱即用的空缓存，到目前用了多次，所以是时候将部分注释拎出来做个总结，强化一下记忆与理解</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buf bytes.buffer</div></pre></td></tr></table></figure>
 <h4 id="func-newbuffer">func NewBuffer</h4>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBuffer</span><span class="params">(buf []<span class="keyword">byte</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
