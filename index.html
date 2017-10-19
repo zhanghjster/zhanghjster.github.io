@@ -248,6 +248,434 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/19/bytes-buffer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/19/bytes-buffer/" itemprop="url">Bytes Buffer</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-19T22:09:32+08:00">
+                2017-10-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/go/" itemprop="url" rel="index">
+                    <span itemprop="name">go</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>bytes.Buffer是带有读写方法的变长字节缓冲区，零值的Buffer是一个即可使用的空缓存，下面是部分注释</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> buf bytes.buffer</div></pre></td></tr></table></figure>
+<h4 id="func-NewBuffer"><a href="#func-NewBuffer" class="headerlink" title="func NewBuffer"></a>func NewBuffer</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBuffer</span><span class="params">(buf []<span class="keyword">byte</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
+<p>使用 buf 作为初始内容创建一个Buffer，新的buffer接管 buf，调用者不应再使用buf。通过NewBuffer可以创建一个缓冲区来读取现有内容(buff)。或者初始化写入的大小，但buff应该用所需的capacity和为0的length来初始化</p>
+<p>通常情况下使用new(Buffer)或者直接声明Buffer变量就可以搞笑的初始化一个Buffer</p>
+<h4 id="func-NewBufferString"><a href="#func-NewBufferString" class="headerlink" title="func NewBufferString"></a>func NewBufferString</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewStringBuffer</span><span class="params">(s <span class="keyword">string</span>)</span> *<span class="title">Buffer</span></span></div></pre></td></tr></table></figure>
+<p>使用s作为初始内容生成一个Buffer，可以用来创建一个用于读取一个字符串的Buffer</p>
+<h4 id="func-Buffer-Bytes"><a href="#func-Buffer-Bytes" class="headerlink" title="func (*Buffer) Bytes()"></a>func (*Buffer) Bytes()</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Bytes</span><span class="params">()</span> []<span class="title">byte</span></span></div></pre></td></tr></table></figure>
+<p>返回长度为b.Len()的slice，为buffer里还没有被读出的内容。slice会一直有效到再次对buffer进行 Write、Read、Reset、Truncate等更新操作，所以更新slice会影响到将来的read操作</p>
+<h4 id="func-Buffer-Next"><a href="#func-Buffer-Next" class="headerlink" title="func (*Buffer) Next()"></a>func (*Buffer) Next()</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Next</span><span class="params">(n <span class="keyword">int</span>)</span> []<span class="title">byte</span></span></div></pre></td></tr></table></figure>
+<p>返回 包含n个byte的slice，如果buffer里有不够n个未读数据则返回全部内容。slice只有效到Buffer的下一次读写操作</p>
+<h4 id="func-Buffer-Read"><a href="#func-Buffer-Read" class="headerlink" title="func (*Buffer) Read"></a>func (*Buffer) Read</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Read</span><span class="params">(p []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>读取len(p)个字节数据直到读完，返回值n表示读出的字节数，如果已经没有数据可读(n=0)，返回err为io.EOF</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">buf := bytes.NewBufferString(<span class="string">"abcd"</span>)</div><div class="line"><span class="keyword">var</span> data = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">3</span>)</div><div class="line">fmt.Println(buf.Read(data))</div><div class="line">fmt.Println(buf.Read(data))</div><div class="line">fmt.Println(buf.Read(data))</div></pre></td></tr></table></figure>
+<p>结果为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">3 &lt;nil&gt;</div><div class="line">1 &lt;nil&gt;</div><div class="line">0 EOF</div></pre></td></tr></table></figure>
+<h4 id="func-Buffer-ReadByte"><a href="#func-Buffer-ReadByte" class="headerlink" title="func (*Buffer) ReadByte()"></a>func (*Buffer) ReadByte()</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadByte</span><span class="params">()</span> <span class="params">(<span class="keyword">byte</span>, error)</span></span></div></pre></td></tr></table></figure>
+<p>读取buffer里的下一个字节， 如果没有则返回 io.EOF</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">buf := bytes.NewBufferString(<span class="string">"abcd"</span>)</div><div class="line"><span class="keyword">var</span> data = <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">3</span>)</div><div class="line">fmt.Println(buf.Read(data))</div><div class="line">fmt.Println(buf.ReadByte())</div><div class="line">fmt.Println(buf.ReadByte())</div></pre></td></tr></table></figure>
+<p>结果为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">3 &lt;nil&gt;</div><div class="line">100 &lt;nil&gt;</div><div class="line">0 EOF</div></pre></td></tr></table></figure>
+<h4 id="func-Buffer-ReadBytes"><a href="#func-Buffer-ReadBytes" class="headerlink" title="func (*Buffer) ReadBytes"></a>func (*Buffer) ReadBytes</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadBytes</span><span class="params">(delim <span class="keyword">byte</span>)</span> <span class="params">(line []<span class="keyword">byte</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>读取buffer里一直到第一次出现delim的所有字节，返回包含delim在内的slice。如果在找打delimiter之前遇到error，则返回已经读取的数据和 error(通常是io.EOF)。当且仅当line不以delim为结尾时才 err != nil</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">buf := bytes.NewBufferString(<span class="string">"abcd"</span>)</div><div class="line">line, err := buf.ReadBytes(<span class="string">'c'</span>)</div><div class="line">fmt.Println(<span class="keyword">string</span>(line), err)</div><div class="line"></div><div class="line">line, err = buf.ReadBytes(<span class="string">'e'</span>)</div><div class="line">fmt.Println(<span class="keyword">string</span>(line), err)</div></pre></td></tr></table></figure>
+<p>结果为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">abc &lt;nil&gt;</div><div class="line">d EOF</div></pre></td></tr></table></figure>
+<h4 id="func-Buffer-ReadRune"><a href="#func-Buffer-ReadRune" class="headerlink" title="func (*Buffer) ReadRune"></a>func (*Buffer) ReadRune</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadRune</span><span class="params">()</span> <span class="params">(r <span class="keyword">rune</span>, size <span class="keyword">int</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>读取并返回下一个UTF8编码的Code Point。如果没有有效的字节，返回io.EOF。如果是错误的UTF8编码，则只读取一个字节，并且返回 ‘U+FFFD’, 1</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> s = <span class="string">"大"</span></div><div class="line">fmt.Printf(<span class="string">"%+q %x %b\n"</span>, s, s, []<span class="keyword">byte</span>(s))</div><div class="line">buf := bytes.NewBufferString(s)</div><div class="line"></div><div class="line"><span class="comment">// 读取一个字符破坏编码</span></div><div class="line">buf.ReadByte()</div><div class="line"></div><div class="line"><span class="comment">// 无效的编码，读取一个字节</span></div><div class="line"><span class="comment">// 返回 "U+FFFD", 1, nil</span></div><div class="line">r, n, err := buf.ReadRune()</div><div class="line">fmt.Printf(<span class="string">"%+q %d, %v\n"</span>, r, n, err)</div><div class="line"></div><div class="line"><span class="comment">// 无效的编码吗，读取一个字节</span></div><div class="line"><span class="comment">// 返回 "U+FFFD", 1, nil</span></div><div class="line">r, n, err = buf.ReadRune()</div><div class="line">fmt.Printf(<span class="string">"%+q %d, %v\n"</span>, r, n, err)</div><div class="line"></div><div class="line"><span class="comment">// 已无数据</span></div><div class="line">r, n, err = buf.ReadRune()</div><div class="line">fmt.Printf(<span class="string">"%+q %d, %v\n"</span>, r, n, err)</div></pre></td></tr></table></figure>
+<p>返回</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&quot;\u5927&quot; e5a4a7 [11100101 10100100 10100111]</div><div class="line">&apos;\ufffd&apos; 1, &lt;nil&gt;</div><div class="line">&apos;\ufffd&apos; 1, &lt;nil&gt;</div><div class="line">&apos;\x00&apos; 0, EOF</div></pre></td></tr></table></figure>
+<h4 id="func-Buffer-ReadString"><a href="#func-Buffer-ReadString" class="headerlink" title="func (*Buffer) ReadString"></a>func (*Buffer) ReadString</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadString</span><span class="params">(delim <span class="keyword">byte</span>)</span> <span class="params">(line <span class="keyword">string</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>读取一直到dlim的字节并返回包含delim在内的字符串，如果在遇到delim之前遇到错误，则返回已经读取的内容和error(通常为io.EOF)。当且仅当err!=nil时，返回的字符串不包含delim</p>
+<h4 id="func-ReadFrom"><a href="#func-ReadFrom" class="headerlink" title="func ReadFrom"></a>func ReadFrom</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadFrom</span><span class="params">(r io.Reader)</span> <span class="params">(n <span class="keyword">int64</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>从ioreader中读取数据并追加到缓存里直到遇到read的io.EOF，buffer的长度会自动按需增加。返回值 n 为成功读取的字节数，在读的过程中遇到的除io.EOF的error外也返回。如果buffer太大，则返回 ErrTwoLarge</p>
+<h4 id="func-Buffer-Cap-int"><a href="#func-Buffer-Cap-int" class="headerlink" title="func (*Buffer) Cap() int"></a>func (*Buffer) Cap() int</h4><p>返回底层用于保存数据的slice的容量</p>
+<h4 id="func-Buffer-Len-int"><a href="#func-Buffer-Len-int" class="headerlink" title="func (*Buffer) Len() int"></a>func (*Buffer) Len() int</h4><p>返回还未读出的bytes数量 b.Len == len(b.Bytes())</p>
+<h4 id="func-Buffer-Grow"><a href="#func-Buffer-Grow" class="headerlink" title="func (*Buffer) Grow()"></a>func (*Buffer) Grow()</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Grow</span><span class="params">(n <span class="keyword">int</span>)</span></span></div></pre></td></tr></table></figure>
+<p>增加Buffer的容量n使其能够至少再容纳n个bytes， 如果n为负值 Grow会panic，如果buffer不能grow，则panic ErrTooLarge</p>
+<h4 id="func-Buffer-Reset"><a href="#func-Buffer-Reset" class="headerlink" title="func (*Buffer) Reset"></a>func (*Buffer) Reset</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Reset</span><span class="params">()</span></span></div></pre></td></tr></table></figure>
+<p>重置buffer为空，但保留底层的存储空间，和Trancate(0)相同</p>
+<h4 id="func-Buffer-Truncate"><a href="#func-Buffer-Truncate" class="headerlink" title="func (*Buffer) Truncate"></a>func (*Buffer) Truncate</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Truncate</span><span class="params">(n <span class="keyword">int</span>)</span></span></div></pre></td></tr></table></figure>
+<p>丢弃前n个未读字节后的所有字节，但继续使用相同的底层存储空间，如果n为负数或者大于buffer的长度则panic</p>
+<h4 id="func-Buffer-String"><a href="#func-Buffer-String" class="headerlink" title="func (*Buffer) String()"></a>func (*Buffer) String()</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span></div></pre></td></tr></table></figure>
+<p>以字符串形式返回未读内容，但不会将这些内容置为已读，如果buffer是nil，则返回nil</p>
+<h4 id="func（-Buffer-UnreadByte"><a href="#func（-Buffer-UnreadByte" class="headerlink" title="func（*Buffer) UnreadByte"></a>func（*Buffer) UnreadByte</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">UnreadByte</span><span class="params">()</span> <span class="title">error</span></span></div></pre></td></tr></table></figure>
+<p>将最新一次成功读取的字节设置为未读。如果上一次读之后有写的操作或者上一次读返回error或read返回了0字节，则返回error(<strong><em>似乎有问题，上一次read如果返回io.EOF并没有让unreadbyte返回error</em></strong>）</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">buf := bytes.NewBufferString(<span class="string">"abcd"</span>)</div><div class="line">fmt.Println(buf.String())</div><div class="line"></div><div class="line">buf.ReadByte()</div><div class="line">fmt.Println(buf.UnreadByte())</div><div class="line"></div><div class="line">fmt.Println(buf.ReadString(<span class="string">'e'</span>))</div><div class="line"></div><div class="line"><span class="comment">// 此处读取返回了 io.EOF</span></div><div class="line">fmt.Println(buf.ReadString(<span class="string">'e'</span>))</div><div class="line"><span class="comment">// 此处并没有返回error</span></div><div class="line">fmt.Println(buf.UnreadByte())</div><div class="line"></div><div class="line">fmt.Println(buf.String())</div></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">abcd</div><div class="line">&lt;nil&gt;</div><div class="line">abcd EOF</div><div class="line"> EOF</div><div class="line">&lt;nil&gt;</div><div class="line">d</div></pre></td></tr></table></figure>
+<h4 id="func-UnreadRune"><a href="#func-UnreadRune" class="headerlink" title="func UnreadRune()"></a>func UnreadRune()</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">UnreadRune</span><span class="params">()</span> <span class="title">error</span></span></div></pre></td></tr></table></figure>
+<p>将上一次读出的rune置位未读，如果上一次读取返回error，则UnreadRune也返回error</p>
+<h4 id="func-Buffer-Write"><a href="#func-Buffer-Write" class="headerlink" title="func (*Buffer) Write"></a>func (*Buffer) Write</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Write</span><span class="params">(p []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>将p里内容写入缓冲并返回成功p的长度，err永远为nil，如果buffer太长则返回 ErrTooLarge</p>
+<h4 id="func-Buffer-WriteByte"><a href="#func-Buffer-WriteByte" class="headerlink" title="func (*Buffer) WriteByte"></a>func (*Buffer) WriteByte</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteByte</span><span class="params">(c <span class="keyword">byte</span>)</span> <span class="title">error</span></span></div></pre></td></tr></table></figure>
+<p>将字节c写入缓冲，永远返回nil的error，如果buffer太大，则返回ErrTooLarge</p>
+<h4 id="func-Buffer-WriteRune"><a href="#func-Buffer-WriteRune" class="headerlink" title="func (*Buffer) WriteRune"></a>func (*Buffer) WriteRune</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteRune</span><span class="params">(r <span class="keyword">rune</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>将UTF8编码的Unicode point写入buffer，返回字符的长度和永远为nil的error，如果buffer太长则返回ErrTooLarge</p>
+<h4 id="func-Buffer-WriteString"><a href="#func-Buffer-WriteString" class="headerlink" title="func (*Buffer) WriteString"></a>func (*Buffer) WriteString</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteString</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>将字符串写入到buffer，err永远为空</p>
+<h4 id="func-Buffer-WriteTo"><a href="#func-Buffer-WriteTo" class="headerlink" title="func (*Buffer) WriteTo"></a>func (*Buffer) WriteTo</h4><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteTo</span><span class="params">(w io.Wirter)</span> <span class="params">(n <span class="keyword">int64</span>, err error)</span></span></div></pre></td></tr></table></figure>
+<p>将buffe中内容写入到writer，返回写入的字节数和写入过程中遇到的任何错误</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ol>
+<li><p>读取方法</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Read</span><span class="params">(p []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadByte</span><span class="params">()</span> <span class="params">(<span class="keyword">byte</span>, error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadBytes</span><span class="params">(delim <span class="keyword">byte</span>)</span> <span class="params">([]<span class="keyword">byte</span>, error)</span> </span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadString</span><span class="params">(delim <span class="keyword">byte</span>)</span> <span class="params">(line <span class="keyword">string</span>, err error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadRune</span><span class="params">()</span> <span class="params">(r <span class="keyword">rune</span>, err error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">ReadFrom</span><span class="params">(r io.Reader)</span> <span class="params">(n <span class="keyword">int64</span>, err error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">Next</span><span class="params">(n <span class="keyword">int</span>)</span> []<span class="title">byte</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">Bytes</span><span class="params">()</span> []<span class="title">byte</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span></div></pre></td></tr></table></figure>
+</li>
+<li><p>写入方法</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(b *Buffer)</span> <span class="title">Write</span><span class="params">(p []<span class="keyword">byte</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteByte</span><span class="params">(c <span class="keyword">byte</span>)</span> <span class="title">error</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteString</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteRune</span><span class="params">(r <span class="keyword">rune</span>)</span> <span class="params">(n <span class="keyword">int</span>, err error)</span></span></div><div class="line"><span class="function"><span class="title">func</span> <span class="params">(b *Buffer)</span> <span class="title">WriteTo</span><span class="params">(w io.Wirter)</span> <span class="params">(n <span class="keyword">int64</span>, err error)</span></span></div></pre></td></tr></table></figure>
+</li>
+<li><p>其他</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">func (b *Buffer) Cap() int</div><div class="line">func (b *Buffer) Len() int</div><div class="line">func (b *Buffer) Trancate(n int)</div><div class="line">func (b *Buffer) Grow(n int)	</div><div class="line">func (b *Buffer) Reset()</div><div class="line">func (b *Buffer) UnReadByte() error</div><div class="line">func (b *Buffer) UnReadRune() error</div></pre></td></tr></table></figure>
+<p>​</p>
+<p>​</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/17/kmp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/17/kmp/" itemprop="url">String Match - KMP</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-17T21:49:04+08:00">
+                2017-10-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>在字符串匹配的算法里，不管是Brute Force还是Rolling Hash都有个相同的问题，当出现失配时匹配串都是后移一个字符后重新进行匹配检查。有没有一种更好的办法来减少匹配次数呢？答案就是KMP</p>
+<p>KMP算法由Donald Knuth、Vaughan Pratt、James H. Morris 三人于1977年联合发表，它通过对匹配串在出现失配时包含的信息来确定下一个匹配开始的位置来减少不必要的重复操作</p>
+<p>首先来看一下Brute Force和Rolling Hash共有的的问题，以“hello is not hella”查找“hella”为例，从第一个字符开始对应位置的字符检查，如下图</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/mismatch4.png" width="400"></p>
+<p>当检查到第五个字符 ‘a’!=’o’。出现失配，匹配串右移一个字符，如下图</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/mismatch5.png" width="400"></p>
+<p>匹配的位置回滚到文本串的第二个字符，不过看上去这完全是多余的，因为’ello’和‘hell’也是不匹配的，再重新进行比较就是重复的操作了，KMP算法就是解决这种多余的比较。</p>
+<p>先观察一下下面的例子，文本串T和模式串P分别为”ab abcdab bcabcaba”和”abcdabd”</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/kmp3.png" width="400"></p>
+<p>此时匹配串的最后一个字符P[6]和文本串的T[9]不匹配，但可以看到T[7]和T[8]两个字符和P[0]P[1]相匹配，那么将匹配串右移动4个字符，如下图</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/kmp4.png" width="400"></p>
+<p>下一次匹配直接从P[2]与T[9]开始,不必再对P[0]P[1]进行比较，<strong>跳过的字符长度是=匹配串失配字符之前字符串长度-最长相同的前缀和后缀的长度</strong>。这既是KPM算法关键所在，如果为匹配串的每个字符都找到它之前子串的最长前缀后缀，那么就能知道当在这个字符失配时跳过的字符数，可以成为建立一个”最大长度表”来保存这些数字</p>
+<p>以上面的模式串P为例，它的每个子串的前缀后缀分别如下</p>
+<table>
+<thead>
+<tr>
+<th>子串</th>
+<th>前缀</th>
+<th>后缀</th>
+<th>最长相同前缀后缀</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>a</td>
+<td>空</td>
+<td>空</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ab</td>
+<td>a</td>
+<td>b</td>
+<td>0</td>
+</tr>
+<tr>
+<td>abc</td>
+<td>a,ab</td>
+<td>c,bc</td>
+<td>0</td>
+</tr>
+<tr>
+<td>abca</td>
+<td><strong>a</strong>,ab,abc</td>
+<td><strong>a</strong>,ca,bca</td>
+<td>1</td>
+</tr>
+<tr>
+<td>abcab</td>
+<td>a,<strong>ab</strong>,abc,abca</td>
+<td>b,<strong>ab</strong>,cab,bcab</td>
+<td>2</td>
+</tr>
+<tr>
+<td>abcabd</td>
+<td>a,ab,abc,abca,abcab</td>
+<td>d,bd,abd,cabd,bcabd</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>总结出每个字符对应的最大长度表如下</p>
+<table>
+<thead>
+<tr>
+<th>字符</th>
+<th>a</th>
+<th>b</th>
+<th>c</th>
+<th>a</th>
+<th>b</th>
+<th>d</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>最长相同长度</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>那么当出现失配时，匹配串移动的长度可以用下面的方法计算</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">匹配串移动的位数 =</div></pre></td></tr></table></figure>
+<p>参考：</p>
+<ol>
+<li><a href="http://www.stoimen.com/blog/2012/04/09/computer-algorithms-morris-pratt-string-searching/" target="_blank" rel="external">Computer Algorithms: Morris-Pratt String Searching</a></li>
+<li><a href="http://wiki.jikexueyuan.com/project/kmp-algorithm/define.html" target="_blank" rel="external">KMP 算法</a></li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/17/rabin-karp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -935,7 +1363,7 @@
 
       
         
-          <p>对于我们人类来说，认知正数或者负数是没有任何麻烦的，因为是我们发明了它，在一个数的前面有“-”号就表示负数，前面有“+”或者不加符号就表示正数，很简单不是吗? 但，这对于人类的另一个发明计算机来说，就不那么容易了，应为它们的大脑里只有“0”和“1”，没有加号和减号的概念。辣莫，怎么才能让它们能够识别正负数呢？</p>
+          <p>对于我们人类来说，认知正数或者负数是没有任何麻烦的，因为是我们发明了它，在一个数的前面有”-“号就表示负数，前面有”+”或者不加符号就表示正数，很简单不是吗? 但，这对于人类的另一个发明计算机来说，就不那么容易了，应为它们的大脑里只有”0”和”1”，没有加号和减号的概念。辣莫，怎么才能让它们能够识别正负数呢？</p>
 <p>自从计算机被发明以来，世界上的各种研究员、数学家、计算机科学都在殚精竭虑的寻找在二进制编码所限制的世界里表示负数。经过多年的求索与争吵产生了三种编码方法，下面我们详细看一下每一种方法，感受一下他们的原理和使用场景</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1228,7 +1656,7 @@
 
       
         
-          <p>插入排序是一种简单的适用于小数组的排序算法，时间复杂度为<span class="math inline">\(O(n^2)\)</span>，逻辑类似玩扑克时把新拿到的牌按顺序插入到已有牌中，如下图：</p>
+          <p>插入排序是一种简单的适用于小数组的排序算法，时间复杂度为$O(n^2)$，逻辑类似玩扑克时把新拿到的牌按顺序插入到已有牌中，如下图：</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/Insertion-Sort.jpg" width="400"></p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1375,306 +1803,11 @@
 
       
         
-          <p>快速排序是一个分治法排序，由<a href="https://en.wikipedia.org/wiki/Tony_Hoare" target="_blank" rel="external">Tony Hoare</a>在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 <span class="math inline">\(O(nlogn)\)</span> , 最坏情况下为<span class="math inline">\(O(n^2)\)</span></p>
+          <p> 快速排序是一个分治法排序，由<a href="https://en.wikipedia.org/wiki/Tony_Hoare" target="_blank" rel="external">Tony Hoare</a>在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 $O(nlogn)$  , 最坏情况下为$O(n^2)$</p>
 <p>算法的思想是取一个枢纽元“pivot”然后将数组元素以枢纽元为中心分割(partition)，递归执行。枢纽元可以从通过取第一个、取最后一个、随机、中位的办法从数组里取得。其中关分割是算法的关键，在这个过程里要将数组里所有小于pivot的数放到它的前面，大于pivot的数放到它的后面</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/26/quick-sort/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/09/25/majority-item/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/25/majority-item/" itemprop="url">Find majority item</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-25T22:37:10+08:00">
-                2017-09-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>一次选美大赛，由N个评委投票来产生冠军，每个评委都将投票放到自己面前的小盒子里。在冠军的票数需要超过半数的情况下，实现算法从这N个小盒子里找出这个冠军。要求时间复杂度是<span class="math inline">\(O(n)\)</span>，空间复杂度<span class="math inline">\(O(1)\)</span></p>
-<p>这是一个经典的从数组中找出重复次数过半的元素的问题，可以使用Boyer–Moore投票算法解决，解决思想就是减掉两两不同的元素剩下的就是要求的</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/25/majority-item/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/09/22/raft/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/22/raft/" itemprop="url">Raft</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-22T09:42:29+08:00">
-                2017-09-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>对于单台服务器的系统来说，保存一条数据并保持它的完整性是非常容易的。但对于多个服务器组成的集群，就会遇到分布式一致性问题，数据在不同的节点上保存的值可能不同，这就需要算法实现保证数据一致性，Paxos和Raft便是这样的算法</p>
-<p>Paxos曾经是一致性算法的标杆，大多数算法都基于它或者受它的影响，但它难于理解，在实际应用中难于实现</p>
-<p>Raft是人们经过Paxos痛苦的折磨后设计出的一个更好的一致性算法，它在容错和性能上与Paxos相当，但比Paxos更容易理解和实现</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/22/raft/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1761,7 +1894,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">17</span>
+                <span class="site-state-item-count">19</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1783,7 +1916,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">47</span>
+                <span class="site-state-item-count">51</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
