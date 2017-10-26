@@ -69,19 +69,19 @@
 
 
 
-<meta name="description" content="Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下 以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下 首先，如果两个指针相遇，一定是有个环，因为不是环的话快的指针">
+<meta name="description" content="Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下 以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下">
 <meta name="keywords" content="判圈算法,龟兔赛跑法,算法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Floyd Cycle Dectection">
 <meta property="og:url" content="http://benx.io/2017/10/26/floyd-cycle-detect/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下 以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下 首先，如果两个指针相遇，一定是有个环，因为不是环的话快的指针">
+<meta property="og:description" content="Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下 以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/cycle.png">
-<meta property="og:updated_time" content="2017-10-26T15:43:00.000Z">
+<meta property="og:updated_time" content="2017-10-26T15:44:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Floyd Cycle Dectection">
-<meta name="twitter:description" content="Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下 以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下 首先，如果两个指针相遇，一定是有个环，因为不是环的话快的指针">
+<meta name="twitter:description" content="Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下 以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下">
 <meta name="twitter:image" content="http://owo5nif4b.bkt.clouddn.com/cycle.png">
 
 
@@ -345,6 +345,7 @@
       
         <p>Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下</p>
 <p>以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下</p>
+<p><a id="more"></a></p>
 <p>首先，如果两个指针相遇，一定是有个环，因为不是环的话快的指针就一路到链表尽头了。那么有环两个指针就一定相遇吗？不一定，但我们这里的t和h就一定相遇，原因如下</p>
 <p>假设，t和h所在的环有n个元素，某一时刻h所在位置是0，t与h的在逆时针方向上距离是a，此时他们逆时针向前移动，如果t向前移动x步后两指针相遇，则有</p>
 <p><span class="math display">\[\\ 2x \% n \equiv (a+x)\%n\]</span></p>
