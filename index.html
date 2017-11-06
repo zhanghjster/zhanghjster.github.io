@@ -248,6 +248,153 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/11/06/max-sum-contiguous-subsequence/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/11/06/max-sum-contiguous-subsequence/" itemprop="url">Maximum contiguous subsequence</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-06T21:25:50+08:00">
+                2017-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>给定一个由n个整数组成的数组A，找到和最大的连续子序列$A[i],A[i+1],\cdot\cdot\cdot,A[j]$ , 比如 A = [,-2, 1, -3, 4 , -1, 2, 1, -5, 4]的子序列[4, -1, 2, 1]的和6，为最大的子序列，这个问题可以采用暴力、分治或动态规划解决，这里只总结动态规划的处理办法Kadane算法</p>
+<p>Kandane算法开始于一个归纳问题：如果我们知道以第$i$元素结尾的最大子序列$S_i$,其和为$B<em>i$，那么以$i+1$ 这个元素结尾的最长子序$S</em>{i+1}$及它和$B_{i+1}$是什么? 答案是很直接的，如果 $B<em>i + A</em>{i+1} &gt; A<em>{i+1}$ 则$S</em>{i+1} = <s_i, a_{i+1}="">$ 否则 $S<em>{i+1} = &lt;A</em>{i+1}&gt;$，所以 $B_{i+1} = max(B<em>i + A</em>{i+1}, A_{i+1}) $，可见其具有动态规划的最优子结构的性质</s_i,></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/11/06/max-sum-contiguous-subsequence/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/26/floyd-cycle-detect/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -342,7 +489,6 @@
         
           <p>Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下</p>
 <p>以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下</p>
-<p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/10/26/floyd-cycle-detect/#more" rel="contents">
@@ -1523,158 +1669,11 @@
 
       
         
-          <p>插入排序是一种简单的适用于小数组的排序算法，时间复杂度为<span class="math inline">\(O(n^2)\)</span>，逻辑类似玩扑克时把新拿到的牌按顺序插入到已有牌中，如下图：</p>
+          <p>插入排序是一种简单的适用于小数组的排序算法，时间复杂度为$O(n^2)$，逻辑类似玩扑克时把新拿到的牌按顺序插入到已有牌中，如下图：</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/Insertion-Sort.jpg" width="400"></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/09/29/insertion-sort/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/09/26/quick-sort/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/09/26/quick-sort/" itemprop="url">QuickSort</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-26T06:43:40+08:00">
-                2017-09-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p> 快速排序是一个分治法排序，由<a href="https://en.wikipedia.org/wiki/Tony_Hoare" target="_blank" rel="external">Tony Hoare</a>在20世纪50年代提出，到现在还依然普遍使用，如果实现的好可以比其合并排序、堆排序等竞争算法快二到三倍。一般情况下它的时间复杂度为 $O(nlogn)$  , 最坏情况下为$O(n^2)$</p>
-<p>算法的思想是取一个枢纽元“pivot”然后将数组元素以枢纽元为中心分割(partition)，递归执行。枢纽元可以从通过取第一个、取最后一个、随机、中位的办法从数组里取得。其中关分割是算法的关键，在这个过程里要将数组里所有小于pivot的数放到它的前面，大于pivot的数放到它的后面</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/09/26/quick-sort/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1761,7 +1760,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">19</span>
+                <span class="site-state-item-count">20</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1783,7 +1782,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-count">56</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
