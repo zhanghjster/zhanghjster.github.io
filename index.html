@@ -248,6 +248,327 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/01/22/docker-machine-macvlan/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/22/docker-machine-macvlan/" itemprop="url">docker-machine 测试 macvlan 环境</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-22T17:56:36+08:00">
+                2018-01-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>最近研究了一下docker的几种网络驱动，其中之一macvlan模式能够让container直接使用host的物理网络，配置与host同一网段的IP，最终的效果是container就像一台和host处于同一网段的物理机</p>
+<p>下面用docker-machine配置maclvan的实验步骤</p>
+<h5 id="创建两个docker-machine">创建两个docker-machine</h5>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker-machine create --driver virtualbox node1</div><div class="line">docker-machine create --driver virtualbox node2</div></pre></td></tr></table></figure>
+<p>在virtualbox里将两个虚拟机停掉后，在网络设置里分别增加“网卡3“配置，使用“桥接网卡“，混杂模式为‘全部允许’, 之后重新启动两个虚拟机</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/QQ20180122-181844@2x.png" width="400"></p>
+<p>注意： “网卡1”和网卡2“不要动，否则docker不能正常运行</p>
+<h4 id="在docker-machine里创建macvlane">在docker-machine里创建macvlane</h4>
+<ol style="list-style-type: decimal">
+<li>进入node1</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker-machine ssh node1</div></pre></td></tr></table></figure></p>
+<ol start="2" style="list-style-type: decimal">
+<li>查看node1的ip， 我的电脑上结果如下</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ ip addr | grep inet</div><div class="line">    inet 127.0.0.1/8 scope host lo</div><div class="line">    inet6 ::1/128 scope host </div><div class="line">    inet 10.0.2.15/24 brd 10.0.2.255 scope global eth0</div><div class="line">    inet6 fe80::a00:27ff:fe93:3624/64 scope link </div><div class="line">    inet 192.168.1.113/24 brd 255.255.255.255 scope global eth1</div><div class="line">    inet6 fe80::a00:27ff:feb4:f61a/64 scope link </div><div class="line">    inet 192.168.99.100/24 brd 192.168.99.255 scope global eth2</div><div class="line">    inet6 fe80::a00:27ff:fe48:4740/64 scope link </div><div class="line">    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0</div></pre></td></tr></table></figure></p>
+<p>其中 ”192.168.1.113“和我的电脑是在同一网段，查看网关为 192.168.1.1 ，命令如下</p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ ip r</div><div class="line">default via 10.0.2.2 dev eth0  metric 1 </div><div class="line">default via 192.168.1.1 dev eth1  metric 1 </div><div class="line">10.0.2.0/24 dev eth0  proto kernel  scope link  src 10.0.2.15 </div><div class="line">127.0.0.1 dev lo  scope link </div><div class="line">172.17.0.0/16 dev docker0  proto kernel  scope link  src 172.17.0.1 </div><div class="line">192.168.1.0/24 dev eth1  proto kernel  scope link  src 192.168.1.113 </div><div class="line">192.168.99.0/24 dev eth2  proto kernel  scope link  src 192.168.99.100</div></pre></td></tr></table></figure></p>
+<ol start="3" style="list-style-type: decimal">
+<li>设置node1的eth1为混杂模式</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ sudo ip link set eth1 promisc on</div></pre></td></tr></table></figure></p>
+<ol start="4" style="list-style-type: decimal">
+<li>创建macvlan network</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ docker network create --subnet 192.168.1.0/24 --gateway 192.168.1.1 -o parent=eth1 -d macvlan macvlan1</div></pre></td></tr></table></figure></p>
+<ol start="5" style="list-style-type: decimal">
+<li>运行一个container，指定网络为上面创建的’macvlan1‘，ip为 192.168.1.123</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ docker run -itd --name c1 --network macvlan1 --ip 192.168.1.123 alpine /bin/sh</div></pre></td></tr></table></figure></p>
+<ol start="6" style="list-style-type: decimal">
+<li>查看 上面刚创建的container, ’c1’的ip， 为192.168.1.123， 配置成功</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ docker exec -it c1 ip a </div><div class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1</div><div class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</div><div class="line">    inet 127.0.0.1/8 scope host lo</div><div class="line">       valid_lft forever preferred_lft forever</div><div class="line">7: eth0@if4: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue state UNKNOWN </div><div class="line">    link/ether 02:42:c0:a8:01:7b brd ff:ff:ff:ff:ff:ff</div><div class="line">    inet 192.168.1.123/24 brd 192.168.1.255 scope global eth0</div><div class="line">       valid_lft forever preferred_lft forever</div></pre></td></tr></table></figure></p>
+<ol start="7" style="list-style-type: decimal">
+<li>同样的办法在node2里创建macvlan和创建一个container ‘c2’，最终node1 c2 node2 c2 的ip如下</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">node1: 192.168.1.113</div><div class="line">c1: 192.168.1.123</div><div class="line">node2: 192.168.1.114</div><div class="line">c2: 192.168.1.124</div></pre></td></tr></table></figure></p>
+<p>另外我的电脑的ip是192.168.1.101，</p>
+<ol start="8" style="list-style-type: decimal">
+<li>两个container c1 c2 分别运行在两个node上，检查他们之间是否ping 通</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ docker exec -it c1 ping 192.168.1.124</div><div class="line">PING 192.168.1.124 (192.168.1.124): 56 data bytes</div><div class="line">64 bytes from 192.168.1.124: seq=0 ttl=64 time=5.530 ms</div><div class="line">64 bytes from 192.168.1.124: seq=1 ttl=64 time=0.450 ms</div></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker@node2:~$ docker exec -it  c2 ping 192.168.1.123</div><div class="line">PING 192.168.1.123 (192.168.1.123): 56 data bytes</div><div class="line">64 bytes from 192.168.1.123: seq=0 ttl=64 time=1.309 ms</div><div class="line">64 bytes from 192.168.1.123: seq=1 ttl=64 time=0.458 ms</div></pre></td></tr></table></figure></p>
+<ol start="9" style="list-style-type: decimal">
+<li>container和我的电脑是否互通</li>
+</ol>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ docker exec -it c1 ping 192.168.1.101</div><div class="line">PING 192.168.1.101 (192.168.1.101): 56 data bytes</div><div class="line">64 bytes from 192.168.1.101: seq=0 ttl=64 time=1.277 ms</div><div class="line">64 bytes from 192.168.1.101: seq=1 ttl=64 time=0.320 ms</div></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:~ Ben$ ping 192.168.1.123</div><div class="line">PING 192.168.1.123 (192.168.1.123): 56 data bytes</div><div class="line">64 bytes from 192.168.1.123: icmp_seq=0 ttl=64 time=0.452 ms</div><div class="line">64 bytes from 192.168.1.123: icmp_seq=1 ttl=64 time=0.295 ms</div></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker@node2:~$ docker exec -it  c2 ping 192.168.1.101</div><div class="line">PING 192.168.1.101 (192.168.1.101): 56 data bytes</div><div class="line">64 bytes from 192.168.1.101: seq=0 ttl=64 time=0.656 ms</div><div class="line">64 bytes from 192.168.1.101: seq=1 ttl=64 time=0.419 ms</div></pre></td></tr></table></figure></p>
+<p><figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">localhost:~ Ben$ ping 192.168.1.124</div><div class="line">PING 192.168.1.124 (192.168.1.124): 56 data bytes</div><div class="line">64 bytes from 192.168.1.124: icmp_seq=0 ttl=64 time=0.500 ms</div><div class="line">64 bytes from 192.168.1.124: icmp_seq=1 ttl=64 time=0.341 ms</div></pre></td></tr></table></figure></p>
+<ol start="10" style="list-style-type: decimal">
+<li><p>container和除它所在host之外的其他host互通，也就是c1和node2，c2和node1</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ docker exec -it c1 ping 192.168.1.114</div><div class="line">PING 192.168.1.114 (192.168.1.114): 56 data bytes</div><div class="line">64 bytes from 192.168.1.114: seq=0 ttl=64 time=4.136 ms</div><div class="line">64 bytes from 192.168.1.114: seq=1 ttl=64 time=0.388 ms</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker@node2:~$ docker exec -it  c2 ping 192.168.1.113</div><div class="line">PING 192.168.1.113 (192.168.1.113): 56 data bytes</div><div class="line">64 bytes from 192.168.1.113: seq=0 ttl=64 time=4.510 ms</div><div class="line">64 bytes from 192.168.1.113: seq=1 ttl=64 time=0.496 ms</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">docker@node1:~$ ping 192.168.1.124</div><div class="line">PING 192.168.1.124 (192.168.1.124): 56 data bytes</div><div class="line">64 bytes from 192.168.1.124: seq=0 ttl=64 time=1.375 ms</div><div class="line">64 bytes from 192.168.1.124: seq=1 ttl=64 time=0.509 ms</div><div class="line">64 bytes from 192.168.1.124: seq=2 ttl=64 time=0.531 ms</div></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker@node2:~$ ping 192.168.1.113</div><div class="line">PING 192.168.1.113 (192.168.1.113): 56 data bytes</div><div class="line">64 bytes from 192.168.1.113: seq=0 ttl=64 time=1.962 ms</div><div class="line">64 bytes from 192.168.1.113: seq=1 ttl=64 time=0.367 ms</div></pre></td></tr></table></figure></li>
+<li><p>不错其他配置的情况下，container和其所在host是不能互通的，即node1和c1之间，node2和c2之间不能ping通，这是macvlan的特性，需要其他办法解决</p>
+<p>​</p></li>
+</ol>
+<h5 id="总结">总结</h5>
+<p>macvlan对于那种需要设置container ip的应用场景比较合适，比如外部程序需要直接通过ip访问container，爬虫程序部署到container里是需要设置public ip做一些ip限制的规避，邮件服务器部署到container里需要public ip做spf dkim等验证。另外它也比桥接或者swarm的overlay效率高很多，只是ip的管理比较麻烦，这也是它的一个弊端</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/01/12/amqp-concept/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/01/12/amqp-concept/" itemprop="url">未命名</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T08:17:43+08:00">
+                2018-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="概念">概念</h4>
+<ol style="list-style-type: decimal">
+<li>代理服务器 Message Broker</li>
+<li>队列，Queue</li>
+<li>路由， Route</li>
+<li>路由键，Routing key</li>
+<li>绑定件，Binding key</li>
+<li>交换器，Exchange</li>
+<li>直接交换器，Direct Exchange</li>
+<li>默认交换器，Default Exchange</li>
+</ol>
+<h4 id="fanout-交换器">Fanout 交换器</h4>
+<p>最简单也是最快的交换器，直接将消息广播给所有绑定到它的所有队列或交换器，提供了典型的pub/sub机制</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/QQ20180112-130224@2x.png" width="400"></p>
+<h4 id="直接交换器">直接交换器</h4>
+<p>直接交换器使用’路由键’来路由消息。路由键由发布者在发布消息时设置，通常是一个由点号链接的多个字符串组成，比如 “booking.new”</p>
+<p>队列通过’绑定键’与直接交换器绑定，直接交换器会将消息发送给所有’绑定键’与’路由键’相同的队列</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/QQ20180112-133507.png" width="400"></p>
+<h4 id="默认交换器">默认交换器</h4>
+<p>‘默认交换器‘是由’代理服务器‘预定义的一种没有名称的‘直接交换器’。每个创建的’队列‘都会以它的名称为’路由键’自动绑定到’默认交换器’。</p>
+<p>假设一个队列被定义为以’search-index’为名称。一个发给’默认交换器’的消息，如果它的’路由健’是’search-indexing’，则这个消息就会路由给‘search-index’这个队列。这个特性使得看上去我们可以直接发送消息给指定名称的队列，但实际上底层还是经过了交换器。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://benx.io/2017/12/03/counting-sort/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1379,301 +1700,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/08/sub-string-match/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/08/sub-string-match/" itemprop="url">String Match - Brute Force</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-08T21:15:50+08:00">
-                2017-10-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>字符串匹配是IT们经常要遇到的问题，虽然很多现代语言和库都提供了函数来处理，但研究一下他们的工作机理还是有必要的</p>
-<p>一种最简单直接的匹配算法就是暴力匹配(Brute Force)，之所以称它暴力是因为要将文本与匹配串的每个字符都进行比较，耗时耗力</p>
-<p>它的逻辑可以描述为，一个包含模式串的“模板”沿文本滑动，同时对每个偏移都要检查模板上的字符是否和文本中对应的字符相等。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/10/08/sub-string-match/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/04/signed-integer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/10/04/signed-integer/" itemprop="url">Signed Integer</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-04T09:26:07+08:00">
-                2017-10-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/基础/" itemprop="url" rel="index">
-                    <span itemprop="name">基础</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>对于我们人类来说，认知正数或者负数是没有任何麻烦的，因为是我们发明了它，在一个数的前面有“-”号就表示负数，前面有“+”或者不加符号就表示正数，很简单不是吗? 但，这对于人类的另一个发明计算机来说，就不那么容易了，应为它们的大脑里只有“0”和“1”，没有加号和减号的概念。辣莫，怎么才能让它们能够识别正负数呢？</p>
-<p>自从计算机被发明以来，世界上的各种研究员、数学家、计算机科学都在殚精竭虑的寻找在二进制编码所限制的世界里表示负数。经过多年的求索与争吵产生了三种编码方法，下面我们详细看一下每一种方法，感受一下他们的原理和使用场景</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/10/04/signed-integer/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1723,7 +1749,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">22</span>
+                <span class="site-state-item-count">24</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1745,7 +1771,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">57</span>
+                <span class="site-state-item-count">59</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -1787,7 +1813,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
