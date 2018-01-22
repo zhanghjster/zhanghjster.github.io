@@ -429,146 +429,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/01/12/amqp-concept/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/01/12/amqp-concept/" itemprop="url">未命名</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-12T08:17:43+08:00">
-                2018-01-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="概念">概念</h4>
-<ol style="list-style-type: decimal">
-<li>代理服务器 Message Broker</li>
-<li>队列，Queue</li>
-<li>路由， Route</li>
-<li>路由键，Routing key</li>
-<li>绑定件，Binding key</li>
-<li>交换器，Exchange</li>
-<li>直接交换器，Direct Exchange</li>
-<li>默认交换器，Default Exchange</li>
-</ol>
-<h4 id="fanout-交换器">Fanout 交换器</h4>
-<p>最简单也是最快的交换器，直接将消息广播给所有绑定到它的所有队列或交换器，提供了典型的pub/sub机制</p>
-<p><img src="http://owo5nif4b.bkt.clouddn.com/QQ20180112-130224@2x.png" width="400"></p>
-<h4 id="直接交换器">直接交换器</h4>
-<p>直接交换器使用’路由键’来路由消息。路由键由发布者在发布消息时设置，通常是一个由点号链接的多个字符串组成，比如 “booking.new”</p>
-<p>队列通过’绑定键’与直接交换器绑定，直接交换器会将消息发送给所有’绑定键’与’路由键’相同的队列</p>
-<p><img src="http://owo5nif4b.bkt.clouddn.com/QQ20180112-133507.png" width="400"></p>
-<h4 id="默认交换器">默认交换器</h4>
-<p>‘默认交换器‘是由’代理服务器‘预定义的一种没有名称的‘直接交换器’。每个创建的’队列‘都会以它的名称为’路由键’自动绑定到’默认交换器’。</p>
-<p>假设一个队列被定义为以’search-index’为名称。一个发给’默认交换器’的消息，如果它的’路由健’是’search-indexing’，则这个消息就会路由给‘search-index’这个队列。这个特性使得看上去我们可以直接发送消息给指定名称的队列，但实际上底层还是经过了交换器。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://benx.io/2017/12/03/counting-sort/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1700,6 +1560,154 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/08/sub-string-match/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/08/sub-string-match/" itemprop="url">String Match - Brute Force</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-08T21:15:50+08:00">
+                2017-10-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>字符串匹配是IT们经常要遇到的问题，虽然很多现代语言和库都提供了函数来处理，但研究一下他们的工作机理还是有必要的</p>
+<p>一种最简单直接的匹配算法就是暴力匹配(Brute Force)，之所以称它暴力是因为要将文本与匹配串的每个字符都进行比较，耗时耗力</p>
+<p>它的逻辑可以描述为，一个包含模式串的“模板”沿文本滑动，同时对每个偏移都要检查模板上的字符是否和文本中对应的字符相等。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/10/08/sub-string-match/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -1749,7 +1757,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">24</span>
+                <span class="site-state-item-count">23</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
