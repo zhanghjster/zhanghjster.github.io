@@ -77,7 +77,7 @@
 <meta property="og:site_name" content="笨哥小抄">
 <meta property="og:description" content="在一条数据的生命周期中，它通常要经历提取、存储、加载三套系统。数据提取系统接收数据并将其保存到存储系统，数据加载系统从则从存储系统中的加载数据进行业务处理。而在众多场景中，当数据提取系统接收并保存新的数据时，往往要加载系统做出实时的更新。 比如，一个评论系统，当保存评论内容后会要求缓存、搜索引擎、垃圾检测等使用到评论的系统做相应的更新 如果是简单的单体式应用，评论系统会在保存完评论后调用更新缓存、">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-20T05:01:39.231Z">
+<meta property="og:updated_time" content="2018-05-20T05:05:13.772Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="kafka connect">
 <meta name="twitter:description" content="在一条数据的生命周期中，它通常要经历提取、存储、加载三套系统。数据提取系统接收数据并将其保存到存储系统，数据加载系统从则从存储系统中的加载数据进行业务处理。而在众多场景中，当数据提取系统接收并保存新的数据时，往往要加载系统做出实时的更新。 比如，一个评论系统，当保存评论内容后会要求缓存、搜索引擎、垃圾检测等使用到评论的系统做相应的更新 如果是简单的单体式应用，评论系统会在保存完评论后调用更新缓存、">
@@ -328,7 +328,7 @@
 <p>如果使用kafka作为消息总线，这个则是有可能的。kafka提供了一套框架用于从数据源中拉取数据并转化为kafka数据流的框架 <a href="https://www.confluent.io/product/connectors/" target="_blank" rel="external">kafka connect</a>, 它支持诸如MySQL、ActiveMQ、ES、MongoDB等等多种数据源，并且可以根据需求定制connector。</p>
 <p>对于前面的评论系统，如果将数据保存到MySQL中。使用kafka connect监听评论数据库的更新操作(INSERT、UPDATE、DELETE), 将这些操作转化成一条消息发布到数据总线上，所有使用到评论的系统监听到这些操作后所处相应的实时响应。这样一来，评论系统就只与数据库打交道，逻辑更加简单了</p>
 <p>Kafka官方的MySQL Connector只能监听到数据的INSERT和UPDATE操作，如果要将监听到DELETE，需要采取一些技巧，方法是DELETE操作不是直接从数据库中删除，而是通过UPDATE一个字段为‘deleted’状态来触发connector拉取数据。之所以这样做，是因为这个connector使用的JDBC方式拉取数据，它是监听不到一个被真正delete掉的数据的。</p>
-<p>一个更好的办法是采用CDC(Change Data Capture)技术。<a href="http://debezium.io" target="_blank" rel="external">Devezium</a> 就是其中之一，它监听的是MySQL的binlog，可以对数据库的DELETE，包括数据库的表的操作都能够获取到，速度上比JDBC的更快。</p>
+<p>一个更好的办法是采用CDC(Change Data Capture)技术。<a href="http://debezium.io" target="_blank" rel="external">Debezium</a> 就是其中之一，它监听的是MySQL的binlog，可以对数据库的DELETE，包括数据库的表的操作都能够获取到，速度上比JDBC的更快。</p>
 <p>它的<a href="http://debezium.io/docs/connectors/mysql/" target="_blank" rel="external">工作原理</a>, 大概分为如下两步骤：</p>
 <ol style="list-style-type: decimal">
 <li>同步镜像数据</li>
