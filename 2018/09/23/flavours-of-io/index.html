@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Page Cache,Buffers,Standard IO,Direct IO," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="本文是读后翻译，原文在此On Disk IO, Part 1: Flavors of IO 了解IO的工作原理、使用场景、底层存储系统、及算法取舍对于开发和运维人员的日常工作都有很大帮助，能使他们在数据库选型、问题定位、性能调优等方面会做出更佳的选择 相比于经常被讨论的网络IO，文件系统IO则不是那么引人注意。部分原因是网络IO具有更多的更能和细节，从一个操作系统到另一个操作系统各不相同，而文件系">
+<meta name="keywords" content="Page Cache,Buffers,Standard IO,Direct IO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IO 系列1">
+<meta property="og:url" content="http://benx.io/2018/09/23/flavours-of-io/index.html">
+<meta property="og:site_name" content="笨哥小抄">
+<meta property="og:description" content="本文是读后翻译，原文在此On Disk IO, Part 1: Flavors of IO 了解IO的工作原理、使用场景、底层存储系统、及算法取舍对于开发和运维人员的日常工作都有很大帮助，能使他们在数据库选型、问题定位、性能调优等方面会做出更佳的选择 相比于经常被讨论的网络IO，文件系统IO则不是那么引人注意。部分原因是网络IO具有更多的更能和细节，从一个操作系统到另一个操作系统各不相同，而文件系">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/1%2ABIhWPv9P-ePgQX5Ien1AQA.png">
+<meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/1%2Ayl8Rdk17NtAtpYndh3XFQw.png">
+<meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/1%2AZj8_whEZm_AEaBXBtqdiBw.png">
+<meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/1%2A7MM3iNFLcQnUc9wZ8aISRw.png">
+<meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/1%2AZiSuwydbAZpuqcUW4puaHw-2.png">
+<meta property="og:updated_time" content="2018-09-23T12:00:47.518Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IO 系列1">
+<meta name="twitter:description" content="本文是读后翻译，原文在此On Disk IO, Part 1: Flavors of IO 了解IO的工作原理、使用场景、底层存储系统、及算法取舍对于开发和运维人员的日常工作都有很大帮助，能使他们在数据库选型、问题定位、性能调优等方面会做出更佳的选择 相比于经常被讨论的网络IO，文件系统IO则不是那么引人注意。部分原因是网络IO具有更多的更能和细节，从一个操作系统到另一个操作系统各不相同，而文件系">
+<meta name="twitter:image" content="http://owo5nif4b.bkt.clouddn.com/1%2ABIhWPv9P-ePgQX5Ien1AQA.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://benx.io/2018/09/23/flavours-of-io/"/>
+
+
+
+
+
+  <title>IO 系列1 | 笨哥小抄</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20062311-4', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">笨哥小抄</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/09/23/flavours-of-io/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">IO 系列1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-23T13:39:44+08:00">
+                2018-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是读后翻译，原文在此<a href="https://medium.com/databasss/on-disk-io-part-1-flavours-of-io-8e1ace1de017" target="_blank" rel="external">On Disk IO, Part 1: Flavors of IO</a></p>
+<p>了解IO的工作原理、使用场景、底层存储系统、及算法取舍对于开发和运维人员的日常工作都有很大帮助，能使他们在数据库选型、问题定位、性能调优等方面会做出更佳的选择</p>
+<p>相比于经常被讨论的网络IO，文件系统IO则不是那么引人注意。部分原因是网络IO具有更多的更能和细节，从一个操作系统到另一个操作系统各不相同，而文件系统IO的工具集则小的很多。此外，现在系统中人们大多数使用数据库作为存储手段，程序通过网络上的驱动程序与其通信，文件系统则留给数据库开发人员理解和处理。理解数据如何从磁盘中读取仍然很重要。</p>
+<p>IO有多种概念：</p>
+<p>系统调用：open，write，read ，fsync，sync，close</p>
+<p>标准IO：fopen，fwrite，fread，fflush，fclose</p>
+<p>向量IO：writev，readv</p>
+<p>内存映射IO：open，mmap，msync，munmap</p>
+<p>我们先来讨论标准IO以及用户态优化，因为程序开发人员最终使用的最多</p>
+<a id="more"></a>
+<h4 id="buffered-io">Buffered IO</h4>
+<p>在谈论stdio.h函数时，在“缓冲”方面存在一些混淆。使用标准IO时，可以选择完全缓冲和行缓冲，也可以选择不用任何缓冲。这种“用户空间”缓冲与内核缓冲（页面缓存）无关，在本文后面将讨论。“缓冲”和“缓存”可以区分开来，这可能会明确区分这些概念</p>
+<h4 id="sectorblockpage">Sector/Block/Page</h4>
+<p>块设备(Block device)是一种特殊的文件类型，它提供对硬件设备(HDD, SSD)的缓冲访问(Buffered Access)。块设备工作于扇区(Sector)上，每个扇区由相邻字节组成，通常为512字节。块设备的最小传输单元是扇区，它不可能传输小于扇区大小的数据，更多情况下则是一次传输多个连续扇区。文件系统(File System)最小的可寻址单元是块(Block)，它由多个连续的扇区组成，典型的块大小是512、1024、2048、4096字节。通常，IO是通过虚拟内存(Virtual Memoty)完成，虚拟内存将请求的文件系统块缓存在内存并作为中间操作的缓冲区。虚拟内存与页面(Page)一起使用，这些页面被映射到文件系统的块，典型的页面大小是4096字节。</p>
+<p>总的来说就是：虚拟内存页面映射到文件系统块，文件系统块映射到块设备的扇区</p>
+<h3 id="standard-io">Standard IO</h3>
+<p>标准IO(Standard IO)使用系统调用<span class="math inline">\(read()\)</span> 和<span class="math inline">\(write()\)</span>执行IO操作。当读取数据时，会首先寻址页缓存(Page Cache)，如果数据不存在，则会触发页面错误(Page Fault)来从块设备读取内容，这意味着对为映射区域执行读取操作会华为更长时间。</p>
+<p>当执行写入操作，内容会首先写入到页面缓存(Page Cache)，这意味着数据不是立即到达硬件设备。当内核决定‘脏数据回写’(writeback of dirty page)时才会被写入到硬件设备</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/1%2ABIhWPv9P-ePgQX5Ien1AQA.png" width="400"></p>
+<p>标准IO采用用户空间缓冲区(Byte Buffer)，然后将内容复制到页面缓存。使用O_DIRECT标志时缓冲区则直接写入块设备。</p>
+<h4 id="page-cache">Page Cache</h4>
+<p>页面缓存(Page Cache)存储最近被访问的文件片段(fragment)，这些片段在最近的时间内更有可能被访问。当使用要使用磁盘文件时，<span class="math inline">\(read()\)</span>和<span class="math inline">\(write()\)</span>调用不会直接访问磁盘，而是通过页面缓存。</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/1%2Ayl8Rdk17NtAtpYndh3XFQw.png" width="400"></p>
+<p>在执行<span class="math inline">\(read\)</span>操作时，页面缓存会被首先查询，如果数据已经在页面缓存中，它则被直接复制给用户，不会有磁盘访问，完全是内存操作。否则，文件内容需要先从存储介质中读取并加载到页面缓存中，然后返回给用户。如果页面缓存已满，最少使用的页面会被刷写到磁盘并从从页面缓存中清除为新页面留出空间</p>
+<p><span class="math inline">\(write\)</span>调用只是将用户控件的缓冲区复制到内核的页面缓存并将写入的页面标记为‘dirty’。稍后，内核在称为‘刷新’(flush)或’回写’(writeback)进程中将修改写入到磁盘上。实际IO通常不会立即发生，页面缓存里的数据会同时被<span class="math inline">\(read\)</span>调用读取。</p>
+<p>被标志位‘dirty’的页面缓存会被刷写到磁盘上，因为它们已经和磁盘上的内容不同。这个过程称为’回写’(writeback)。回写存在潜在的缺点，比如IO请求排队，所以了解用于回写的阈值和比率以及查看队列深度对于避免限制和高延迟有很大帮助，可以在Linux文档中找到有关调整虚拟内存的更多信息。</p>
+<p>页面缓存的背后逻辑由’时间局部性’(Temporal Locality)原理解释，该原理表明最近访问的页面将在最近的某个时间点再次被访问。</p>
+<p>另一个’空间局部性’(Spatial Locality)原理则表明一个数据被使用后，在空间上更接近的数据在最近也会被访问。这被用于被称为’预取’过程，该过程提前加载文件内容用于预期的访问，进而分摊一部分IO成本</p>
+<p>页面缓存还通过延迟写入和合并相邻读取来提高IO性能</p>
+<p>缓冲区缓存(Buffer Cache)和页面缓存(Page Cache)以前是完全独立的概念，在Linux内核2.4后统一。现在它主要被称为页面缓存，但有些人仍然使用数据缓冲区缓存，实际上它们是同一个意思。</p>
+<p>页面缓存保存最近被访问或将要访问的文件内容，因此所有的都通过它的IO操作可以为<span class="math inline">\(read-write-read\)</span>的操作序列可以完全在内存上进行而不必有任何的磁盘操作。</p>
+<h4 id="delaying-errors">Delaying Errors</h4>
+<p>当执行<span class="math inline">\(write\)</span>操作时，确保数据真正的到达磁盘是很重要的，因为它很可能被写入到缓存中，而在后续的刷写过程中有可能报错。<a href="https://lwn.net/Articles/457667/" target="_blank" rel="external">这里</a>有更多的内容可以供参考</p>
+<h3 id="direct-io">Direct IO</h3>
+<p>有些时候使用内核页面缓存来执行IO时不可取的，在打开文件时候使用O_DIRECT标志则指示操作系统绕过页面缓存直接对块设备直接进行IO操作。这意味着写数据时数据会直接刷写到磁盘上而不是先写到缓存页面再由内核回写。</p>
+<p>对于使用’Direct IO’的程序很可能导致性能下降，但可以更细粒度的控制IO操作并提高性能。通常，使用这种类型IO的程序会在应用程序里实现缓存层。</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/1%2AZj8_whEZm_AEaBXBtqdiBw.png" width="400"></p>
+<p>Direct IO在<span class="math inline">\(PostgreSQL\)</span>和<span class="math inline">\(MySQL\)</span>中被使用，开发人员更细粒度的控制数据访问操作，可能使用自定义的IO调度程序和缓存。例如，<span class="math inline">\(PostgreSQL\)</span>在WAL中使用Direct IO来确保尽快的写入来保证持久性，因为他们确信数据不会被立即使用，因此绕过页面缓存写入不会导致性能下降。</p>
+<p>不鼓励同时使用Direct IO和页面缓存打开相同的文件，因为即使数据位于页面缓存中，也会对磁盘设备执行直接操作，这可能会导致不希望的结果。</p>
+<h4 id="block-alignment">Block Alignment</h4>
+<p>由于’Direct IO’是绕过缓存也直接操作底层存储，它要求所有操作都是与扇区边界对齐的。也就是每个操作的开始地址必须是扇区大小(通常为512)的倍数，并且缓存的大小也应该为扇区的倍数。当使用页面缓存时，因为写操作先是在没存上执行，对齐显得不是那么重要：当真正的写入操作执行时，内核会确保分割页面并且按照扇区对齐将数据写入磁盘</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/1%2A7MM3iNFLcQnUc9wZ8aISRw.png" width="400" title="不对齐"></p>
+<p>​ 不对齐</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/1%2AZiSuwydbAZpuqcUW4puaHw-2.png" width="400"></p>
+<p>​ 对齐</p>
+<p>不管是否使用O_DIRECT标识，写入数据时快对齐的读写都是好的想法，因为跨段边界会导致更多扇区需要加载和写入。</p>
+<h3 id="summary">Summary</h3>
+<p>IO不管是是否使用缓存，了解原理对实际操作中避免误用起到很大的作用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Page-Cache/" rel="tag"># Page Cache</a>
+          
+            <a href="/tags/Buffers/" rel="tag"># Buffers</a>
+          
+            <a href="/tags/Standard-IO/" rel="tag"># Standard IO</a>
+          
+            <a href="/tags/Direct-IO/" rel="tag"># Direct IO</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/27/elk-mb/" rel="next" title="ELK Metricbeat体验">
+                <i class="fa fa-chevron-left"></i> ELK Metricbeat体验
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/09/23/more-flavours-of-io/" rel="prev" title="IO 系列2">
+                IO 系列2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Benx</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#buffered-io"><span class="nav-number">1.</span> <span class="nav-text">Buffered IO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sectorblockpage"><span class="nav-number">2.</span> <span class="nav-text">Sector/Block/Page</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#standard-io"><span class="nav-number"></span> <span class="nav-text">Standard IO</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#page-cache"><span class="nav-number">1.</span> <span class="nav-text">Page Cache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#delaying-errors"><span class="nav-number">2.</span> <span class="nav-text">Delaying Errors</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#direct-io"><span class="nav-number"></span> <span class="nav-text">Direct IO</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#block-alignment"><span class="nav-number">1.</span> <span class="nav-text">Block Alignment</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#summary"><span class="nav-number"></span> <span class="nav-text">Summary</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Benx</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

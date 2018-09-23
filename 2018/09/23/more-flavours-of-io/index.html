@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Memory Mapping,Page Cache Optimizations,AIO,Vectored IO," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="本文是读后翻译，原文在此On Disk IO, Part 2: More Flavours of IO Memory Mapping 内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。  内存映射将进程虚拟页面直接映射到内核页面缓存，避免了标准IO对用户空间缓存和页面缓存之间的数据复制操作。 使用\(mmap\">
+<meta name="keywords" content="Memory Mapping,Page Cache Optimizations,AIO,Vectored IO">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IO 系列2">
+<meta property="og:url" content="http://benx.io/2018/09/23/more-flavours-of-io/index.html">
+<meta property="og:site_name" content="笨哥小抄">
+<meta property="og:description" content="本文是读后翻译，原文在此On Disk IO, Part 2: More Flavours of IO Memory Mapping 内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。  内存映射将进程虚拟页面直接映射到内核页面缓存，避免了标准IO对用户空间缓存和页面缓存之间的数据复制操作。 使用\(mmap\">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/1%2AxvxPz9VhYoJx2AOFPbaSWw.png">
+<meta property="og:updated_time" content="2018-09-23T12:00:47.518Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IO 系列2">
+<meta name="twitter:description" content="本文是读后翻译，原文在此On Disk IO, Part 2: More Flavours of IO Memory Mapping 内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。  内存映射将进程虚拟页面直接映射到内核页面缓存，避免了标准IO对用户空间缓存和页面缓存之间的数据复制操作。 使用\(mmap\">
+<meta name="twitter:image" content="http://owo5nif4b.bkt.clouddn.com/1%2AxvxPz9VhYoJx2AOFPbaSWw.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"hide","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://benx.io/2018/09/23/more-flavours-of-io/"/>
+
+
+
+
+
+  <title>IO 系列2 | 笨哥小抄</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-20062311-4', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">笨哥小抄</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/09/23/more-flavours-of-io/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">IO 系列2</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-23T19:39:44+08:00">
+                2018-09-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是读后翻译，原文在此<a href="https://medium.com/databasss/on-disk-io-part-2-more-flavours-of-io-c945db3edb13" target="_blank" rel="external">On Disk IO, Part 2: More Flavours of IO</a></p>
+<h4 id="memory-mapping">Memory Mapping</h4>
+<p>内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。</p>
+<p><img src="http://owo5nif4b.bkt.clouddn.com/1%2AxvxPz9VhYoJx2AOFPbaSWw.png" width="400"></p>
+<p>内存映射将进程虚拟页面直接映射到内核页面缓存，避免了标准IO对用户空间缓存和页面缓存之间的数据复制操作。</p>
+<p>使用<span class="math inline">\(mmap\)</span>，文件可以以私有或共享的模式映射到内存段。私有映射允许从文件读取，但写入会触发相关页面缓存的写时复制(copy-on-write)，以使原始页面保持原样并保持更改为私有，因此所有更改都不会反映到文件本身上。在共享模式下，文件映射与其他进程共享，以便他们可以查看映射的内存段的更新。此外，更改将传递到底层文件。</p>
+<p>除非特殊指定，否则文件内容不会立即加载到内存，而是以惰性方式加载。内存映射所需的空间是保留的，但不会立即分配。第一次读写操作会导致页面错误从而触发相应页面的内存分配。从国MAP_POPULATE可以预先映射区域并强制文件预读取。</p>
+<p>内存映射通过页面缓存完成，与标准IO相同，使用按需分页(Damand paging)方法管理这些缓存页面。当第一次访问内存，会发出一个缺页中断(Page Fault)，它会向内核发出请求页面未加载到内存的信号。内核识别出要加载的数据的位置。缺页中断对开发人员来说是透明的，程序会继续进行，就像什么也没发生，不过有时它可能会影响程序性能</p>
+<p>也可以使用保护标志将文件映射到内存，比如只读模式。如果一个对映射内存的操作违反了条件，则会触发段错误。</p>
+<p><span class="math inline">\(mmap\)</span>是一个非常有用的IO工具：它避免了内存创建缓冲区无关的副本，页避免了触发实际IO操作的系统调用开销。从开发人员角度，对使用<span class="math inline">\(mmapp\)</span>的文件发出随机去读看起来就像普通的指针操作，不涉及到lseek调用。</p>
+<p><span class="math inline">\(mmap\)</span>存在一些缺点，但对于现代硬件来说不太重要了：</p>
+<ul>
+<li>mmap是内核使用更多的数据结果来管理内存映射</li>
+<li>内存映射的文件大小限制：大多数时间没和代码应该内存友好。不过对于64位的系统，已经可以映射更大的文件</li>
+</ul>
+<p>当然，这并不意味着所有操作都由内存映射文件来完成。它经常被数据库实现者使用。例如，MongoDB的默认存储引擎是mmap支持的，SQLit也广泛使用内存映射</p>
+<a id="more"></a>
+<h4 id="page-cache-optimizations">Page Cache Optimizations</h4>
+<p>从到目前我们讨论的内容来看，使用标准IO开起来简化了很多东西，同时牺牲了可控性。虽然在内核可以使用内部统计信息更好的预测执行回写和预取页面的时机，但有时候也有必要让内核以有益于程序的方式管理内存。</p>
+<p>一种向内核通知你的意图的方式是使用<span class="math inline">\(fadvise\)</span>, 使用以下标志，可以向内核指示你的意图，并让他优化页面缓存的使用：</p>
+<ul>
+<li>ADV_SEQUENTIAL，指定按照偏移量从高到低的方式读取文件，因此内核可以确保在读取发生之前提前获取页面</li>
+<li><em>FADV_RANDOM</em>，禁用预读，页面缓存中清除不会很快被访问的页面</li>
+<li>FADV_WILLNEED，通知OS页面将会很快被该进程使用，使得内核有机会提前缓存页面，并且当读取操作发生时，从页面缓存而不是缺页中断提供它</li>
+<li>FADV_DONTNEED， 建议内核可以释放相应的页面</li>
+</ul>
+<p>如同<span class="math inline">\(advise\)</span>的字面意义，它只是‘建议’，并不意味着内核会按照啊建议去执行。</p>
+<p>由于数据库开发人员通常可以预测访问，因此fadvise是一种非常有用的工具。例如，RocksDB使用它来通知内核有关访问模式的信息，具体取决于文件类型（SSTable或HintFile），模式（随机或顺序）和操作（写入或压缩）</p>
+<p>另一个有用的调用时<span class="math inline">\(mlock\)</span>，它允许强制页面保存在内存中。这意味着，一旦页面内加载到内存，后续操作都是从页面缓存中提供，必须谨慎使用，因为它会耗尽系统资源。</p>
+<h4 id="aio">AIO</h4>
+<p>异步IO(Asynchronous IO), 它是一个接口，通过它可以初始化多个IO操作，并注册操作完成时的回调操作。使用异步IO可以帮助程序在IO操作进行时继续运行主线程的任务。</p>
+<h4 id="vectored-io">Vectored IO</h4>
+<p>一种可能不太流行的执行IO操作的方法是向量IO（也称为Scatter / Gather）。它在缓冲区向量上运行，并允许每个系统调用使用多个缓冲区从磁盘读取和写入数据。</p>
+<p>执行向量读取时，首先将字节从源读取到缓冲区。然后，从第一个缓冲区的长度开始直到第二个缓冲区的长度偏移的源的字节将被读入第二个缓冲区，依此类推，就像源一个接一个地填充缓冲区一样。向量写入以类似的方式工作：缓冲区将被写入，就好像它们在写入之前被连接一样。</p>
+<p>这种方法可以通过允许读取较小的块，因此避免为连续块分配大的存储区域，同时减少用来自磁盘的数据填充所有这些缓冲区所需的系统调用量。另一个优点是读取和写入都是原子的：内核阻止其他进程在读取和写入操作期间对同一描述符执行IO，从而保证数据的完整性。</p>
+<p>从开发人员的角度来看，如果数据在文件中以某种方式布局。例如，它被拆分为固定大小的头和多个固定大小的块，则可以发出一个单独的调用来填充单独的缓冲区分配给这些部分。</p>
+<p>这听起来很有用，但不知何故，只有少数数据库使用向量IO。这可能是因为通用数据库同时处理大量文件，试图保证每个正在运行的操作的活跃性并减少它们的延迟，因此可以按块访问和缓存数据。向量IO对于分析工作负载和/或列式数据库更有用，其中数据连续存储在磁盘上，并且其处理可以在稀疏块中并行完成。其中一个例子是Apache Arrow。</p>
+<h4 id="summary">Summary</h4>
+<p>有很多东西可供选择，每一个都有自己的优点和缺点。使用特定工具并不能保证积极的结果，因为它们的具体细节而导致这些IO风格很容易被误解和误用</p>
+<p>加载和写入。</p>
+<h3 id="summary-1">Summary</h3>
+<p>IO不管是是否使用缓存，了解原理对实际操作中避免误用起到很大的作用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Memory-Mapping/" rel="tag"># Memory Mapping</a>
+          
+            <a href="/tags/Page-Cache-Optimizations/" rel="tag"># Page Cache Optimizations</a>
+          
+            <a href="/tags/AIO/" rel="tag"># AIO</a>
+          
+            <a href="/tags/Vectored-IO/" rel="tag"># Vectored IO</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/09/23/flavours-of-io/" rel="next" title="IO 系列1">
+                <i class="fa fa-chevron-left"></i> IO 系列1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          
+            <p class="site-author-name" itemprop="name">Benx</p>
+            <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+            
+              <a href="/archives/">
+            
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#memory-mapping"><span class="nav-number">1.</span> <span class="nav-text">Memory Mapping</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#page-cache-optimizations"><span class="nav-number">2.</span> <span class="nav-text">Page Cache Optimizations</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#aio"><span class="nav-number">3.</span> <span class="nav-text">AIO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vectored-io"><span class="nav-number">4.</span> <span class="nav-text">Vectored IO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#summary"><span class="nav-number">5.</span> <span class="nav-text">Summary</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#summary-1"><span class="nav-number"></span> <span class="nav-text">Summary</span></a></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Benx</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
