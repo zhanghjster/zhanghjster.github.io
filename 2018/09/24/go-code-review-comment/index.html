@@ -69,17 +69,17 @@
 
 
 
-<meta name="description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import Commet Sentences 注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束： 12345// Request represents a request to run a command.type Reques">
+<meta name="description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go Code Review Comment">
 <meta property="og:url" content="http://benx.io/2018/09/24/go-code-review-comment/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import Commet Sentences 注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束： 12345// Request represents a request to run a command.type Reques">
+<meta property="og:description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-24T05:45:15.370Z">
+<meta property="og:updated_time" content="2018-09-24T05:46:32.149Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go Code Review Comment">
-<meta name="twitter:description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import Commet Sentences 注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束： 12345// Request represents a request to run a command.type Reques">
+<meta name="twitter:description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 
 
 
@@ -320,6 +320,7 @@
       
         <h4 id="gofmt">Gofmt</h4>
 <p>使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import</p>
+<a id="more"></a>
 <h4 id="commet-sentences">Commet Sentences</h4>
 <p>注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Request represents a request to run a command.</span></div><div class="line"><span class="keyword">type</span> Request <span class="keyword">struct</span> &#123; ...</div><div class="line"></div><div class="line"><span class="comment">// Encode writes the JSON encoding of req to w.</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(w io.Writer, req *Request)</span></span> &#123; ...</div></pre></td></tr></table></figure>
