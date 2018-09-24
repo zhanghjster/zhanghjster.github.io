@@ -319,8 +319,9 @@
       
         
           <p>本文是读后翻译，原文在此<a href="https://medium.com/databasss/on-disk-io-part-3-lsm-trees-8b2da218496f" target="_blank" rel="external">On Disk IO, Part 3: LSM Trees</a></p>
-<p>现如今数据库所使用的存储类型有很多种，它们各有优缺点，具体使用哪一种需要做出权衡。本文介绍其中一种经常被使用的类型，LSM(Log Structured Merge tree)。 </p>
-<h3 id="LSM-Trees"><a href="#LSM-Trees" class="headerlink" title="LSM Trees"></a>LSM Trees</h3><p>Log Structured Merge Trees开始于LSM的<a href="http://paperhub.s3.amazonaws.com/18e91eb4db2114a06ea614f0384f2784.pdf" target="_blank" rel="external">开创论文</a>，它建议实现类似于B树的磁盘驻留树，不同之处是针对顺序磁盘访问做了优化，节点(Node)可以被完全占用。虽然LSM经常被与B树做对比，但他们最明显的区别是LSM树允许不可变的可合并的文件。</p>
+<p>现如今数据库所使用的存储类型有很多种，它们各有优缺点，具体使用哪一种需要做出权衡。本文介绍其中一种经常被使用的类型，LSM(Log Structured Merge tree)。</p>
+<h3 id="lsm-trees">LSM Trees</h3>
+<p>Log Structured Merge Trees开始于LSM的<a href="http://paperhub.s3.amazonaws.com/18e91eb4db2114a06ea614f0384f2784.pdf" target="_blank" rel="external">开创论文</a>，它建议实现类似于B树的磁盘驻留树，不同之处是针对顺序磁盘访问做了优化，节点(Node)可以被完全占用。虽然LSM经常被与B树做对比，但他们最明显的区别是LSM树允许不可变的可合并的文件。</p>
 <p>尽管LSM树有各种的不同实现方式，但他们都可能一个共同之处，使用了Sorted String Tables</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -329,144 +330,6 @@
             </a>
           </div>
           <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/09/23/go-code-rewview-comment/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/09/23/go-code-rewview-comment/" itemprop="url">go-code-rewview-comment</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-23T20:52:30+08:00">
-                2018-09-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="Gofmt"><a href="#Gofmt" class="headerlink" title="Gofmt"></a>Gofmt</h4><p>使用gofmt自动修复大多数代码样式问题，使用goimports增加或移除import</p>
-<h4 id="Commet-Sentences"><a href="#Commet-Sentences" class="headerlink" title="Commet Sentences"></a>Commet Sentences</h4><p>注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Request represents a request to run a command.</span></div><div class="line"><span class="keyword">type</span> Request <span class="keyword">struct</span> &#123; ...</div><div class="line"></div><div class="line"><span class="comment">// Encode writes the JSON encoding of req to w.</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(w io.Writer, req *Request)</span></span> &#123; ...</div></pre></td></tr></table></figure>
-<h4 id="Contexts"><a href="#Contexts" class="headerlink" title="Contexts"></a>Contexts</h4><p>context.Context类型的值包含跨API和进程的安全凭证(security credentials)、追踪信息(tracing information)、截止时间(deadline)和取消信号(cancellation signal)。Context在Go程序从RPC或HTTP或传入、传出，在整个函数的调用链显示的传递。</p>
-<p>大多数函数使用第一个参数传递context:</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">(ctx context.Context, /* other arguments */)</span></span> &#123;&#125;</div></pre></td></tr></table></figure>
-<p>A function that is never request-specific may use context.Background(), but err on the side of passing a Context even if you think you don’t need to. The default case is to pass a Context; only use context.Background() directly if you have a good reason why the alternative is a mistake.</p>
-<p>对于结构类型，不要包含Context成员，而是将ctx参数添加到需要传递它的该类型的每个方法上，而那些必须与标准库或第三方库中的接口匹配的方法除外。</p>
-<p>Don’t create custom Context types or use interfaces other than Context in function signatures.</p>
-<p>如果有要传递的应用程序数据，请将其放在参数(parameter)、接收器(receiver)、全局变量(global)或者context中。</p>
-<p>Context是不可更改的，因此可以将其传递给多个调用来共享相同的安全凭证(security credentials)、追踪信息(tracing information)、截止时间(deadline)和取消信号(cancellation signal)</p>
-<h4 id="Declaring-Empty-Slices"><a href="#Declaring-Empty-Slices" class="headerlink" title="Declaring Empty Slices"></a>Declaring Empty Slices</h4><p>当声明一个空的Slice，首选:</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> t []<span class="keyword">int</span></div></pre></td></tr></table></figure>
-<p>而不是：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> t = []<span class="keyword">string</span>&#123;&#125;</div></pre></td></tr></table></figure>
-<p>前一个方法声明了一个空的slice，而后者则声明非空但长度为0的slice并且分配了内存空间。他们在功能上相同（$len$和$cap$都为0)，但应首选前者。</p>
-<p>在有限的一些情况下，后者为首选。例如，编码JSON对象时，nil Slice编码为null而[]string{}则编码为[]。</p>
-<p>在设计接口时，避免区分nil slice和non-nil,zero-length Slice。因为这会导致细微的编程错误。</p>
-<p>更多关于nil请点<a href="https://www.youtube.com/watch?v=ynoY2xz-F8s" target="_blank" rel="external">这里</a></p>
-
-          
         
       
     </div>
@@ -584,15 +447,16 @@
       
         
           <p>本文是读后翻译，原文在此<a href="https://medium.com/databasss/on-disk-io-part-2-more-flavours-of-io-c945db3edb13" target="_blank" rel="external">On Disk IO, Part 2: More Flavours of IO</a></p>
-<h4 id="Memory-Mapping"><a href="#Memory-Mapping" class="headerlink" title="Memory Mapping"></a>Memory Mapping</h4><p>内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。</p>
+<h4 id="memory-mapping">Memory Mapping</h4>
+<p>内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/1%2AxvxPz9VhYoJx2AOFPbaSWw.png" width="400"></p>
 <p>内存映射将进程虚拟页面直接映射到内核页面缓存，避免了标准IO对用户空间缓存和页面缓存之间的数据复制操作。</p>
-<p>使用$mmap$，文件可以以私有或共享的模式映射到内存段。私有映射允许从文件读取，但写入会触发相关页面缓存的写时复制(copy-on-write)，以使原始页面保持原样并保持更改为私有，因此所有更改都不会反映到文件本身上。在共享模式下，文件映射与其他进程共享，以便他们可以查看映射的内存段的更新。此外，更改将传递到底层文件。</p>
+<p>使用<span class="math inline">\(mmap\)</span>，文件可以以私有或共享的模式映射到内存段。私有映射允许从文件读取，但写入会触发相关页面缓存的写时复制(copy-on-write)，以使原始页面保持原样并保持更改为私有，因此所有更改都不会反映到文件本身上。在共享模式下，文件映射与其他进程共享，以便他们可以查看映射的内存段的更新。此外，更改将传递到底层文件。</p>
 <p>除非特殊指定，否则文件内容不会立即加载到内存，而是以惰性方式加载。内存映射所需的空间是保留的，但不会立即分配。第一次读写操作会导致页面错误从而触发相应页面的内存分配。从国MAP_POPULATE可以预先映射区域并强制文件预读取。</p>
 <p>内存映射通过页面缓存完成，与标准IO相同，使用按需分页(Damand paging)方法管理这些缓存页面。当第一次访问内存，会发出一个缺页中断(Page Fault)，它会向内核发出请求页面未加载到内存的信号。内核识别出要加载的数据的位置。缺页中断对开发人员来说是透明的，程序会继续进行，就像什么也没发生，不过有时它可能会影响程序性能</p>
 <p>也可以使用保护标志将文件映射到内存，比如只读模式。如果一个对映射内存的操作违反了条件，则会触发段错误。</p>
-<p>$mmap$是一个非常有用的IO工具：它避免了内存创建缓冲区无关的副本，页避免了触发实际IO操作的系统调用开销。从开发人员角度，对使用$mmapp$的文件发出随机去读看起来就像普通的指针操作，不涉及到lseek调用。</p>
-<p>$mmap$存在一些缺点，但对于现代硬件来说不太重要了：</p>
+<p><span class="math inline">\(mmap\)</span>是一个非常有用的IO工具：它避免了内存创建缓冲区无关的副本，页避免了触发实际IO操作的系统调用开销。从开发人员角度，对使用<span class="math inline">\(mmapp\)</span>的文件发出随机去读看起来就像普通的指针操作，不涉及到lseek调用。</p>
+<p><span class="math inline">\(mmap\)</span>存在一些缺点，但对于现代硬件来说不太重要了：</p>
 <ul>
 <li>mmap是内核使用更多的数据结果来管理内存映射</li>
 <li>内存映射的文件大小限制：大多数时间没和代码应该内存友好。不过对于64位的系统，已经可以映射更大的文件</li>
@@ -853,16 +717,15 @@
 
       
         
-          <ol>
-<li><p>安装docker, <a href="https://store.docker.com/editions/community/docker-ce-desktop-mac" target="_blank" rel="external">https://store.docker.com/editions/community/docker-ce-desktop-mac</a></p>
-</li>
-<li><p>下载 elk 的 docker-compose 配置文件 </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/deviantony/docker-elk.git</div></pre></td></tr></table></figure>
-</li>
-<li><p>启动elk三个container</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd docker-elk</div><div class="line">docker-compose up</div></pre></td></tr></table></figure>
-</li>
+          <ol style="list-style-type: decimal">
+<li><p>安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac</p></li>
+<li><p>下载 elk 的 docker-compose 配置文件</p></li>
 </ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/deviantony/docker-elk.git</div></pre></td></tr></table></figure></p>
+<ol start="3" style="list-style-type: decimal">
+<li>启动elk三个container</li>
+</ol>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd docker-elk</div><div class="line">docker-compose up</div></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/05/27/elk-mb/#more" rel="contents">
@@ -1238,9 +1101,11 @@
         
           
             <p>计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。</p>
-<p>计数排序的基本思想是：假设输入有 $n$ 个元素，每个元素$p_i$具有一个非负的最大值为$k$的整数键$x_i $，对第个元素 $p_i$ 计算键值小于 $x_i$ 的元素的个数$c_i$，然后利用 $c_i$ 直接将元素$p_i$放到输出数组的位置上</p>
-<h5 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h5><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">CountingSort</span><span class="params">(a []<span class="keyword">int</span>, k <span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</div><div class="line">	<span class="comment">// 数组的每一项保存键值小于或等于其索引的元素的个数</span></div><div class="line">	<span class="keyword">var</span> c = <span class="built_in">make</span>([]<span class="keyword">int</span>, k)</div><div class="line"></div><div class="line">	<span class="comment">// 将输入数组元素直接当做键值</span></div><div class="line">	<span class="comment">// 计算每个键值的出现次数</span></div><div class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</div><div class="line">		c[v]++</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 计算不大于每个键值的键值个数</span></div><div class="line">	<span class="comment">// 也就是键值对应元素在输出数组里的索引</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(c); i++ &#123;</div><div class="line">		c[i] += c[i<span class="number">-1</span>]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 按照c里计算的每个键值所在索引生成输出</span></div><div class="line">	b := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="built_in">len</span>(a))</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(a) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</div><div class="line">		b[c[a[i]]<span class="number">-1</span>] = a[i]</div><div class="line">		c[a[i]]--</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> b</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>计数排序的时间复杂度为 $O(k+n)$, 适用于当输入元素具有小整数的键值，小的意思是键值的大小范围不能远大于元素的个数</p>
+<p>计数排序的基本思想是：假设输入有 <span class="math inline">\(n\)</span> 个元素，每个元素<span class="math inline">\(p_i\)</span>具有一个非负的最大值为<span class="math inline">\(k\)</span>的整数键$x_i $，对第个元素 <span class="math inline">\(p_i\)</span> 计算键值小于 <span class="math inline">\(x_i\)</span> 的元素的个数<span class="math inline">\(c_i\)</span>，然后利用 <span class="math inline">\(c_i\)</span> 直接将元素<span class="math inline">\(p_i\)</span>放到输出数组的位置上</p>
+<h5 id="实现">实现</h5>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">CountingSort</span><span class="params">(a []<span class="keyword">int</span>, k <span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</div><div class="line">	<span class="comment">// 数组的每一项保存键值小于或等于其索引的元素的个数</span></div><div class="line">	<span class="keyword">var</span> c = <span class="built_in">make</span>([]<span class="keyword">int</span>, k)</div><div class="line"></div><div class="line">	<span class="comment">// 将输入数组元素直接当做键值</span></div><div class="line">	<span class="comment">// 计算每个键值的出现次数</span></div><div class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</div><div class="line">		c[v]++</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 计算不大于每个键值的键值个数</span></div><div class="line">	<span class="comment">// 也就是键值对应元素在输出数组里的索引</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(c); i++ &#123;</div><div class="line">		c[i] += c[i<span class="number">-1</span>]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 按照c里计算的每个键值所在索引生成输出</span></div><div class="line">	b := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="built_in">len</span>(a))</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(a) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</div><div class="line">		b[c[a[i]]<span class="number">-1</span>] = a[i]</div><div class="line">		c[a[i]]--</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> b</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="总结">总结</h5>
+<p>计数排序的时间复杂度为 <span class="math inline">\(O(k+n)\)</span>, 适用于当输入元素具有小整数的键值，小的意思是键值的大小范围不能远大于元素的个数</p>
 <p>另外还有一个重要的特性是它是稳定的，也就是对于两个键值相同的元素，在输出数组中的顺序和在输入数组中是相同的</p>
 
           
@@ -1361,7 +1226,9 @@
       
         
           <p>通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息</p>
-<h4 id="文件权限"><a href="#文件权限" class="headerlink" title="文件权限"></a>文件权限</h4><h5 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h5><p>通过 ls命令查看，以下面结果为例</p>
+<h4 id="文件权限">文件权限</h4>
+<h5 id="查看">查看</h5>
+<p>通过 ls命令查看，以下面结果为例</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar</div><div class="line">-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txt</div><div class="line">lrwxr-xr-x  1 Ben  staff     7B 11 30 22:42 bar_link.txt -&gt; bar.txt</div><div class="line">drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 foo</div><div class="line">-rw-r--r--  1 Ben  staff     0B 11 30 22:41 foo.txt</div></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
@@ -1508,12 +1375,160 @@
 
       
         
-          <p>给定一个由n个整数组成的数组A，找到和最大的连续子序列$A[i],A[i+1],\cdot\cdot\cdot,A[j]$ , 比如 A = [-2, 1, -3, 4 , -1, 2, 1, -5, 4]的子序列[4, -1, 2, 1]的和6，为最大的子序列，这个问题可以采用暴力、分治或动态规划解决，这里只总结动态规划的处理办法Kadane算法</p>
-<p>Kandane算法开始于一个归纳问题：如果我们知道以第$i$元素结尾的最大子序列$S_i$,其和为</p>
-<p>$B<em>i$，那么以$i+1$ 这个元素结尾的最长子序$S</em>{i+1}$及它和$B_{i+1}$是什么? 答案是很直接的，如果 $B<em>i + A</em>{i+1} &gt; A<em>{i+1}$ 则$S</em>{i+1} = <s_i, a_{i+1}="">$ 否则 $S<em>{i+1} = &lt;A</em>{i+1}&gt;$，所以 $B_{i+1} = max(B<em>i + A</em>{i+1}, A_{i+1}) $，可见其具有动态规划的最优子结构的性质</s_i,></p>
+          <p>给定一个由n个整数组成的数组A，找到和最大的连续子序列<span class="math inline">\(A[i],A[i+1],\cdot\cdot\cdot,A[j]\)</span> , 比如 A = [-2, 1, -3, 4 , -1, 2, 1, -5, 4]的子序列[4, -1, 2, 1]的和6，为最大的子序列，这个问题可以采用暴力、分治或动态规划解决，这里只总结动态规划的处理办法Kadane算法</p>
+<p>Kandane算法开始于一个归纳问题：如果我们知道以第<span class="math inline">\(i\)</span>元素结尾的最大子序列<span class="math inline">\(S_i\)</span>,其和为</p>
+<p><span class="math inline">\(B_i\)</span>，那么以<span class="math inline">\(i+1\)</span> 这个元素结尾的最长子序<span class="math inline">\(S_{i+1}\)</span>及它和<span class="math inline">\(B_{i+1}\)</span>是什么? 答案是很直接的，如果 <span class="math inline">\(B_i + A_{i+1} &gt; A_{i+1}\)</span> 则<span class="math inline">\(S_{i+1} = &lt;S_i, A_{i+1}&gt;\)</span> 否则 <span class="math inline">\(S_{i+1} = &lt;A_{i+1}&gt;\)</span>，所以 $B_{i+1} = max(B_i + A_{i+1}, A_{i+1}) $，可见其具有动态规划的最优子结构的性质</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/11/06/max-sum-contiguous-subsequence/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/10/26/floyd-cycle-detect/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/10/26/floyd-cycle-detect/" itemprop="url">Floyd Cycle Dectection</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-10-26T22:09:32+08:00">
+                2017-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>Floyd判圈算法又称龟兔赛跑算法，可以在链表、状态机、迭代函数上判断是否存在环，并求出环路的起点与长度，算法逻辑如下</p>
+<p>以链表为例，假设表头结点为S，有两个指针t和h均指向它，接着同时让t和h向前推进，t每次前进一步，h前进两步，二者一直前进直到到达尽头(没有后续结点)或两者再次相遇。如果两个指针再次相遇则说明有个环C，下面简要证明一下</p>
+<p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/10/26/floyd-cycle-detect/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1600,7 +1615,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">29</span>
+                <span class="site-state-item-count">28</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
