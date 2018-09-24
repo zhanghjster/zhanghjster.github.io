@@ -53,7 +53,7 @@
 <link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="exponetiation," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -69,18 +69,17 @@
 
 
 
-<meta name="description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 \(n^m\) 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt;">
-<meta name="keywords" content="exponetiation">
+<meta name="description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Power">
-<meta property="og:url" content="http://benx.io/2017/09/20/pow/index.html">
+<meta property="og:title" content="Go Code Review Comment">
+<meta property="og:url" content="http://benx.io/2018/09/23/go-code-review-comment/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 \(n^m\) 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt;">
+<meta property="og:description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-09-28T13:39:15.000Z">
+<meta property="og:updated_time" content="2018-09-24T05:21:17.464Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Power">
-<meta name="twitter:description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 \(n^m\) 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt;">
+<meta name="twitter:title" content="Go Code Review Comment">
+<meta name="twitter:description" content="Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 
 
 
@@ -110,13 +109,13 @@
 
 
 
-  <link rel="canonical" href="http://benx.io/2017/09/20/pow/"/>
+  <link rel="canonical" href="http://benx.io/2018/09/23/go-code-review-comment/"/>
 
 
 
 
 
-  <title>Power | 笨哥小抄</title>
+  <title>Go Code Review Comment | 笨哥小抄</title>
   
 
 
@@ -252,7 +251,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/09/20/pow/">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/09/23/go-code-review-comment/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Benx">
@@ -269,7 +268,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Power</h1>
+          <h1 class="post-title" itemprop="name headline">Go Code Review Comment</h1>
         
 
         <div class="post-meta">
@@ -281,8 +280,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-09-20T09:32:48+08:00">
-                2017-09-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-09-23T20:52:30+08:00">
+                2018-09-23
               </time>
             
 
@@ -319,26 +318,49 @@
       
 
       
-        <p>在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 <span class="math inline">\(n^m\)</span> 的方法。代码如下：</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">hashStr</span><span class="params">(sep <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">uint32</span>, <span class="keyword">uint32</span>)</span></span> &#123;</div><div class="line">	....</div><div class="line">	<span class="keyword">var</span> pow, sq <span class="keyword">uint32</span> = <span class="number">1</span>, primeRK</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(sep); i &gt; <span class="number">0</span>; i &gt;&gt;= <span class="number">1</span> &#123;</div><div class="line">		<span class="keyword">if</span> i&amp;<span class="number">1</span> != <span class="number">0</span> &#123;</div><div class="line">			pow *= sq</div><div class="line">		&#125;</div><div class="line">		sq *= sq</div><div class="line">	&#125;</div><div class="line">	....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>发现它并不是简单的m次n的乘积得到，其中必有一些技巧的存在。</p>
+        <h4 id="gofmt">Gofmt</h4>
+<p>使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import</p>
 <a id="more"></a>
-<h4 id="left-to-right-exponentiation">Left-to-Right Exponentiation</h4>
-<p>这是一个很古老的办法，具体逻辑是这样，比如：要计算$x^{25} $:</p>
-<pre><code>  1. 首先将25用二进制表示 11001.
-  2. 去掉最高位的1， 变为 1001.
-  3. 用D(double)代表0， D1（double and +1）代表1。得到计算的指令 D1DDD1
-  4. 从左到右，按照上面得到的指令进行计算。顺序得到$x^2$,$x^3$,$x^6$,$x^{12}$,$x^{24}$,$x^{25}$. 共执行了6次。</code></pre>
-<p>这个办法存在一个问题就是需要先计算出从左到右的指令集，并需要一定的空间保存。程序上实现有一定的复杂度。 这个办法也叫 Addition Chain Exponetiation</p>
-<h4 id="right-to-left-exponetiation">Right-to-Left Exponetiation</h4>
-<p>这个算法也比较古老，实现方法如下,</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Power(x,n) &#123;</div><div class="line">  r := 1</div><div class="line">  y := x</div><div class="line">  while (n &gt; 1) &#123; </div><div class="line">    if odd(n) then r := r*y</div><div class="line">    n := floor(n/2)</div><div class="line">    y := y*y</div><div class="line">  &#125;</div><div class="line">  r := r*y</div><div class="line">  return(r)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>开头的golang代码就是这个算法的实现,与left-to-right比较实现起来很容易,不需要额外的空间存储指令。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">pow</span><span class="params">(m, n <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> ret <span class="keyword">int</span> = <span class="number">1</span></div><div class="line">	<span class="keyword">for</span> n &gt; <span class="number">0</span> &#123;</div><div class="line">		<span class="keyword">if</span> n&amp;<span class="number">1</span> != <span class="number">0</span> &#123;</div><div class="line">			ret *= m</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		m *= m</div><div class="line">		n &gt;&gt;= <span class="number">1</span></div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="keyword">return</span> ret</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="参考">参考：</h4>
-<p>https://en.wikipedia.org/wiki/Addition-chain_exponentiation</p>
-<p>http://primes.utm.edu/glossary/xpage/BinaryExponentiation.html</p>
-<p>https://www.quora.com/What-are-some-fast-algorithms-for-computing-the-nth-power-of-a-number</p>
+<h4 id="commet-sentences">Commet Sentences</h4>
+<p>注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Request represents a request to run a command.</span></div><div class="line"><span class="keyword">type</span> Request <span class="keyword">struct</span> &#123; ...</div><div class="line"></div><div class="line"><span class="comment">// Encode writes the JSON encoding of req to w.</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(w io.Writer, req *Request)</span></span> &#123; ...</div></pre></td></tr></table></figure>
+<h4 id="contexts">Contexts</h4>
+<p>context.Context类型的值包含跨API和进程的安全凭证(security credentials)、追踪信息(tracing information)、截止时间(deadline)和取消信号(cancellation signal)。Context在Go程序从RPC或HTTP或传入、传出，在整个函数的调用链显示的传递。</p>
+<p>大多数函数使用第一个参数传递context:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">(ctx context.Context, /* other arguments */)</span></span> &#123;&#125;</div></pre></td></tr></table></figure>
+<p>A function that is never request-specific may use context.Background(), but err on the side of passing a Context even if you think you don’t need to. The default case is to pass a Context; only use context.Background() directly if you have a good reason why the alternative is a mistake.</p>
+<p>对于结构类型，不要包含Context成员，而是将ctx参数添加到需要传递它的该类型的每个方法上，而那些必须与标准库或第三方库中的接口匹配的方法除外。</p>
+<p>Don’t create custom Context types or use interfaces other than Context in function signatures.</p>
+<p>如果有要传递的应用程序数据，请将其放在参数(parameter)、接收器(receiver)、全局变量(global)或者context中。</p>
+<p>Context是不可更改的，因此可以将其传递给多个调用来共享相同的安全凭证(security credentials)、追踪信息(tracing information)、截止时间(deadline)和取消信号(cancellation signal)</p>
+<h4 id="declaring-empty-slices">Declaring Empty Slices</h4>
+<p>当声明一个空的Slice，首选:</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> t []<span class="keyword">int</span></div></pre></td></tr></table></figure>
+<p>而不是：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> t = []<span class="keyword">string</span>&#123;&#125;</div></pre></td></tr></table></figure>
+<p>前一个方法声明了一个空的slice，而后者则声明非空但长度为0的slice(分配了内存空间)。他们在功能上相同（<span class="math inline">\(len\)</span>和<span class="math inline">\(cap\)</span>都为0)，但应首选前者。</p>
+<p>在有限的一些情况下，后者为首选。例如，编码JSON对象时，nil Slice编码为null而[]string{}则编码为[]。</p>
+<p>在设计接口时，避免区分nil slice和non-nil,zero-length Slice。因为这会导致细微的编程错误。</p>
+<p>更多关于nil请点<a href="https://www.youtube.com/watch?v=ynoY2xz-F8s" target="_blank" rel="external">这里</a></p>
+<p><a href="https://stackoverflow.com/questions/44305170/nil-slices-vs-non-nil-slices-vs-empty-slices-in-go-language" target="_blank" rel="external">这里</a> 也有nil Slice和空slice的区别的介绍</p>
+<h4 id="crypto-rand">Crypto Rand</h4>
+<p>不要使用math/rand生成秘钥，即便是一次性的。没有种子的话，生成器是完全可预测的。用time.Nanoseconds()生成种子也只有几位的墒。可以只用crypto/rand的Reader，如果需要文本，使用base64或打印成Hex</p>
+<p><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> (</div><div class="line">    <span class="string">"crypto/rand"</span></div><div class="line">    <span class="comment">// "encoding/base64"</span></div><div class="line">    <span class="comment">// "encoding/hex"</span></div><div class="line">    <span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Key</span><span class="params">()</span> <span class="title">string</span></span> &#123;</div><div class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">16</span>)</div><div class="line">    _, err := rand.Read(buf)</div><div class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">        <span class="built_in">panic</span>(err)  <span class="comment">// out of randomness, should never happen</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%x"</span>, buf)</div><div class="line">    <span class="comment">// or hex.EncodeToString(buf)</span></div><div class="line">    <span class="comment">// or base64.StdEncoding.EncodeToString(buf)</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h4 id="doc-commet">Doc Commet</h4>
+<p>所有顶级的导出名称都需要有注释，不常用的未导出的类型或函数声明也需要有注释。<a href="https://golang.org/doc/effective_go.html#commentary" class="uri" target="_blank" rel="external">https://golang.org/doc/effective_go.html#commentary</a>有更多关于注释的约定。</p>
+<h4 id="dont-panic">Don’t Panic</h4>
+<p>不要使用panic处理普通的error，使用error或多返回值。<a href="https://golang.org/doc/effective_go.html#errors" class="uri" target="_blank" rel="external">https://golang.org/doc/effective_go.html#errors</a>有更多说明</p>
+<h4 id="error-strings">Error Strings</h4>
+<p>Error串不要首字母大写，不要有句号。因为error很多时候会被拼接打印。比如使用fmt.Errorf(“something bad”)而不是fmt.Errorf(“Something bad”)，这样log.Printf(“Reading %s: %v”, filename, err)就不会在打印结果的字符串中出现大写字母和句号。</p>
+<h4 id="examples">Examples</h4>
+<p>添加一个包的时候，对常用的用法增加可运行的实例或测试来演示如何使用。</p>
+<p><a href="https://blog.golang.org/examples" target="_blank" rel="external">这里</a>有更多说明</p>
+<h4 id="goroutine-lifetimes">Goroutine Lifetimes</h4>
+<p>当产生goroutine时，要清楚什么时间或什么条件下它会退出</p>
+<p>如果被管道的读取或发送阻塞，goroutine可能发生泄漏，即便管道无法访问GC不会终止goroutine。</p>
+<p>即便goroutine不泄露，当它不再有用还任由它运行还是会导致其他的难以诊断的问题。向关闭的管道写入会触发panic。在“不需要结果”之后修改仍在使用的输入会导致数据竞争。任由gorouting长时间运行会导致不可预测的内存使用。</p>
+<p>尽量保持并发代码足够简单来确保goroutine的生命周期简洁清晰。如果不行就加入注释说明goroutine退出的时机。</p>
+<p>……</p>
 
       
     </div>
@@ -354,12 +376,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/exponetiation/" rel="tag"># exponetiation</a>
-          
-        </div>
-      
 
       
       
@@ -369,8 +385,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/09/19/utf8/" rel="next" title="UTF8">
-                <i class="fa fa-chevron-left"></i> UTF8
+              <a href="/2018/09/23/more-flavours-of-io/" rel="next" title="IO 系列2">
+                <i class="fa fa-chevron-left"></i> IO 系列2
               </a>
             
           </div>
@@ -379,8 +395,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/09/20/percent-encoding/" rel="prev" title="Percent Encoding">
-                Percent Encoding <i class="fa fa-chevron-right"></i>
+              <a href="/2018/09/24/lsm/" rel="prev" title="IO 系列3">
+                IO 系列3 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -514,7 +530,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#left-to-right-exponentiation"><span class="nav-number">1.</span> <span class="nav-text">Left-to-Right Exponentiation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#right-to-left-exponetiation"><span class="nav-number">2.</span> <span class="nav-text">Right-to-Left Exponetiation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#gofmt"><span class="nav-number">1.</span> <span class="nav-text">Gofmt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#commet-sentences"><span class="nav-number">2.</span> <span class="nav-text">Commet Sentences</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#contexts"><span class="nav-number">3.</span> <span class="nav-text">Contexts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#declaring-empty-slices"><span class="nav-number">4.</span> <span class="nav-text">Declaring Empty Slices</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#crypto-rand"><span class="nav-number">5.</span> <span class="nav-text">Crypto Rand</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#doc-commet"><span class="nav-number">6.</span> <span class="nav-text">Doc Commet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dont-panic"><span class="nav-number">7.</span> <span class="nav-text">Don’t Panic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#error-strings"><span class="nav-number">8.</span> <span class="nav-text">Error Strings</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#examples"><span class="nav-number">9.</span> <span class="nav-text">Examples</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#goroutine-lifetimes"><span class="nav-number">10.</span> <span class="nav-text">Goroutine Lifetimes</span></a></li></ol></div>
             
 
           </div>
