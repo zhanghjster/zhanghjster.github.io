@@ -356,20 +356,18 @@
 </ul>
 <p>作为众多服务的中间媒介，通常采用的是健壮高可用的键/值存储系统</p>
 <a id="more"></a>
-<h3 id="zookeeper">ZooKeeper</h3>
-<p>历史悠久，数据存储格式类似文件系统，通过私有协议访问，集群式架构。优点是成熟稳定，缺点是系统复杂，资源占用高</p>
-<h3 id="etcd">etcd</h3>
-<p>etcd是通过HTTP协议访问的k/v存储系统，采用集群架构，容易部署和使用。但他更多功能是提供存储，要实现服务发现还得配合一些第三方的应用或者自己实现。 ​<br>
-* “registrator”, 自动注册工具，将服务提供方的信息存储到etcd, consul这种kv存储系统 * ”confd“，轻量级的配置管理工具，他可以从etcd里取最新的服务信息生成配置文件，服务使用方就可以用它来实时更新配置文件</p>
-<h3 id="consul">Consul</h3>
-<p>Consul 提供了高可用的kv存储，集群架构，这点和etcd zookeeper类似。 另外也提供了自动服务发现注册的套件，并且能否对服务进行健康检查。 结合consul-template可以实现服务提供方信息更新(比如增加了API服务器)时，自动生成配置文件给服务使用方自动更新配置。</p>
-<h5 id="架构图">架构图</h5>
-<p><img src="https://www.consul.io/assets/images/consul-arch-420ce04a.png" width="400"></p>
+<h3 id="ZooKeeper"><a href="#ZooKeeper" class="headerlink" title="ZooKeeper"></a>ZooKeeper</h3><p>历史悠久，数据存储格式类似文件系统，通过私有协议访问，集群式架构。优点是成熟稳定，缺点是系统复杂，资源占用高</p>
+<h3 id="etcd"><a href="#etcd" class="headerlink" title="etcd"></a>etcd</h3><p>etcd是通过HTTP协议访问的k/v存储系统，采用集群架构，容易部署和使用。但他更多功能是提供存储，要实现服务发现还得配合一些第三方的应用或者自己实现。<br>​    </p>
+<ul>
+<li>“registrator”, 自动注册工具，将服务提供方的信息存储到etcd, consul这种kv存储系统</li>
+<li>”confd“，轻量级的配置管理工具，他可以从etcd里取最新的服务信息生成配置文件，服务使用方就可以用它来实时更新配置文件 </li>
+</ul>
+<h3 id="Consul"><a href="#Consul" class="headerlink" title="Consul"></a>Consul</h3><p>Consul 提供了高可用的kv存储，集群架构，这点和etcd zookeeper类似。 另外也提供了自动服务发现注册的套件，并且能否对服务进行健康检查。 结合consul-template可以实现服务提供方信息更新(比如增加了API服务器)时，自动生成配置文件给服务使用方自动更新配置。</p>
+<h5 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h5><p><img src="https://www.consul.io/assets/images/consul-arch-420ce04a.png" width="400"></p>
 <p>从图中可看到的是Consul支持跨数据中心，在每个数据中心有client和server。一般server是3-5个，少了会影响可靠性，多了会影响速度。client则没有数量的限制。</p>
 <p>集群通过goosip协议管理所有node成员和广播集群消息，client需要配置文件就能发现急群众所有的server，节点故障检测被分不到整个集群，不需要server的参与。所有server通过Raft协议进行选主(leader), leader负责处理所有的查询和事务。</p>
 <p>server还负责与其他数据中心交互来处理跨数据中心的请求，当server收到这种请求它会将请求转发到相应的数据中心活本地的leader。</p>
-<h4 id="raft-in-consul">Raft in Consul</h4>
-<p>Consul使用Raft算法实现分布式存储的一致性。Raft节点在集群中有follower,candidate或leader三种状态，初始为follower，在这个状态下节点可以接收来自leader的日志单元和投票选leader。如果一段时间内收不到来自leader的心跳，则升级为candidate想集群所有node发送投票邀请，如果candidate收到过半节点的投票则升级为leader，leader负责接收日志单元并复制给所有follower</p>
+<h4 id="Raft-in-Consul"><a href="#Raft-in-Consul" class="headerlink" title="Raft in Consul"></a>Raft in Consul</h4><p>Consul使用Raft算法实现分布式存储的一致性。Raft节点在集群中有follower,candidate或leader三种状态，初始为follower，在这个状态下节点可以接收来自leader的日志单元和投票选leader。如果一段时间内收不到来自leader的心跳，则升级为candidate想集群所有node发送投票邀请，如果candidate收到过半节点的投票则升级为leader，leader负责接收日志单元并复制给所有follower</p>
 <p>集群当选出leader后才能接收新的日志单元，节点收到日志时把日志转发给leader，leader将日志保存到本地存储复制给所有follower，当超过半数的follower成功复制后日志单元状态变为‘committed’，进而交给状态机去执行。然后leader会将日志单元的committ状态发送给所有follower让他们来更新到各自状态机。</p>
 <p>Consul自动的通过快照机制将Raft日志压缩来避免其无限增长</p>
 <p>在consul集群里，只有server结点通过Raft算法进行数据一致性管理，原因是Raft集群的结点数量不能太多(在3-5)，如果client也参与到Raft那么随着集群结点数量增加，在Raft算法下集群效率会下降，client结点只是将数据请求转发给server</p>
@@ -377,7 +375,7 @@
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="attr">servers:</span></div><div class="line">	<span class="bullet">-</span> <span class="string">"192.168.1.11:11011"</span></div><div class="line">	<span class="bullet">-</span> <span class="string">"192.168.1.12:11011"</span></div><div class="line">	<span class="bullet">-</span> <span class="string">"192.168.1.13:11011"</span></div></pre></td></tr></table></figure>
 <p>另外可以让server启动时自动的维护Raft的server列表，这需要避免split-brain(双主)的情况，Consul采用了下面两种方式实现：</p>
 <ul>
-<li>’-bootstrap’参数，如果集群先启动一个server并且他优先成为leader(Consul在这里做了特殊设置，让这个bootstrap server从log中恢复成leader状态)，之后加入的所有server一直是follower状态。但这还有个问题，就是还是得固定一台server成为第一个leader，启动参数必须与其他server不同(必须带有-bootstrap）</li>
+<li>‘-bootstrap’参数，如果集群先启动一个server并且他优先成为leader(Consul在这里做了特殊设置，让这个bootstrap server从log中恢复成leader状态)，之后加入的所有server一直是follower状态。但这还有个问题，就是还是得固定一台server成为第一个leader，启动参数必须与其他server不同(必须带有-bootstrap）</li>
 <li>‘-bootstrap-expect’参数，所有server都用同一参数’-boostrap-expect N’说明集群的server个数为N，在有N个server join进来后，cluster开始启动raft逻辑选主。注意，N一定要与server总数相同，否则会出现split-brain问题，比如N=3 儿集群server总数为7，就很可能出现两个leader的情况。</li>
 </ul>
 <p>对于读操作，consul支持多种一致性模式：</p>
@@ -386,11 +384,8 @@
 <li>‘consistent’，这种模式下要求leader给follower发消息确认仍然是leader，这就造成了读取操作时多了一步操作增加了延迟</li>
 <li>‘stale’，这个模式下每个server都可以负责读取，这就导致读出来的数据因为还未在leader把数据复制到全部follower时被读出儿造成不一致，但这种情况也是少数，并且效率会非常快，并且即便没有leader的情况下还能够提供读操作</li>
 </ul>
-<h4 id="gossip-in-consul">Gossip in Consul</h4>
-<p>Consul使用<a href="https://en.wikipedia.org/wiki/Gossip_protocol" target="_blank" rel="external">gossip</a>协议来管理节点和集群内发送消息，这个功能由底层的<a href="https://www.serf.io/" target="_blank" rel="external">Serf</a>库提供。集群中有LAN和WAN两个gossip pool。前者包含集群中所有的节点，用于client自动发现server、故障检测、消息群发等目的。“WAN pool”用于跨数据中心的server交互</p>
-<h3 id="consul功能">Consul功能</h3>
-<h4 id="注册服务service">注册服务(Service)</h4>
-<p>要做到“服务发现”就需要有一个存有所有“service”的目录，consul提供了HTTP API和配置文件两种机制来向目录中注册service</p>
+<h4 id="Gossip-in-Consul"><a href="#Gossip-in-Consul" class="headerlink" title="Gossip in Consul"></a>Gossip in Consul</h4><p>Consul使用<a href="https://en.wikipedia.org/wiki/Gossip_protocol" target="_blank" rel="external">gossip</a>协议来管理节点和集群内发送消息，这个功能由底层的<a href="https://www.serf.io/" target="_blank" rel="external">Serf</a>库提供。集群中有LAN和WAN两个gossip pool。前者包含集群中所有的节点，用于client自动发现server、故障检测、消息群发等目的。“WAN pool”用于跨数据中心的server交互</p>
+<h3 id="Consul功能"><a href="#Consul功能" class="headerlink" title="Consul功能"></a>Consul功能</h3><h4 id="注册服务-Service"><a href="#注册服务-Service" class="headerlink" title="注册服务(Service)"></a>注册服务(Service)</h4><p>要做到“服务发现”就需要有一个存有所有“service”的目录，consul提供了HTTP API和配置文件两种机制来向目录中注册service</p>
 <p>下面是配置文件里service的例子</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	&quot;service&quot;: &#123;</div><div class="line">	    &quot;name&quot;: &quot;redis&quot;,</div><div class="line">	    &quot;tags&quot;: [&quot;v2.0&quot;，&quot;primary&quot;],</div><div class="line">	    &quot;address&quot;: &quot;&quot;,</div><div class="line">	    &quot;port&quot;: 8000,</div><div class="line">	    &quot;checks&quot;: [</div><div class="line">	        &#123;</div><div class="line">	            &quot;id&quot;: &quot;redis check&quot;,</div><div class="line">	            &quot;script&quot;: &quot;/usr/local/bin/check_redis.pl&quot;,</div><div class="line">	            &quot;interval&quot;: &quot;5s&quot;</div><div class="line">	        &#125;,</div><div class="line">	        &#123;</div><div class="line">	            &quot;id&quot;: &quot;redis check&quot;,</div><div class="line">	            &quot;script&quot;: &quot;/usr/local/bin/check_redis.pl&quot;,</div><div class="line">	            &quot;interval&quot;: &quot;5s&quot;</div><div class="line">	        &#125;</div><div class="line">	    ]</div><div class="line">	  &#125;,</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <ul>
@@ -400,12 +395,11 @@
 <li>address，服务的地址</li>
 <li>port，端口</li>
 <li>tocken，ACL token</li>
-<li>checks, ‘name’默认使用’service:<service-id>’，如果重复多个则用service:<service-id>:<num>(num自增)。检查失败的时候DNS会自动将service去除，如果check里不设置默认的status，则默认为‘critial’防止service自动的被加到服务池里</num></service-id></service-id></li>
+<li>checks, ‘name’默认使用’service:<service-id>‘，如果重复多个则用service:<service-id>:<num>(num自增)。检查失败的时候DNS会自动将service去除，如果check里不设置默认的status，则默认为‘critial’防止service自动的被加到服务池里</num></service-id></service-id></li>
 </ul>
-<h4 id="本地dns">本地DNS</h4>
-<p>DNS是Consul提供服务查询的主要接口，程序可以通过DNS来获得自己感兴趣的服务的地址，而不用通过与consul的的HTTP API交互</p>
+<h4 id="本地DNS"><a href="#本地DNS" class="headerlink" title="本地DNS"></a>本地DNS</h4><p>DNS是Consul提供服务查询的主要接口，程序可以通过DNS来获得自己感兴趣的服务的地址，而不用通过与consul的的HTTP API交互</p>
 <p>默认情况下consul在127.0.0.1:8600监听DNS请求，默认不支持递归查询</p>
-<p>Consul支持两种类型的DNS查询，“node lookup”和“service lookup”, query的格式也比较特别</p>
+<p>Consul支持两种类型的DNS查询，”node lookup”和”service lookup”, query的格式也比较特别</p>
 <ul>
 <li>node lookup，格式如下：</li>
 </ul>
@@ -417,7 +411,7 @@
 <li>service lookup, 格式如下</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[tag.]&lt;service&gt;.service[.datacenter].&lt;domain&gt;</div></pre></td></tr></table></figure>
-<p>比如查询“redis”这个service的结果如下:</p>
+<p>比如查询”redis”这个service的结果如下:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">[root@node4 consul.d]# dig @127.0.0.1 -p 8600 redis.service.consul</div><div class="line"></div><div class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-51.el7 &lt;&lt;&gt;&gt; @127.0.0.1 -p 8600 redis.service.consul</div><div class="line">; (1 server found)</div><div class="line">;; global options: +cmd</div><div class="line">;; Got answer:</div><div class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 10593</div><div class="line">;; flags: qr aa rd; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1</div><div class="line">;; WARNING: recursion requested but not available</div><div class="line"></div><div class="line">;; OPT PSEUDOSECTION:</div><div class="line">; EDNS: version: 0, flags:; udp: 4096</div><div class="line">;; QUESTION SECTION:</div><div class="line">;redis.service.consul.		IN	A</div><div class="line"></div><div class="line">;; ANSWER SECTION:</div><div class="line">redis.service.consul.	0	IN	A	172.19.0.4</div><div class="line">redis.service.consul.	0	IN	A	172.19.0.6</div><div class="line"></div><div class="line">;; Query time: 2 msec</div><div class="line">;; SERVER: 127.0.0.1#8600(127.0.0.1)</div><div class="line">;; WHEN: Thu Sep 28 06:15:04 UTC 2017</div><div class="line">;; MSG SIZE  rcvd: 81</div></pre></td></tr></table></figure>
 <p>当有service通不过健康检查，consul会自动将其从DNS里去除, 比如将172.19.0.6上的check结果设置为‘critial’</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">[root@node4 consul.d]# dig @127.0.0.1 -p 8600 redis.service.consul</div><div class="line"></div><div class="line">; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-51.el7 &lt;&lt;&gt;&gt; @127.0.0.1 -p 8600 redis.service.consul</div><div class="line">; (1 server found)</div><div class="line">;; global options: +cmd</div><div class="line">;; Got answer:</div><div class="line">;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 40502</div><div class="line">;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1</div><div class="line">;; WARNING: recursion requested but not available</div><div class="line"></div><div class="line">;; OPT PSEUDOSECTION:</div><div class="line">; EDNS: version: 0, flags:; udp: 4096</div><div class="line">;; QUESTION SECTION:</div><div class="line">;redis.service.consul.		IN	A</div><div class="line"></div><div class="line">;; ANSWER SECTION:</div><div class="line">redis.service.consul.	0	IN	A	172.19.0.6</div><div class="line"></div><div class="line">;; Query time: 3 msec</div><div class="line">;; SERVER: 127.0.0.1#8600(127.0.0.1)</div><div class="line">;; WHEN: Thu Sep 28 06:22:38 UTC 2017</div><div class="line">;; MSG SIZE  rcvd: 65</div></pre></td></tr></table></figure>
@@ -428,21 +422,27 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">_&lt;service&gt;._&lt;protocol&gt;[.service][.datacenter][.domain]</div><div class="line"></div><div class="line">consul文档里这么写，但感觉应该是下面这样</div><div class="line">  </div><div class="line">  _&lt;service&gt;._&lt;protocol&gt;.service[.datacenter].&lt;domain&gt;</div></pre></td></tr></table></figure>
 <p><strong>protocol</strong>用service的tag，如果没有就用’tcp’</p>
-<h4 id="健康检查checks">健康检查(Checks)</h4>
-<p>Agent的一个重要任务是做系统级和程序级的健康检测，检测通过配置文件或HTTP接口来定义并被保存到Agent所运行的节点</p>
+<h4 id="健康检查-Checks"><a href="#健康检查-Checks" class="headerlink" title="健康检查(Checks)"></a>健康检查(Checks)</h4><p>Agent的一个重要任务是做系统级和程序级的健康检测，检测通过配置文件或HTTP接口来定义并被保存到Agent所运行的节点</p>
 <p>检查的类型</p>
 <ul>
-<li>定时脚本检查(script+Interval), 调用一个第三方的程序进行健康检测，使用退出码或标准输出来表明检测结果(类似Nagios), 输出内容不能超过4K，默认的检查超时时间是30秒，可以通过配置文件里的“timeout”来定义。Agent使用enable_script_checks参数来打开这种检查</li>
+<li><p>定时脚本检查(script+Interval), 调用一个第三方的程序进行健康检测，使用退出码或标准输出来表明检测结果(类似Nagios), 输出内容不能超过4K，默认的检查超时时间是30秒，可以通过配置文件里的”timeout”来定义。Agent使用enable_script_checks参数来打开这种检查</p>
+<p>脚本退出码与检测结果对应关系：</p>
+<ul>
+<li>0, passing</li>
+<li>1, warning</li>
+<li>other, failing</li>
 </ul>
-<p>脚本退出码与检测结果对应关系： * 0, passing * 1, warning * other, failing</p>
-<p>脚本的任何输出内容会被保存到消息的‘Output’字段， Agent启动后， * 定时HTTP检查(HTTP+Interval), 定时通过HTTP GET调用指定的URL，根绝HTTP返回码判断服务状态。‘2xx’表示通过检查，‘429’表示警告，其余均表示故障。默认情况下http请求的timeout与检查的interval相同，最长为10秒。可以通过‘timeout’来在配置文件里设置。检查返回的内容大小不能超过4K，超过部分会被截断。默认情况下支持SSL，可以通过tls_skip_verify来关掉。 * 定时TCP检查(TCP+Interval), 定时通过TCP连接检查指定host/IP和端口，根据是否能够建立连接成功与否判定service状态，成功连接表示service正常，否则表示事态危急. 默认超时时间10秒。 * TTL检查，通过服务主动的定时更新TTL，超过时间的定位service故障。 * 定时Docker检查，通过调用常驻docker里的一个检查程序来进行，这个程序通过调用Docker Exec API来启动，需要consul agent具有调用Docker HTTP API或Unix Socket的权限。consul用 DOCKER_HOST 来定位Docker API端点，检查程序运行完后要返回适当的退出码和输出，输出内容不能超过4K。Agent需要通过enable_script_check来打开这种检查</p>
-<p>默认会将check的状态设置为‘critical’，这是防止服务在没有被检查前就被加入到调用这个服务的系统里,下面是一个check的配置项例子： ​<br>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	 &quot;check&quot;: &#123;</div><div class="line">	    &quot;id&quot;: &quot;redis check&quot;,</div><div class="line">	    &quot;script&quot;: &quot;/usr/local/bin/check_redis.pl&quot;,</div><div class="line">	    &quot;interval&quot;:&quot;5s&quot;,</div><div class="line">	    &quot;status&quot;:&quot;passing&quot;</div><div class="line">	    &quot;service_id&quot;: &quot;redis&quot; # 检查绑定到指定的service，只会影响指定service</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>多个检查用数组表示 ​<br>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	&quot;checks&quot;: [</div><div class="line">		&#123;</div><div class="line">			&quot;id&quot;: &quot;redis check&quot;,</div><div class="line">			&quot;script&quot;: &quot;/usr/local/bin/check_redis.pl&quot;,</div><div class="line">			&quot;interval&quot;:&quot;5s&quot;,</div><div class="line">			&quot;service_id&quot;: &quot;redis&quot;,</div><div class="line">			&quot;status&quot;:&quot;critial&quot;</div><div class="line">		&#125;,</div><div class="line">		&#123;</div><div class="line">			&quot;id&quot;: &quot;ssh&quot;,</div><div class="line">			&quot;name&quot;: &quot;ssh port check&quot;,</div><div class="line">			&quot;tcp&quot;: &quot;benx:22&quot;,</div><div class="line">			&quot;interval&quot;: &quot;10s&quot;,</div><div class="line">			&quot;timeout&quot;: &quot;5s&quot;</div><div class="line">		&#125;</div><div class="line">	]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>脚本的任何输出内容会被保存到消息的‘Output’字段， Agent启动后，</p>
+</li>
+<li>定时HTTP检查(HTTP+Interval), 定时通过HTTP GET调用指定的URL，根绝HTTP返回码判断服务状态。‘2xx’表示通过检查，‘429’表示警告，其余均表示故障。默认情况下http请求的timeout与检查的interval相同，最长为10秒。可以通过‘timeout’来在配置文件里设置。检查返回的内容大小不能超过4K，超过部分会被截断。默认情况下支持SSL，可以通过tls_skip_verify来关掉。</li>
+<li>定时TCP检查(TCP+Interval), 定时通过TCP连接检查指定host/IP和端口，根据是否能够建立连接成功与否判定service状态，成功连接表示service正常，否则表示事态危急. 默认超时时间10秒。</li>
+<li>TTL检查，通过服务主动的定时更新TTL，超过时间的定位service故障。</li>
+<li>定时Docker检查，通过调用常驻docker里的一个检查程序来进行，这个程序通过调用Docker Exec API来启动，需要consul agent具有调用Docker HTTP API或Unix Socket的权限。consul用 DOCKER_HOST 来定位Docker API端点，检查程序运行完后要返回适当的退出码和输出，输出内容不能超过4K。Agent需要通过enable_script_check来打开这种检查</li>
+</ul>
+<p>默认会将check的状态设置为‘critical’，这是防止服务在没有被检查前就被加入到调用这个服务的系统里,下面是一个check的配置项例子：<br>​<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	 &quot;check&quot;: &#123;</div><div class="line">	    &quot;id&quot;: &quot;redis check&quot;,</div><div class="line">	    &quot;script&quot;: &quot;/usr/local/bin/check_redis.pl&quot;,</div><div class="line">	    &quot;interval&quot;:&quot;5s&quot;,</div><div class="line">	    &quot;status&quot;:&quot;passing&quot;</div><div class="line">	    &quot;service_id&quot;: &quot;redis&quot; # 检查绑定到指定的service，只会影响指定service</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>多个检查用数组表示<br>​<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">	&quot;checks&quot;: [</div><div class="line">		&#123;</div><div class="line">			&quot;id&quot;: &quot;redis check&quot;,</div><div class="line">			&quot;script&quot;: &quot;/usr/local/bin/check_redis.pl&quot;,</div><div class="line">			&quot;interval&quot;:&quot;5s&quot;,</div><div class="line">			&quot;service_id&quot;: &quot;redis&quot;,</div><div class="line">			&quot;status&quot;:&quot;critial&quot;</div><div class="line">		&#125;,</div><div class="line">		&#123;</div><div class="line">			&quot;id&quot;: &quot;ssh&quot;,</div><div class="line">			&quot;name&quot;: &quot;ssh port check&quot;,</div><div class="line">			&quot;tcp&quot;: &quot;benx:22&quot;,</div><div class="line">			&quot;interval&quot;: &quot;10s&quot;,</div><div class="line">			&quot;timeout&quot;: &quot;5s&quot;</div><div class="line">		&#125;</div><div class="line">	]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>下面是监控上文的‘checks’的例子，</p>
-<h4 id="状态监视watch">状态监视(Watch)</h4>
-<p>使用Whach可以监视KV、nodes、service、checks等对象的变化，当有更新时会触发watch定义的可执行的handler。</p>
+<h4 id="状态监视-Watch"><a href="#状态监视-Watch" class="headerlink" title="状态监视(Watch)"></a>状态监视(Watch)</h4><p>使用Whach可以监视KV、nodes、service、checks等对象的变化，当有更新时会触发watch定义的可执行的handler。</p>
 <p>Watch通过阻塞的HTTP API实现，Agent会根据调用相应api请求自动监视指定内容，当有变化时通知handler</p>
 <p>Watch还可以加入到Agent的配置文件中的watches生成，下面是Agent配置文件的内容</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  &quot;watches&quot;: [</div><div class="line">      &#123;</div><div class="line">		  &quot;type&quot;: &quot;key&quot;,</div><div class="line">		  &quot;key&quot;: &quot;foo/bar&quot;,</div><div class="line">		  &quot;handler&quot;: &quot;/usr/bin/my-watch-handler.pl&quot;</div><div class="line">		&#125;</div><div class="line">   ]</div><div class="line">&#125;</div></pre></td></tr></table></figure>
@@ -458,10 +458,10 @@
 <li>checks</li>
 <li>event</li>
 </ul>
-<p>下面是监控key“foo/bar”的例子，用脚本/opt/consul/script/kw.pl为handler，它会将watch传给他的内容打印</p>
-<p>保存“foo/bar”后启动watch, 他会先将kv的现有状态输出给handler</p>
+<p>下面是监控key”foo/bar”的例子，用脚本/opt/consul/script/kw.pl为handler，它会将watch传给他的内容打印</p>
+<p>保存”foo/bar”后启动watch, 他会先将kv的现有状态输出给handler</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/kv1.png" width="400"></p>
-<p>更新“foo/bar”</p>
+<p>更新”foo/bar”</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/kv2.png" width="400"></p>
 <p>“foo/bar”被更新后, watch输出了kv的新的状态给handler</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/kv3.png" width="400"></p>
@@ -472,7 +472,7 @@
 <p>当把exit(1)改为exit(0)后， handler打印了新的check结果</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/kv7.png" width="400"></p>
 <p>参考：</p>
-<p>https://www.consul.io</p>
+<p><a href="https://www.consul.io" target="_blank" rel="external">https://www.consul.io</a></p>
 
       
     </div>
@@ -595,7 +595,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -617,7 +617,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -652,7 +652,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#zookeeper"><span class="nav-number">1.</span> <span class="nav-text">ZooKeeper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#etcd"><span class="nav-number">2.</span> <span class="nav-text">etcd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#consul"><span class="nav-number">3.</span> <span class="nav-text">Consul</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#架构图"><span class="nav-number">3.0.1.</span> <span class="nav-text">架构图</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#raft-in-consul"><span class="nav-number">3.1.</span> <span class="nav-text">Raft in Consul</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#gossip-in-consul"><span class="nav-number">3.2.</span> <span class="nav-text">Gossip in Consul</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#consul功能"><span class="nav-number">4.</span> <span class="nav-text">Consul功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注册服务service"><span class="nav-number">4.1.</span> <span class="nav-text">注册服务(Service)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#本地dns"><span class="nav-number">4.2.</span> <span class="nav-text">本地DNS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#健康检查checks"><span class="nav-number">4.3.</span> <span class="nav-text">健康检查(Checks)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态监视watch"><span class="nav-number">4.4.</span> <span class="nav-text">状态监视(Watch)</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ZooKeeper"><span class="nav-number">1.</span> <span class="nav-text">ZooKeeper</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#etcd"><span class="nav-number">2.</span> <span class="nav-text">etcd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consul"><span class="nav-number">3.</span> <span class="nav-text">Consul</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#架构图"><span class="nav-number">3.0.1.</span> <span class="nav-text">架构图</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Raft-in-Consul"><span class="nav-number">3.1.</span> <span class="nav-text">Raft in Consul</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gossip-in-Consul"><span class="nav-number">3.2.</span> <span class="nav-text">Gossip in Consul</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consul功能"><span class="nav-number">4.</span> <span class="nav-text">Consul功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注册服务-Service"><span class="nav-number">4.1.</span> <span class="nav-text">注册服务(Service)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#本地DNS"><span class="nav-number">4.2.</span> <span class="nav-text">本地DNS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#健康检查-Checks"><span class="nav-number">4.3.</span> <span class="nav-text">健康检查(Checks)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#状态监视-Watch"><span class="nav-number">4.4.</span> <span class="nav-text">状态监视(Watch)</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="本文是Golang CodeReviewComment读后总结翻译 Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
+<meta name="description" content="本文是Golang CodeReviewComment读后总结翻译 Gofmt使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 <meta name="keywords" content="Go,Golang,CodeRewview">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Go Code Review Comment">
 <meta property="og:url" content="http://benx.io/2018/09/24/go-code-review-comment/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="本文是Golang CodeReviewComment读后总结翻译 Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
+<meta property="og:description" content="本文是Golang CodeReviewComment读后总结翻译 Gofmt使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2018-09-24T06:03:46.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Go Code Review Comment">
-<meta name="twitter:description" content="本文是Golang CodeReviewComment读后总结翻译 Gofmt 使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
+<meta name="twitter:description" content="本文是Golang CodeReviewComment读后总结翻译 Gofmt使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import">
 
 
 
@@ -320,14 +320,11 @@
 
       
         <p>本文是<a href="https://github.com/golang/go/wiki/CodeReviewComments" target="_blank" rel="external">Golang CodeReviewComment</a>读后总结翻译</p>
-<h4 id="gofmt">Gofmt</h4>
-<p>使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import</p>
+<h4 id="Gofmt"><a href="#Gofmt" class="headerlink" title="Gofmt"></a>Gofmt</h4><p>使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import</p>
 <a id="more"></a>
-<h4 id="commet-sentences">Commet Sentences</h4>
-<p>注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束：</p>
+<h4 id="Commet-Sentences"><a href="#Commet-Sentences" class="headerlink" title="Commet Sentences"></a>Commet Sentences</h4><p>注释语句应该是完整的语句，即便看上去是冗余的。这会让godoc提取的文档具有良好的格式。注释应该以要描述的事物的名称开头并以点号结束：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Request represents a request to run a command.</span></div><div class="line"><span class="keyword">type</span> Request <span class="keyword">struct</span> &#123; ...</div><div class="line"></div><div class="line"><span class="comment">// Encode writes the JSON encoding of req to w.</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(w io.Writer, req *Request)</span></span> &#123; ...</div></pre></td></tr></table></figure>
-<h4 id="contexts">Contexts</h4>
-<p>context.Context类型的值包含跨API和进程的安全凭证(security credentials)、追踪信息(tracing information)、截止时间(deadline)和取消信号(cancellation signal)。Context在Go程序从RPC或HTTP或传入、传出，在整个函数的调用链显示的传递。</p>
+<h4 id="Contexts"><a href="#Contexts" class="headerlink" title="Contexts"></a>Contexts</h4><p>context.Context类型的值包含跨API和进程的安全凭证(security credentials)、追踪信息(tracing information)、截止时间(deadline)和取消信号(cancellation signal)。Context在Go程序从RPC或HTTP或传入、传出，在整个函数的调用链显示的传递。</p>
 <p>大多数函数使用第一个参数传递context:</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">(ctx context.Context, /* other arguments */)</span></span> &#123;&#125;</div></pre></td></tr></table></figure>
 <p>A function that is never request-specific may use context.Background(), but err on the side of passing a Context even if you think you don’t need to. The default case is to pass a Context; only use context.Background() directly if you have a good reason why the alternative is a mistake.</p>
@@ -335,37 +332,28 @@
 <p>Don’t create custom Context types or use interfaces other than Context in function signatures.</p>
 <p>如果有要传递的应用程序数据，请将其放在参数(parameter)、接收器(receiver)、全局变量(global)或者context中。</p>
 <p>Context是不可更改的，因此可以将其传递给多个调用来共享相同的安全凭证(security credentials)、追踪信息(tracing information)、截止时间(deadline)和取消信号(cancellation signal)</p>
-<h4 id="declaring-empty-slices">Declaring Empty Slices</h4>
-<p>当声明一个空的Slice，首选:</p>
+<h4 id="Declaring-Empty-Slices"><a href="#Declaring-Empty-Slices" class="headerlink" title="Declaring Empty Slices"></a>Declaring Empty Slices</h4><p>当声明一个空的Slice，首选:</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> t []<span class="keyword">int</span></div></pre></td></tr></table></figure>
 <p>而不是：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> t = []<span class="keyword">string</span>&#123;&#125;</div></pre></td></tr></table></figure>
-<p>前一个方法声明了一个空的slice，而后者则声明非空但长度为0的slice(分配了内存空间)。他们在功能上相同（<span class="math inline">\(len\)</span>和<span class="math inline">\(cap\)</span>都为0)，但应首选前者。</p>
+<p>前一个方法声明了一个空的slice，而后者则声明非空但长度为0的slice(分配了内存空间)。他们在功能上相同（$len$和$cap$都为0)，但应首选前者。</p>
 <p>在有限的一些情况下，后者为首选。例如，编码JSON对象时，nil Slice编码为null而[]string{}则编码为[]。</p>
 <p>在设计接口时，避免区分nil slice和non-nil,zero-length Slice。因为这会导致细微的编程错误。</p>
 <p>更多关于nil请点<a href="https://www.youtube.com/watch?v=ynoY2xz-F8s" target="_blank" rel="external">这里</a></p>
 <p><a href="https://stackoverflow.com/questions/44305170/nil-slices-vs-non-nil-slices-vs-empty-slices-in-go-language" target="_blank" rel="external">这里</a> 也有nil Slice和空slice的区别的介绍</p>
-<h4 id="crypto-rand">Crypto Rand</h4>
-<p>不要使用math/rand生成秘钥，即便是一次性的。没有种子的话，生成器是完全可预测的。用time.Nanoseconds()生成种子也只有几位的墒。可以只用crypto/rand的Reader，如果需要文本，使用base64或打印成Hex</p>
-<p><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> (</div><div class="line">    <span class="string">"crypto/rand"</span></div><div class="line">    <span class="comment">// "encoding/base64"</span></div><div class="line">    <span class="comment">// "encoding/hex"</span></div><div class="line">    <span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Key</span><span class="params">()</span> <span class="title">string</span></span> &#123;</div><div class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">16</span>)</div><div class="line">    _, err := rand.Read(buf)</div><div class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">        <span class="built_in">panic</span>(err)  <span class="comment">// out of randomness, should never happen</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%x"</span>, buf)</div><div class="line">    <span class="comment">// or hex.EncodeToString(buf)</span></div><div class="line">    <span class="comment">// or base64.StdEncoding.EncodeToString(buf)</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<h4 id="doc-commet">Doc Commet</h4>
-<p>所有顶级的导出名称都需要有注释，不常用的未导出的类型或函数声明也需要有注释。<a href="https://golang.org/doc/effective_go.html#commentary" class="uri" target="_blank" rel="external">https://golang.org/doc/effective_go.html#commentary</a>有更多关于注释的约定。</p>
-<h4 id="dont-panic">Don’t Panic</h4>
-<p>不要使用panic处理普通的error，使用error或多返回值。<a href="https://golang.org/doc/effective_go.html#errors" class="uri" target="_blank" rel="external">https://golang.org/doc/effective_go.html#errors</a>有更多说明</p>
-<h4 id="error-strings">Error Strings</h4>
-<p>Error串不要首字母大写，不要有句号。因为error很多时候会被拼接打印。比如使用fmt.Errorf(“something bad”)而不是fmt.Errorf(“Something bad”)，这样log.Printf(“Reading %s: %v”, filename, err)就不会在打印结果的字符串中出现大写字母和句号。</p>
-<h4 id="examples">Examples</h4>
-<p>添加一个包的时候，对常用的用法增加可运行的实例或测试来演示如何使用。</p>
+<h4 id="Crypto-Rand"><a href="#Crypto-Rand" class="headerlink" title="Crypto Rand"></a>Crypto Rand</h4><p>不要使用math/rand生成秘钥，即便是一次性的。没有种子的话，生成器是完全可预测的。用time.Nanoseconds()生成种子也只有几位的墒。可以只用crypto/rand的Reader，如果需要文本，使用base64或打印成Hex</p>
+ <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> (</div><div class="line">    <span class="string">"crypto/rand"</span></div><div class="line">    <span class="comment">// "encoding/base64"</span></div><div class="line">    <span class="comment">// "encoding/hex"</span></div><div class="line">    <span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">Key</span><span class="params">()</span> <span class="title">string</span></span> &#123;</div><div class="line">    buf := <span class="built_in">make</span>([]<span class="keyword">byte</span>, <span class="number">16</span>)</div><div class="line">    _, err := rand.Read(buf)</div><div class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</div><div class="line">        <span class="built_in">panic</span>(err)  <span class="comment">// out of randomness, should never happen</span></div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%x"</span>, buf)</div><div class="line">    <span class="comment">// or hex.EncodeToString(buf)</span></div><div class="line">    <span class="comment">// or base64.StdEncoding.EncodeToString(buf)</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="Doc-Commet"><a href="#Doc-Commet" class="headerlink" title="Doc Commet"></a>Doc Commet</h4><p>所有顶级的导出名称都需要有注释，不常用的未导出的类型或函数声明也需要有注释。<a href="https://golang.org/doc/effective_go.html#commentary" target="_blank" rel="external">https://golang.org/doc/effective_go.html#commentary</a>有更多关于注释的约定。</p>
+<h4 id="Don’t-Panic"><a href="#Don’t-Panic" class="headerlink" title="Don’t Panic"></a>Don’t Panic</h4><p>不要使用panic处理普通的error，使用error或多返回值。<a href="https://golang.org/doc/effective_go.html#errors" target="_blank" rel="external">https://golang.org/doc/effective_go.html#errors</a>有更多说明</p>
+<h4 id="Error-Strings"><a href="#Error-Strings" class="headerlink" title="Error Strings"></a>Error Strings</h4><p>Error串不要首字母大写，不要有句号。因为error很多时候会被拼接打印。比如使用fmt.Errorf(“something bad”)而不是fmt.Errorf(“Something bad”)，这样log.Printf(“Reading %s: %v”, filename, err)就不会在打印结果的字符串中出现大写字母和句号。</p>
+<h4 id="Examples"><a href="#Examples" class="headerlink" title="Examples"></a>Examples</h4><p>添加一个包的时候，对常用的用法增加可运行的实例或测试来演示如何使用。</p>
 <p><a href="https://blog.golang.org/examples" target="_blank" rel="external">这里</a>有更多说明</p>
-<h4 id="goroutine-lifetimes">Goroutine Lifetimes</h4>
-<p>当产生goroutine时，要清楚什么时间或什么条件下它会退出</p>
+<h4 id="Goroutine-Lifetimes"><a href="#Goroutine-Lifetimes" class="headerlink" title="Goroutine Lifetimes"></a>Goroutine Lifetimes</h4><p>当产生goroutine时，要清楚什么时间或什么条件下它会退出</p>
 <p>如果被管道的读取或发送阻塞，goroutine可能发生泄漏，即便管道无法访问GC不会终止goroutine。</p>
-<p>即便goroutine不泄露，当它不再有用还任由它运行还是会导致其他的难以诊断的问题。向关闭的管道写入会触发panic。在“不需要结果”之后修改仍在使用的输入会导致数据竞争。任由gorouting长时间运行会导致不可预测的内存使用。</p>
+<p>即便goroutine不泄露，当它不再有用还任由它运行还是会导致其他的难以诊断的问题。向关闭的管道写入会触发panic。在”不需要结果”之后修改仍在使用的输入会导致数据竞争。任由gorouting长时间运行会导致不可预测的内存使用。</p>
 <p>尽量保持并发代码足够简单来确保goroutine的生命周期简洁清晰。如果不行就加入注释说明goroutine退出的时机。</p>
-<h4 id="handle-errors">Handle Errors</h4>
-<p>不要使用 _ 丢弃error处理。如果一个函数返回error, 则需要通过检查它来确保函数运行成功。最终需要对error进行处理或返回它。更多error处理请看<a href="https://golang.org/doc/effective_go.html#errors" class="uri" target="_blank" rel="external">https://golang.org/doc/effective_go.html#errors</a></p>
-<h4 id="imports">Imports</h4>
-<p>避免重命名导入的package，除非为了避免冲突；好的packge名不会需要重命名。当出现冲突时，将本地或项目相关的导入重命名。</p>
+<h4 id="Handle-Errors"><a href="#Handle-Errors" class="headerlink" title="Handle Errors"></a>Handle Errors</h4><p>不要使用 _ 丢弃error处理。如果一个函数返回error, 则需要通过检查它来确保函数运行成功。最终需要对error进行处理或返回它。更多error处理请看<a href="https://golang.org/doc/effective_go.html#errors" target="_blank" rel="external">https://golang.org/doc/effective_go.html#errors</a></p>
+<h4 id="Imports"><a href="#Imports" class="headerlink" title="Imports"></a>Imports</h4><p>避免重命名导入的package，除非为了避免冲突；好的packge名不会需要重命名。当出现冲突时，将本地或项目相关的导入重命名。</p>
 <p>导入以“组”的方式管理，通过空行分割。标准库总是在最前面，goimports可以做这些事情。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">	<span class="string">"fmt"</span></div><div class="line">	<span class="string">"hash/adler32"</span></div><div class="line">	<span class="string">"os"</span></div><div class="line"></div><div class="line">	<span class="string">"appengine/foo"</span></div><div class="line">	<span class="string">"appengine/user"</span></div><div class="line"></div><div class="line">    <span class="string">"github.com/foo/bar"</span></div><div class="line">	<span class="string">"rsc.io/goversion/version"</span></div><div class="line">)</div></pre></td></tr></table></figure>
 
@@ -490,7 +478,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -512,7 +500,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -547,7 +535,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#gofmt"><span class="nav-number">1.</span> <span class="nav-text">Gofmt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#commet-sentences"><span class="nav-number">2.</span> <span class="nav-text">Commet Sentences</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#contexts"><span class="nav-number">3.</span> <span class="nav-text">Contexts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#declaring-empty-slices"><span class="nav-number">4.</span> <span class="nav-text">Declaring Empty Slices</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#crypto-rand"><span class="nav-number">5.</span> <span class="nav-text">Crypto Rand</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#doc-commet"><span class="nav-number">6.</span> <span class="nav-text">Doc Commet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dont-panic"><span class="nav-number">7.</span> <span class="nav-text">Don’t Panic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#error-strings"><span class="nav-number">8.</span> <span class="nav-text">Error Strings</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#examples"><span class="nav-number">9.</span> <span class="nav-text">Examples</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#goroutine-lifetimes"><span class="nav-number">10.</span> <span class="nav-text">Goroutine Lifetimes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#handle-errors"><span class="nav-number">11.</span> <span class="nav-text">Handle Errors</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#imports"><span class="nav-number">12.</span> <span class="nav-text">Imports</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Gofmt"><span class="nav-number">1.</span> <span class="nav-text">Gofmt</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Commet-Sentences"><span class="nav-number">2.</span> <span class="nav-text">Commet Sentences</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Contexts"><span class="nav-number">3.</span> <span class="nav-text">Contexts</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Declaring-Empty-Slices"><span class="nav-number">4.</span> <span class="nav-text">Declaring Empty Slices</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Crypto-Rand"><span class="nav-number">5.</span> <span class="nav-text">Crypto Rand</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Doc-Commet"><span class="nav-number">6.</span> <span class="nav-text">Doc Commet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Don’t-Panic"><span class="nav-number">7.</span> <span class="nav-text">Don’t Panic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Error-Strings"><span class="nav-number">8.</span> <span class="nav-text">Error Strings</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Examples"><span class="nav-number">9.</span> <span class="nav-text">Examples</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Goroutine-Lifetimes"><span class="nav-number">10.</span> <span class="nav-text">Goroutine Lifetimes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Handle-Errors"><span class="nav-number">11.</span> <span class="nav-text">Handle Errors</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Imports"><span class="nav-number">12.</span> <span class="nav-text">Imports</span></a></li></ol></div>
             
 
           </div>

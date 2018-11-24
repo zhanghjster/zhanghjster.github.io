@@ -346,53 +346,50 @@
         <p>Rabin-Karp算法由Richard M.Karp和Michael O.Rabin创建，它的逻辑部分类似暴力匹配也是通过沿文本移动的窗口截取输入，但与暴力匹配不同的是，并不直接将窗口截出的文本子串与模式串做字符比对，而是通过hash函数将两者转换成数字后进行比较，逻辑如下面伪代码</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">function RabinKarp(string t[0..n], string p[0..m])</div><div class="line">	hp := hash(p[0..m])</div><div class="line">	for i from 0 to n-m</div><div class="line">		hs := hash(s[i..i+m-1])</div><div class="line">		if hs == hp and s[i..i+m-1] == p[0..m]</div><div class="line">			return i</div><div class="line">	return not found</div></pre></td></tr></table></figure>
 <a id="more"></a>
-<p>算法的核心部分为hash函数，从时间复杂度上，对于文本<span class="math inline">\(t\)</span>的子串<span class="math inline">\(s[i..i+m-1]\)</span> hash运算需要时间复杂度是<span class="math inline">\(O(m)\)</span> ，所以如果对每个子串都进行hash，则程序的总的时间复杂度会到<span class="math inline">\(O(n-m+1)m\)</span> ，与暴力匹配相当。为了更快的计算速度，hash函数的时间必须是恒定的，为此Rabin-Karp使用了巧妙的Rolling hash办法</p>
-<p>所谓rolling hash是指“下一次的hash使用上次hash的结果来进行计算”，算法将字符串<span class="math inline">\(S[0..m]\)</span> 转化一个以 <span class="math inline">\(d\)</span>为基数的定位数系里的一个数，逻辑如下</p>
-<p><span class="math display">\[\\ H=s[0]d^{m-1} + s[1]d^{m-2}+…+s[m-2]d + s[m-1]\]</span></p>
-<p>对于文本<span class="math inline">\(T[0..n]\)</span>，假设<span class="math inline">\(t_s\)</span>表示<span class="math inline">\(T\)</span>的长度为<span class="math inline">\(m\)</span>的子串<span class="math inline">\(T[s..s+m-1], (s=0,1,…,n-m)\)</span> 的哈希值，则有</p>
+<p>算法的核心部分为hash函数，从时间复杂度上，对于文本$t$的子串$s[i..i+m-1]$ hash运算需要时间复杂度是$O(m)$ ，所以如果对每个子串都进行hash，则程序的总的时间复杂度会到$O(n-m+1)m$ ，与暴力匹配相当。为了更快的计算速度，hash函数的时间必须是恒定的，为此Rabin-Karp使用了巧妙的Rolling hash办法</p>
+<p>所谓rolling hash是指“下一次的hash使用上次hash的结果来进行计算”，算法将字符串$S[0..m]$ 转化一个以 $d$为基数的定位数系里的一个数，逻辑如下</p>
+<p>$$\ H=s[0]d^{m-1} + s[1]d^{m-2}+…+s[m-2]d + s[m-1]$$</p>
+<p>对于文本$T[0..n]$，假设$t_s$表示$T$的长度为$m$的子串$T[s..s+m-1], (s=0,1,…,n-m)$  的哈希值，则有</p>
 <ul>
-<li><span class="math inline">\(T[s..m]\)</span>的hash值：</li>
+<li>$T[s..m]$的hash值：</li>
 </ul>
-<p><span class="math display">\[\\ t_s = T[s]d^{m-1} + T[s+1]d^{m-2}+…+T[s+m-2]d+T[s+m-1]\]</span></p>
+<p>$$\ t_s = T[s]d^{m-1} + T[s+1]d^{m-2}+…+T[s+m-2]d+T[s+m-1]$$</p>
 <ul>
-<li><span class="math inline">\(T[s+1...m+1]\)</span>的hash值：</li>
+<li>$T[s+1…m+1]$的hash值：</li>
 </ul>
-<p><span class="math display">\[\\ t_{s+1} = T[s+1]d^{m-1} + T[s+2]d^{m-2}+…+T[s+m-1]d + T[s+m] \]</span></p>
+<p>$$\ t_{s+1} = T[s+1]d^{m-1} + T[s+2]d^{m-2}+…+T[s+m-1]d + T[s+m] $$</p>
 <p>所以有</p>
-<p><span class="math display">\[\\ \begin{split} t_{s+1} = dt_s - T[s]d^m + T[s+m]\end{split}\]</span></p>
-<p>可见<span class="math inline">\(t_{s+1}, t_s\)</span> 之间的关系是线性的，如果提前计算好<span class="math inline">\(d^m\)</span>， 算法的总时间复杂度为<span class="math inline">\(O(n-m+1)\)</span></p>
-<p>解决了时间复杂度问题后还需要解决哈希函数的冲突问题以及值过大问题，办法可以是<span class="math inline">\(d\)</span>选择使用字符串所有用到字符种类数，然后将hash结果模一个素数<span class="math inline">\(q\)</span>，逻辑如下</p>
-<p><span class="math display">\[\\ t_{s+1} = (dt_s - T[s]d^m + T[s+m]) \mod q\]</span></p>
-<p>如果提前计算出<span class="math inline">\(h_d = (d \mod q)^m\)</span> 则有</p>
-<p><span class="math display">\[\\ t_{s+1} = (dt_s - T[s]h_d + T[s+m]) \mod q\]</span></p>
-<p>模式<span class="math inline">\(P\)</span>的哈希值则为</p>
-<p><span class="math display">\[\\ p = (P[0]d^{m-1} + p[1]d^{m-2}+…+P[1]d+p[0]) \mod q\]</span></p>
-<p>以在“hello from mars”中查找“mars”为例，<span class="math inline">\(d\)</span> 取256， <span class="math inline">\(q\)</span> 取103, 用字符的ASCII码作为字符的值</p>
+<p>$$\ \begin{split} t_{s+1} = dt_s - T[s]d^m + T[s+m]\end{split}$$</p>
+<p>可见$t_{s+1}, t_s$ 之间的关系是线性的，如果提前计算好$d^m$， 算法的总时间复杂度为$O(n-m+1)$</p>
+<p>解决了时间复杂度问题后还需要解决哈希函数的冲突问题以及值过大问题，办法可以是$d$选择使用字符串所有用到字符种类数，然后将hash结果模一个素数$q$，逻辑如下</p>
+<p>$$\ t_{s+1} = (dt_s - T[s]d^m + T[s+m]) \mod q$$</p>
+<p>如果提前计算出$h_d = (d \mod q)^m$ 则有</p>
+<p>$$\ t_{s+1} = (dt_s - T[s]h_d + T[s+m]) \mod q$$</p>
+<p>模式$P$的哈希值则为</p>
+<p>$$\ p = (P[0]d^{m-1} + p[1]d^{m-2}+…+P[1]d+p[0]) \mod q$$</p>
+<p>以在”hello from mars”中查找”mars”为例，$d$ 取256， $q$ 取103, 用字符的ASCII码作为字符的值</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/kp9.png" width="400"></p>
-<p>首先计算出模式<span class="math inline">\(P\)</span>和文本<span class="math inline">\(T[0..3]\)</span>的hash和<span class="math inline">\(h_d\)</span></p>
-<p><span class="math display">\[\\ p = (m\times256^3+a\times256^2+r\times256 + s)\%103 = 39 \]</span></p>
-<p><span class="math display">\[\\ t_0 = (h\times256^3+e\times256^2+l\times256+l)\%103=54\]</span></p>
-<p><span class="math display">\[\\ h_d = (256\%103)^4 = 63\]</span></p>
-<p>因为<span class="math inline">\(p \neq t_0\)</span>，窗口右移</p>
-<p><span class="math display">\[\\ t_1 = (256\times t_0 - h\times h_d + o)\%103 = 70\]</span></p>
-<p><span class="math inline">\(p\neq t_1\)</span> ， 继续右移直至检测到 ’mars’的hash与p相同</p>
+<p>首先计算出模式$P$和文本$T[0..3]$的hash和$h_d$</p>
+<p>$$\ p = (m\times256^3+a\times256^2+r\times256 + s)\%103 = 39 $$</p>
+<p>$$\ t_0 = (h\times256^3+e\times256^2+l\times256+l)\%103=54$$</p>
+<p>$$\ h_d = (256\%103)^4 = 63$$</p>
+<p>因为$p \neq t_0$，窗口右移</p>
+<p>$$\ t_1 = (256\times t_0 - h\times h_d + o)\%103 = 70$$</p>
+<p>$p\neq t_1$ ， 继续右移直至检测到 ‘mars’的hash与p相同</p>
 <p>下面是算法的详细实现：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// t 为文本, p 为模式</span></div><div class="line"><span class="comment">// d 为基数, q 为模, </span></div><div class="line"><span class="comment">// d为文本t的所有字符种类的和, q为满足d*q接近计算机字长的最大的素数</span></div><div class="line"><span class="comment">// </span></div><div class="line"><span class="comment">// 实际应用中d如果选择合适则不需要进行模运算，直接利用无符号整数溢出来实现取模</span></div><div class="line"><span class="comment">// 这样既可以发挥现代计算机乘法效率高于除法优势，还可以减少除法的不必要运算</span></div><div class="line"><span class="comment">// Golang的strings库就采用了这个办法，d的选择是16777619(FNV算法也用到)</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">RabinKarp</span><span class="params">(t, p <span class="keyword">string</span>, d, q <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> n, m <span class="keyword">int</span> = <span class="built_in">len</span>(t), <span class="built_in">len</span>(p)</div><div class="line">	<span class="keyword">if</span> n &lt; m || m == <span class="number">0</span> &#123;</div><div class="line">		<span class="keyword">return</span> <span class="number">-1</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 计算 h = (d%q)^m</span></div><div class="line">	<span class="comment">// right to left binary exponentiation</span></div><div class="line">	<span class="keyword">var</span> h, s <span class="keyword">int</span> = <span class="number">1</span>, d</div><div class="line">	<span class="keyword">for</span> i:=m; i&gt;<span class="number">0</span>;i&gt;&gt;=<span class="number">1</span> &#123;</div><div class="line">		<span class="keyword">if</span> i&amp;<span class="number">1</span> != <span class="number">0</span> &#123;</div><div class="line">			h = (h*s)%q</div><div class="line">		&#125;</div><div class="line">		s = (s*s)%q</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 计算t[0..m]和p的hash</span></div><div class="line">	<span class="keyword">var</span> ht, hp <span class="keyword">int</span></div><div class="line">	<span class="keyword">for</span> i:=<span class="number">0</span>; i&lt;m; i++ &#123;</div><div class="line">		ht = (d*ht + <span class="keyword">int</span>(t[i]))%q</div><div class="line">		hp = (d*hp + <span class="keyword">int</span>(p[i]))%q</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 滚动检查</span></div><div class="line">	<span class="keyword">for</span> i:=<span class="number">0</span>; i &lt;= n-m; i++  &#123;</div><div class="line">		<span class="comment">// 找到潜在匹配后做字符串验证</span></div><div class="line">		<span class="keyword">if</span> ht == hp &amp;&amp; t[i:i+m] == p &#123;</div><div class="line">			<span class="keyword">return</span> i</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// 根据ht[i]计算ht[i+1]</span></div><div class="line">		ht = (d*ht  - <span class="keyword">int</span>(t[i])*h + <span class="keyword">int</span>(t[i+m]))%q</div><div class="line"></div><div class="line">		<span class="comment">// ht为负数时转化成与之同余的正数以便于与p进行比较</span></div><div class="line">		<span class="comment">// 如果ht = (dt*ht + q - (int(t[i])*h)%q + int(t[i+m])%q)</span></div><div class="line">		<span class="comment">// 就不需要下面转化，因为ht肯定为正数，但它效率不高</span></div><div class="line">		<span class="keyword">if</span> ht &lt; <span class="number">0</span> &#123;</div><div class="line">			ht += q</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> <span class="number">-1</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h5 id="资料">资料</h5>
-<h6 id="模运算性质">模运算性质</h6>
-<p><span class="math display">\[\\ (a + b) \mod q = (a \mod q + b \mod q) \mod q\]</span></p>
-<p><span class="math display">\[\\ (a\times b) \mod q = ((a \mod q)\times(b\mod q))\mod q\]</span></p>
-<p><span class="math display">\[\\ (a + b) \mod q = (a + (b \mod q)) \mod q\]</span></p>
-<p><span class="math display">\[\\ (a\times b)\mod q = (a \times  (b\mod q)) \mod q\]</span></p>
-<h6 id="不同类型整数同余">不同类型整数同余</h6>
-<p>假设，<span class="math inline">\(n\)</span>位有符号整数<span class="math inline">\(a, b, c, q\)</span> ，其中<span class="math inline">\(a &lt; b\)</span>， 且有关系 $c (a - b) q $， 那么它们是无符号整型时，这个同余关系还满足吗？答案是，看情况</p>
-<p>在有符号整数情况下</p>
-<p><span class="math display">\[\\ (a - b) \mod q = (-(b-a)) \mod q \]</span></p>
-<p>在无符号整数情况下， <span class="math inline">\(a &lt; b\)</span> 导致溢出使得 <span class="math inline">\(a -b = 2^n - (b - a)\)</span> 所以</p>
-<p><span class="math display">\[\\ (a - b) \mod q = (2^n - (b - a)) \mod q\]</span></p>
-<p>所以当 <span class="math inline">\(2^n \mod q = 0\)</span> 时，同余关系才会满足，否则不成立</p>
+<h5 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h5><h6 id="模运算性质"><a href="#模运算性质" class="headerlink" title="模运算性质"></a>模运算性质</h6><p>$$\ (a + b) \mod q = (a \mod q + b \mod q) \mod q$$</p>
+<p>$$\ (a\times b) \mod q = ((a \mod q)\times(b\mod q))\mod q$$</p>
+<p>$$\ (a + b) \mod q = (a + (b \mod q)) \mod q$$</p>
+<p>$$\ (a\times b)\mod q = (a \times  (b\mod q)) \mod q$$</p>
+<h6 id="不同类型整数同余"><a href="#不同类型整数同余" class="headerlink" title="不同类型整数同余"></a>不同类型整数同余</h6><p>假设，$n$位有符号整数$a, b, c, q$ ，其中$a &lt; b$， 且有关系  $c \equiv (a - b) \mod q $， 那么它们是无符号整型时，这个同余关系还满足吗？答案是，看情况</p>
+<p>在有符号整数情况下 </p>
+<p>$$\ (a - b) \mod q = (-(b-a)) \mod q $$</p>
+<p>在无符号整数情况下， $a &lt; b$ 导致溢出使得 $a -b = 2^n - (b - a)$ 所以</p>
+<p>$$\ (a - b) \mod q = (2^n - (b - a)) \mod q$$</p>
+<p>所以当 $2^n \mod q = 0$ 时，同余关系才会满足，否则不成立</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> main</div><div class="line"></div><div class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> a, b, c, q <span class="keyword">int8</span></div><div class="line">	a, b = <span class="number">1</span>, <span class="number">2</span></div><div class="line"></div><div class="line">	<span class="keyword">var</span> A, B, C, Q <span class="keyword">uint8</span></div><div class="line">	A, B = <span class="number">1</span>, <span class="number">2</span></div><div class="line"></div><div class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> []<span class="keyword">int8</span>&#123;<span class="number">7</span>, <span class="number">8</span>&#125; &#123;</div><div class="line">		q = <span class="keyword">int8</span>(v)</div><div class="line">		Q = <span class="keyword">uint8</span>(v)</div><div class="line"></div><div class="line">		c = (a-b)%q + q <span class="comment">// + q使余数为正</span></div><div class="line">		C = (A - B) % Q</div><div class="line"></div><div class="line">		fmt.Printf(<span class="string">"mod %d:\n"</span>, v)</div><div class="line">		fmt.Printf(<span class="string">"\ta-b = %d (%b), (a-b)%%q = %d\n"</span>, a-b, <span class="keyword">byte</span>(a-b), c)</div><div class="line">		fmt.Printf(<span class="string">"\tA-B = %d (%b), (A-B)%%Q = %d\n"</span>, A-B, A-B, C)</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>运行结果，可以看到当 q = 8 能够整除<span class="math inline">\(2^n\)</span>时，同余成立</p>
+<p>运行结果，可以看到当 q = 8 能够整除$2^n$时，同余成立</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">$ go run main.go </div><div class="line">mod 7:</div><div class="line">        a-b = -1 (11111111), (a-b)%q = 6</div><div class="line">        A-B = 255 (11111111), (A-B)%Q = 3</div><div class="line">mod 8:</div><div class="line">        a-b = -1 (11111111), (a-b)%q = 7</div><div class="line">        A-B = 255 (11111111), (A-B)%Q = 7</div></pre></td></tr></table></figure>
 
       
@@ -514,7 +511,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -536,7 +533,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -69,20 +69,20 @@
 
 
 
-<meta name="description" content="安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac 下载 elk 的 docker-compose 配置文件  1git clone https://github.com/deviantony/docker-elk.git  启动elk三个container  12cd docker-elkdoc">
+<meta name="description" content="安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac  下载 elk 的 docker-compose 配置文件  1git clone https://github.com/deviantony/docker-elk.git  启动elk三个container 12cd docker-elkdoc">
 <meta name="keywords" content="docker,elk,metricbeat,kibana">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ELK Metricbeat体验">
 <meta property="og:url" content="http://benx.io/2018/05/27/elk-mb/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac 下载 elk 的 docker-compose 配置文件  1git clone https://github.com/deviantony/docker-elk.git  启动elk三个container  12cd docker-elkdoc">
+<meta property="og:description" content="安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac  下载 elk 的 docker-compose 配置文件  1git clone https://github.com/deviantony/docker-elk.git  启动elk三个container 12cd docker-elkdoc">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/QQ20180527-080607.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/QQ20180527-080754.png">
 <meta property="og:updated_time" content="2018-09-23T05:58:39.249Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ELK Metricbeat体验">
-<meta name="twitter:description" content="安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac 下载 elk 的 docker-compose 配置文件  1git clone https://github.com/deviantony/docker-elk.git  启动elk三个container  12cd docker-elkdoc">
+<meta name="twitter:description" content="安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac  下载 elk 的 docker-compose 配置文件  1git clone https://github.com/deviantony/docker-elk.git  启动elk三个container 12cd docker-elkdoc">
 <meta name="twitter:image" content="http://owo5nif4b.bkt.clouddn.com/QQ20180527-080607.png">
 
 
@@ -322,49 +322,48 @@
       
 
       
-        <ol style="list-style-type: decimal">
-<li><p>安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac</p></li>
-<li><p>下载 elk 的 docker-compose 配置文件</p></li>
+        <ol>
+<li><p>安装docker, <a href="https://store.docker.com/editions/community/docker-ce-desktop-mac" target="_blank" rel="external">https://store.docker.com/editions/community/docker-ce-desktop-mac</a></p>
+</li>
+<li><p>下载 elk 的 docker-compose 配置文件 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/deviantony/docker-elk.git</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动elk三个container</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd docker-elk</div><div class="line">docker-compose up</div></pre></td></tr></table></figure>
+</li>
 </ol>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/deviantony/docker-elk.git</div></pre></td></tr></table></figure></p>
-<ol start="3" style="list-style-type: decimal">
-<li>启动elk三个container</li>
-</ol>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd docker-elk</div><div class="line">docker-compose up</div></pre></td></tr></table></figure></p>
 <a id="more"></a>
-<p>第一次启动会很慢，因为他要先下载elk的docker镜像</p>
-<p>当开始输出日志后，说明启动了，日志类似下面的内容</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">......</div><div class="line">kibana_1         | &#123;&quot;type&quot;:&quot;log&quot;,&quot;@timestamp&quot;:&quot;2018-05-26T23:40:28Z&quot;,&quot;tags&quot;:[&quot;warning&quot;,&quot;elasticsearch&quot;,&quot;admin&quot;],&quot;pid&quot;:1,&quot;message&quot;:&quot;Unable to revive connection: http://elasticsearch:9200/&quot;&#125;</div><div class="line">kibana_1         | &#123;&quot;type&quot;:&quot;log&quot;,&quot;@timestamp&quot;:&quot;2018-05-26T23:40:28Z&quot;,&quot;tags&quot;:[&quot;warning&quot;,&quot;elasticsearch&quot;,&quot;admin&quot;],&quot;pid&quot;:1,&quot;message&quot;:&quot;No living connections&quot;&#125;</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,518][INFO ][o.e.t.TransportService   ] [NDeKMVX] publish_address &#123;172.24.0.2:9300&#125;, bound_addresses &#123;0.0.0.0:9300&#125;</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,719][INFO ][o.e.h.n.Netty4HttpServerTransport] [NDeKMVX] publish_address &#123;172.24.0.2:9200&#125;, bound_addresses &#123;0.0.0.0:9200&#125;</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,719][INFO ][o.e.n.Node               ] [NDeKMVX] started</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,784][INFO ][o.e.g.GatewayService     ] [NDeKMVX] recovered [0] indices into cluster_state</div><div class="line">kibana_1         | &#123;&quot;type&quot;:&quot;log&quot;,&quot;@timestamp&quot;:&quot;2018-05-26T23:40:31Z&quot;,&quot;tags&quot;:[&quot;status&quot;,&quot;plugin:elasticsearch@6.2.3&quot;,&quot;info&quot;],&quot;pid&quot;:1,&quot;state&quot;:&quot;green&quot;,&quot;message&quot;:&quot;Status changed from red to green - Ready&quot;,&quot;prevState&quot;:&quot;red&quot;,&quot;prevMsg&quot;:&quot;Unable to connect to Elasticsearch at http://elasticsearch:9200.&quot;&#125;</div><div class="line">logstash_1       | Sending Logstash&apos;s logs to /usr/share/logstash/logs which is now configured via log4j2.properties</div><div class="line">......</div></pre></td></tr></table></figure></p>
-<p>​</p>
-<p>在另外的terminal里看一下启动是否完成,</p>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">localhost:~ ben$ docker ps -a </div><div class="line">CONTAINER ID        IMAGE                                       COMMAND                  CREATED             STATUS              PORTS                                                  NAMES</div><div class="line">780529b3fdb5        docker-elk_logstash                         &quot;/usr/local/bin/dock…&quot;   2 minutes ago       Up 2 minutes        5044/tcp, 0.0.0.0:5000-&gt;5000/tcp, 9600/tcp             docker-elk_logstash_1</div><div class="line">055ea02dfdc7        docker-elk_kibana                           &quot;/bin/bash /usr/loca…&quot;   2 minutes ago       Up 2 minutes        0.0.0.0:5601-&gt;5601/tcp                                 docker-elk_kibana_1</div><div class="line">82670cb37a90        docker-elk_elasticsearch                    &quot;/usr/local/bin/dock…&quot;   2 minutes ago       Up 2 minutes        0.0.0.0:9200-&gt;9200/tcp, 0.0.0.0:9300-&gt;9300/tcp         docker-elk_elasticsearch_1</div></pre></td></tr></table></figure></p>
-<p>这样说明已经都启动了</p>
-<ol start="4" style="list-style-type: decimal">
-<li><p>浏览器打开 http://localhost:5601 kibana</p></li>
-<li><p>下载metricbeat https://www.elastic.co/downloads/beats/metricbeat</p></li>
-</ol>
+<p>   第一次启动会很慢，因为他要先下载elk的docker镜像</p>
+<p>   当开始输出日志后，说明启动了，日志类似下面的内容</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">......</div><div class="line">kibana_1         | &#123;&quot;type&quot;:&quot;log&quot;,&quot;@timestamp&quot;:&quot;2018-05-26T23:40:28Z&quot;,&quot;tags&quot;:[&quot;warning&quot;,&quot;elasticsearch&quot;,&quot;admin&quot;],&quot;pid&quot;:1,&quot;message&quot;:&quot;Unable to revive connection: http://elasticsearch:9200/&quot;&#125;</div><div class="line">kibana_1         | &#123;&quot;type&quot;:&quot;log&quot;,&quot;@timestamp&quot;:&quot;2018-05-26T23:40:28Z&quot;,&quot;tags&quot;:[&quot;warning&quot;,&quot;elasticsearch&quot;,&quot;admin&quot;],&quot;pid&quot;:1,&quot;message&quot;:&quot;No living connections&quot;&#125;</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,518][INFO ][o.e.t.TransportService   ] [NDeKMVX] publish_address &#123;172.24.0.2:9300&#125;, bound_addresses &#123;0.0.0.0:9300&#125;</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,719][INFO ][o.e.h.n.Netty4HttpServerTransport] [NDeKMVX] publish_address &#123;172.24.0.2:9200&#125;, bound_addresses &#123;0.0.0.0:9200&#125;</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,719][INFO ][o.e.n.Node               ] [NDeKMVX] started</div><div class="line">elasticsearch_1  | [2018-05-26T23:40:28,784][INFO ][o.e.g.GatewayService     ] [NDeKMVX] recovered [0] indices into cluster_state</div><div class="line">kibana_1         | &#123;&quot;type&quot;:&quot;log&quot;,&quot;@timestamp&quot;:&quot;2018-05-26T23:40:31Z&quot;,&quot;tags&quot;:[&quot;status&quot;,&quot;plugin:elasticsearch@6.2.3&quot;,&quot;info&quot;],&quot;pid&quot;:1,&quot;state&quot;:&quot;green&quot;,&quot;message&quot;:&quot;Status changed from red to green - Ready&quot;,&quot;prevState&quot;:&quot;red&quot;,&quot;prevMsg&quot;:&quot;Unable to connect to Elasticsearch at http://elasticsearch:9200.&quot;&#125;</div><div class="line">logstash_1       | Sending Logstash&apos;s logs to /usr/share/logstash/logs which is now configured via log4j2.properties</div><div class="line">......</div></pre></td></tr></table></figure>
+<p>   ​</p>
+<p>   在另外的terminal里看一下启动是否完成,</p>
+   <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">localhost:~ ben$ docker ps -a </div><div class="line">CONTAINER ID        IMAGE                                       COMMAND                  CREATED             STATUS              PORTS                                                  NAMES</div><div class="line">780529b3fdb5        docker-elk_logstash                         &quot;/usr/local/bin/dock…&quot;   2 minutes ago       Up 2 minutes        5044/tcp, 0.0.0.0:5000-&gt;5000/tcp, 9600/tcp             docker-elk_logstash_1</div><div class="line">055ea02dfdc7        docker-elk_kibana                           &quot;/bin/bash /usr/loca…&quot;   2 minutes ago       Up 2 minutes        0.0.0.0:5601-&gt;5601/tcp                                 docker-elk_kibana_1</div><div class="line">82670cb37a90        docker-elk_elasticsearch                    &quot;/usr/local/bin/dock…&quot;   2 minutes ago       Up 2 minutes        0.0.0.0:9200-&gt;9200/tcp, 0.0.0.0:9300-&gt;9300/tcp         docker-elk_elasticsearch_1</div></pre></td></tr></table></figure>
+<p>   这样说明已经都启动了</p>
+<ol>
+<li><p>浏览器打开 <a href="http://localhost:5601" target="_blank" rel="external">http://localhost:5601</a> kibana</p>
+</li>
+<li><p>下载metricbeat <a href="https://www.elastic.co/downloads/beats/metricbeat" target="_blank" rel="external">https://www.elastic.co/downloads/beats/metricbeat</a></p>
 <p>metricbeat是一个轻量的数据收集工具，可以收集System、Nginx、Mysql等诸多系统的统计信息，不同的系统都有各自的统计指标以及kiban的图表配置</p>
 <p>可以在本机运行metricbeat来监控System的CPU、Memoty、Network这些指标来体验一下kibana的每种图表的用法</p>
 <p>生产环境也可以用来收集监控数据，但可能业务需求不同会有特殊的指标要收集，可以通过改它的代码来定制</p>
-<ol start="6" style="list-style-type: decimal">
-<li>运行metricbeat</li>
-</ol>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tar zxvf metricbeat-6.2.4-darwin-x86_64.tar</div><div class="line">cd metricbeat-6.2.4-darwin-x86_64</div></pre></td></tr></table></figure></p>
+</li>
+<li><p>运行metricbeat</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">tar zxvf metricbeat-6.2.4-darwin-x86_64.tar</div><div class="line">cd metricbeat-6.2.4-darwin-x86_64</div></pre></td></tr></table></figure>
 <p>第一次运行会慢一些，他会到es里初始化一些索引，运行后他就开始收集本机的System数据到es里了，就是前面启动的el的container</p>
-<ol start="7" style="list-style-type: decimal">
-<li>配置kibana的dashboard</li>
-</ol>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./metricbeat setup --dashboards</div></pre></td></tr></table></figure></p>
+</li>
+<li><p>配置kibana的dashboard</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./metricbeat setup --dashboards</div></pre></td></tr></table></figure>
 <p>在新的terminal里运行这个命令会通过kibana的接口直接创建一些dashboard</p>
-<ol start="8" style="list-style-type: decimal">
-<li>kibana上的discover下查看，应该有数据出现了，索引的名字是 ’metricbeat -*‘</li>
-</ol>
+</li>
+<li><p>kibana上的discover下查看，应该有数据出现了，索引的名字是  ’metricbeat -*‘</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/QQ20180527-080607.png" width="400"></p>
 <p>​</p>
-<ol start="9" style="list-style-type: decimal">
-<li>kibana上的visualize下查看，应该有各种dashbaord了，搜出“system”的一些dashboard可以看到本机的一些统计了</li>
-</ol>
+</li>
+<li><p>kibana上的visualize下查看，应该有各种dashbaord了，搜出”system”的一些dashboard可以看到本机的一些统计了</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/QQ20180527-080754.png" width="400"></p>
+</li>
+</ol>
 
       
     </div>
@@ -480,7 +479,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -502,7 +501,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

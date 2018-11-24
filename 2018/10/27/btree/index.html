@@ -79,7 +79,7 @@
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/600px-Disk-structure2.svg.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/b1tree.png">
 <meta property="og:image" content="http://owo5nif4b.bkt.clouddn.com/b2tree.png">
-<meta property="og:updated_time" content="2018-10-27T04:05:13.770Z">
+<meta property="og:updated_time" content="2018-11-05T11:54:12.106Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="B树、B+树">
 <meta name="twitter:description" content="B树、B+树是对辅助存储设备设计的一种平衡查找树，在磁盘读取是能有效的控制IO次数，为多数数据库系统作为索引数据结构。">
@@ -322,35 +322,33 @@
       
 
       
-        <p>B树、B+树是对辅助存储设备设计的一种平衡查找树，在磁盘读取是能有效的控制IO次数，为多数数据库系统作为索引数据结构。</p>
+        <p> B树、B+树是对辅助存储设备设计的一种平衡查找树，在磁盘读取是能有效的控制IO次数，为多数数据库系统作为索引数据结构。</p>
 <a id="more"></a>
-<h4 id="存储设备">存储设备</h4>
-<p>数据是通常是要存储在辅助存储设备上的，通常为硬盘。下面是典型的磁盘结构</p>
+<h4 id="存储设备"><a href="#存储设备" class="headerlink" title="存储设备"></a>存储设备</h4><p>数据是通常是要存储在辅助存储设备上的，通常为硬盘。下面是典型的磁盘结构</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/600px-Disk-structure2.svg.png" width="400"></p>
 <p>上图中的A为磁道(Track)，指磁盘面上的圆形路径。C为扇区(Sector), 是磁道的细分，存储固定数量的用户访问数据，传统上512字节一个扇区。由于磁盘数据读取过程存在机械过程，性能会比内存这种介质差很多，所以为了提高效率，通常磁盘读写是以扇区为单位。磁盘数据通过[Track, Sector]定位扇区，而扇区内的某一字节数据通过在扇区内的Offset定位，所以要查询一字节的数据需要先读取整个扇区，然后通过offset定位字节。</p>
-<h4 id="数据结构">数据结构</h4>
-<p>假设我们有一个表存储员工信息,结构如下</p>
+<h4 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h4><p>假设我们有一个表存储员工信息,结构如下</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>字段名</th>
 <th>数据长度（Byte）</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>id</td>
 <td>10</td>
 </tr>
-<tr class="even">
+<tr>
 <td>name</td>
 <td>50</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>phone</td>
 <td>10</td>
 </tr>
-<tr class="even">
+<tr>
 <td>address</td>
 <td>128</td>
 </tr>
@@ -360,7 +358,7 @@
 <p>如果有100个员工信息</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>id</th>
 <th>name</th>
 <th>phone</th>
@@ -368,25 +366,25 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>1</td>
 <td>Tom</td>
 <td>01011…</td>
 <td>…….</td>
 </tr>
-<tr class="even">
+<tr>
 <td>2</td>
 <td>Lee</td>
 <td>01012…</td>
 <td>…….</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>…..</td>
 <td>…….</td>
 <td>…..</td>
 <td>…..</td>
 </tr>
-<tr class="even">
+<tr>
 <td>100</td>
 <td>Jack</td>
 <td>01100…</td>
@@ -396,37 +394,36 @@
 </table>
 <p>数据总大小为 12800字节，假设磁盘每个扇区大小为512字节，则共需要扇区数 = 12800/512 = 25。</p>
 <p>假设我们要读取id为100用户的信息，则需要把25个扇区的数据都从硬盘读出来才能获得。如果数据更多则需要更多的读取操作。</p>
-<h4 id="索引">索引</h4>
-<p>为了减少磁盘读取的次数，需要做一个Id的索引，记录员工id以及其数据所在的扇区。结构如下</p>
+<h4 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h4><p>为了减少磁盘读取的次数，需要做一个Id的索引，记录员工id以及其数据所在的扇区。结构如下</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>id</th>
 <th>数据指针（指向数据扇区）</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>1</td>
 <td>1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>2</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>3</td>
 <td>1</td>
 </tr>
-<tr class="even">
+<tr>
 <td>4</td>
 <td>1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>…….</td>
 <td>……</td>
 </tr>
-<tr class="even">
+<tr>
 <td>100</td>
 <td>25</td>
 </tr>
@@ -437,31 +434,30 @@
 <p>然而，随着数据量的增减，索引的数据也会增加很多。比如1000个员工信息。则需要33次读取或则全部索引，然后找到指定id数据所在扇区指针。为了解决这个问题，可以建立索引的索引，比如</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>id range</th>
 <th>数据指针（索引所在扇区）</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>1–32</td>
 <td>100</td>
 </tr>
-<tr class="even">
+<tr>
 <td>33–64</td>
 <td>200</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>….</td>
 <td>….</td>
 </tr>
 </tbody>
 </table>
 <p>随着数据数量的增减，可以使用建立多级索引的方法减少磁盘的读取次数。那么就需要一种实现动态多级索引的数据结构。B树、B+树的就为了实现这个结构而设计的。</p>
-<h4 id="b树">B树</h4>
-<p>B树是一种多路数，具有如下性质</p>
-<ol style="list-style-type: decimal">
-<li>每个节点都存储一列关键字，关键字从小到大排列，关键字个数由度<span class="math inline">\(t(t&gt;=2)\)</span>限制，个数<span class="math inline">\(n\)</span>范围为 <span class="math inline">\(t-1&lt;=n&lt;=2t-1\)</span></li>
+<h4 id="B树"><a href="#B树" class="headerlink" title="B树"></a>B树</h4><p>B树是一种多路数，具有如下性质</p>
+<ol>
+<li>每个节点都存储一列关键字，关键字从小到大排列，关键字个数由度$t(t&gt;=2)$限制，个数$n$范围为 $t-1&lt;=n&lt;=2t-1$ </li>
 <li>内结点还存储指向子树的指针，关键字将子树的关键字范围进行分割</li>
 <li>叶子节点处于相同高度上</li>
 <li>根节点至少有1个关键字</li>
@@ -469,50 +465,53 @@
 </ol>
 <p>下图为就一个度为t=2的B树</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/b1tree.png" width="400"></p>
-<h5 id="搜索">搜索</h5>
-<p>搜索类似于二叉搜索树中检索。假设要搜索的关键词为k。我们从根开始并递归地向下遍历。对于每个访问过的非叶节点，如果关键词在节点中，我们只返回节点。否则，我们在最可能存在关键字的子节点中搜索。如果到达叶节点依然没有找到，则返回</p>
-<h5 id="插入">插入</h5>
-<p>通常采用单程下行方式插入，此方法的关键是“主动分裂”，即，在遍历一个子节点前，如果子节点已满则对其进行分裂，为接下来可能存在的合并操作留出足够的空间。与之相反的“被动分裂”，则需要在插入时候发现结点已满才分裂，这会出现回朔的情况，比如，从根节点到叶节点都是满的，当到达叶节点要执行插入，则需要执行分裂，提升一个关键字到父节点，而父节点已满需要再进行分裂，重复下去一直到根节点。这样就出现了重复遍历。</p>
+<h5 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h5><p>搜索类似于二叉搜索树中检索。假设要搜索的关键词为k。我们从根开始并递归地向下遍历。对于每个访问过的非叶节点，如果关键词在节点中，我们只返回节点。否则，我们在最可能存在关键字的子节点中搜索。如果到达叶节点依然没有找到，则返回</p>
+<h5 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h5><p>通常采用单程下行方式插入，此方法的关键是“主动分裂”，即，在遍历一个子节点前，如果子节点已满则对其进行分裂，为接下来可能存在的合并操作留出足够的空间。与之相反的“被动分裂”，则需要在插入时候发现结点已满才分裂，这会出现回朔的情况，比如，从根节点到叶节点都是满的，当到达叶节点要执行插入，则需要执行分裂，提升一个关键字到父节点，而父节点已满需要再进行分裂，重复下去一直到根节点。这样就出现了重复遍历。</p>
 <p>主动分裂的算法描述如下：</p>
-<ol style="list-style-type: decimal">
+<ol>
 <li>假设要插入的关键字K。</li>
 <li>如果结点是叶子结点，则执行插入。</li>
-<li>如果非叶结点，否则执行下面操作：</li>
+<li>如果非叶结点，否则执行下面操作：<ol>
 <li>在结点x找到最有可能可以插入关键字的子树，y</li>
 <li>如果y未满，则进入y</li>
 <li>如果y已满，分裂y为y1和y2，提取其中间的关键字k。如果关键字K小于k，将x指向y2、否则指向y1。</li>
+</ol>
+</li>
 <li>循环第三步操作直到叶子结点</li>
 </ol>
-<h5 id="删除">删除</h5>
-<p>删除操作比插入略复杂，以为删除可以发生在内结点。算法描述如下:</p>
-<ol style="list-style-type: decimal">
+<h5 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h5><p>删除操作比插入略复杂，以为删除可以发生在内结点。算法描述如下:</p>
+<ol>
 <li>如果key在节点中，并且该结点是leaf，则直接删除</li>
-<li>如果key在节点中，并且该结点是内结点，分如下情况</li>
+<li>如果key在节点中，并且该结点是内结点，分如下情况<ol>
 <li>若key所在的位置的左子树是满足最少t个关键字，则将左子树下最接近key的关键字key1复制到key然后在左子树递归删掉key1，否则执行下一情况</li>
 <li>若key所在的位置的右子树是满足最少t个关键字，则将右子树下最接近key的关键字key1复制到key然后在左子树递归删掉key1，否则执行下一情况</li>
 <li>若key的左右子树都少于t个关键字，则合并两子树合并删掉key</li>
-<li>若key不在结点中，找到key最有可能在的子结点，并删除，删除之前判断如果子结点的key个数为t-1个</li>
+</ol>
+</li>
+<li>若key不在结点中，找到key最有可能在的子结点，并删除，删除之前判断如果子结点的key个数为t-1个<ol>
 <li>如果其左兄弟有t个key则借一个key，如果右兄弟有t个key则从其借一个key</li>
 <li>如果左或右兄弟都只有t-1个key，则从合并左或右兄弟</li>
 </ol>
-<p>算法的关键在第三种情况的“主动合并”操作，这样可以确保在结点上删除k时保证至少t个关键字。</p>
+</li>
+</ol>
+<p>算法的关键在第三种情况的”主动合并”操作，这样可以确保在结点上删除k时保证至少t个关键字。</p>
 <p>下面为Golang实现的B数插入、删除、遍历操作</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div><div class="line">181</div><div class="line">182</div><div class="line">183</div><div class="line">184</div><div class="line">185</div><div class="line">186</div><div class="line">187</div><div class="line">188</div><div class="line">189</div><div class="line">190</div><div class="line">191</div><div class="line">192</div><div class="line">193</div><div class="line">194</div><div class="line">195</div><div class="line">196</div><div class="line">197</div><div class="line">198</div><div class="line">199</div><div class="line">200</div><div class="line">201</div><div class="line">202</div><div class="line">203</div><div class="line">204</div><div class="line">205</div><div class="line">206</div><div class="line">207</div><div class="line">208</div><div class="line">209</div><div class="line">210</div><div class="line">211</div><div class="line">212</div><div class="line">213</div><div class="line">214</div><div class="line">215</div><div class="line">216</div><div class="line">217</div><div class="line">218</div><div class="line">219</div><div class="line">220</div><div class="line">221</div><div class="line">222</div><div class="line">223</div><div class="line">224</div><div class="line">225</div><div class="line">226</div><div class="line">227</div><div class="line">228</div><div class="line">229</div><div class="line">230</div><div class="line">231</div><div class="line">232</div><div class="line">233</div><div class="line">234</div><div class="line">235</div><div class="line">236</div><div class="line">237</div><div class="line">238</div><div class="line">239</div><div class="line">240</div><div class="line">241</div><div class="line">242</div><div class="line">243</div><div class="line">244</div><div class="line">245</div><div class="line">246</div><div class="line">247</div><div class="line">248</div><div class="line">249</div><div class="line">250</div><div class="line">251</div><div class="line">252</div><div class="line">253</div><div class="line">254</div><div class="line">255</div><div class="line">256</div><div class="line">257</div><div class="line">258</div><div class="line">259</div><div class="line">260</div><div class="line">261</div><div class="line">262</div><div class="line">263</div><div class="line">264</div><div class="line">265</div><div class="line">266</div><div class="line">267</div><div class="line">268</div><div class="line">269</div><div class="line">270</div><div class="line">271</div><div class="line">272</div><div class="line">273</div><div class="line">274</div><div class="line">275</div><div class="line">276</div><div class="line">277</div><div class="line">278</div><div class="line">279</div><div class="line">280</div><div class="line">281</div><div class="line">282</div><div class="line">283</div><div class="line">284</div><div class="line">285</div><div class="line">286</div><div class="line">287</div><div class="line">288</div><div class="line">289</div><div class="line">290</div><div class="line">291</div><div class="line">292</div><div class="line">293</div><div class="line">294</div><div class="line">295</div><div class="line">296</div><div class="line">297</div><div class="line">298</div><div class="line">299</div><div class="line">300</div><div class="line">301</div><div class="line">302</div><div class="line">303</div><div class="line">304</div><div class="line">305</div><div class="line">306</div><div class="line">307</div><div class="line">308</div><div class="line">309</div><div class="line">310</div><div class="line">311</div><div class="line">312</div><div class="line">313</div><div class="line">314</div><div class="line">315</div><div class="line">316</div><div class="line">317</div><div class="line">318</div><div class="line">319</div><div class="line">320</div><div class="line">321</div><div class="line">322</div><div class="line">323</div><div class="line">324</div><div class="line">325</div><div class="line">326</div><div class="line">327</div><div class="line">328</div><div class="line">329</div><div class="line">330</div><div class="line">331</div><div class="line">332</div><div class="line">333</div><div class="line">334</div><div class="line">335</div><div class="line">336</div><div class="line">337</div><div class="line">338</div><div class="line">339</div><div class="line">340</div><div class="line">341</div><div class="line">342</div><div class="line">343</div><div class="line">344</div><div class="line">345</div><div class="line">346</div><div class="line">347</div><div class="line">348</div><div class="line">349</div><div class="line">350</div><div class="line">351</div><div class="line">352</div><div class="line">353</div><div class="line">354</div><div class="line">355</div><div class="line">356</div><div class="line">357</div><div class="line">358</div><div class="line">359</div><div class="line">360</div><div class="line">361</div><div class="line">362</div><div class="line">363</div><div class="line">364</div><div class="line">365</div><div class="line">366</div><div class="line">367</div><div class="line">368</div><div class="line">369</div><div class="line">370</div><div class="line">371</div><div class="line">372</div><div class="line">373</div><div class="line">374</div><div class="line">375</div><div class="line">376</div><div class="line">377</div><div class="line">378</div><div class="line">379</div><div class="line">380</div><div class="line">381</div><div class="line">382</div><div class="line">383</div><div class="line">384</div><div class="line">385</div><div class="line">386</div><div class="line">387</div><div class="line">388</div><div class="line">389</div><div class="line">390</div><div class="line">391</div><div class="line">392</div><div class="line">393</div><div class="line">394</div><div class="line">395</div><div class="line">396</div><div class="line">397</div><div class="line">398</div><div class="line">399</div><div class="line">400</div><div class="line">401</div><div class="line">402</div><div class="line">403</div><div class="line">404</div><div class="line">405</div><div class="line">406</div><div class="line">407</div><div class="line">408</div><div class="line">409</div><div class="line">410</div><div class="line">411</div><div class="line">412</div><div class="line">413</div><div class="line">414</div><div class="line">415</div><div class="line">416</div><div class="line">417</div><div class="line">418</div><div class="line">419</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">package</span> btree</div><div class="line"></div><div class="line"><span class="keyword">import</span> (</div><div class="line">	<span class="string">"fmt"</span></div><div class="line">)</div><div class="line"></div><div class="line"><span class="keyword">type</span> BTreeNode <span class="keyword">struct</span> &#123;</div><div class="line">	n        <span class="keyword">int</span>          <span class="comment">// number of keys</span></div><div class="line">	t        <span class="keyword">int</span>          <span class="comment">// minimum degree(minimum children)</span></div><div class="line">	leaf     <span class="keyword">bool</span>         <span class="comment">// true for leaf node</span></div><div class="line">	keys     []<span class="keyword">int</span>        <span class="comment">// key slice</span></div><div class="line">	children []*BTreeNode <span class="comment">// child node slice</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBTreeNode</span><span class="params">(t <span class="keyword">int</span>, leaf <span class="keyword">bool</span>)</span> *<span class="title">BTreeNode</span></span> &#123;</div><div class="line">	<span class="keyword">return</span> &amp;BTreeNode&#123;</div><div class="line">		n:        <span class="number">0</span>,</div><div class="line">		t:        t,</div><div class="line">		leaf:     leaf,</div><div class="line">		keys:     <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">2</span>*t<span class="number">-1</span>),</div><div class="line">		children: <span class="built_in">make</span>([]*BTreeNode, <span class="number">2</span>*t),</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 遍历所有以本节点为根的所有结点，打印它们的key</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">Traverse</span><span class="params">()</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> i <span class="keyword">int</span></div><div class="line">	<span class="keyword">for</span> i = <span class="number">0</span>; i &lt; s.n; i++ &#123;</div><div class="line">		<span class="keyword">if</span> !s.leaf &#123;</div><div class="line">			s.children[i].Traverse()</div><div class="line">		&#125;</div><div class="line">		fmt.Printf(<span class="string">"%d "</span>, s.keys[i])</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> s.leaf &#123;</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 遍历最后一个子节点</span></div><div class="line">	s.children[i].Traverse()</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 在以本节点为根的结点中搜索包含指定关键字的结点以及关键字所在位置</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">Search</span><span class="params">(k <span class="keyword">int</span>)</span> <span class="params">(*BTreeNode, <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> i <span class="keyword">int</span></div><div class="line">	<span class="comment">// 找到第一个不大于key的关键字所在位置</span></div><div class="line">	<span class="comment">// 结束条件，i = s.n || s.keys[i] &gt;= k</span></div><div class="line">	<span class="keyword">for</span> i = <span class="number">0</span>; i &lt; s.n &amp;&amp; s.keys[i] &lt; k; i++ &#123;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> i &lt; s.n &amp;&amp; s.keys[i] == k &#123;</div><div class="line">		<span class="keyword">return</span> s, i</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> s.leaf &#123;</div><div class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, <span class="number">0</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 在孩子中查找</span></div><div class="line">	<span class="comment">// 包含 i == s.n 或 s.keys[i] &gt; k</span></div><div class="line">	<span class="keyword">return</span> s.children[i].Search(k)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">insertNonFull</span><span class="params">(k <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="comment">// 找到要插入的位置</span></div><div class="line">	<span class="keyword">var</span> i <span class="keyword">int</span></div><div class="line">	<span class="keyword">for</span> i = <span class="number">0</span>; i &lt; s.n &amp;&amp; s.keys[i] &lt; k; i++ &#123;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// k 已经在本节点里存在</span></div><div class="line">	<span class="keyword">if</span> i &lt; s.n &amp;&amp; s.keys[i] == k &#123;</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 如果是叶节点则插入</span></div><div class="line">	<span class="keyword">if</span> s.leaf &#123;</div><div class="line">		<span class="comment">// 将i之后的key右移</span></div><div class="line">		<span class="built_in">copy</span>(s.keys[i+<span class="number">1</span>:], s.keys[i:s.n])</div><div class="line"></div><div class="line">		<span class="comment">// k放到位置i</span></div><div class="line">		s.keys[i] = k</div><div class="line">		s.n++</div><div class="line"></div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">var</span> c = s.children[i]</div><div class="line"></div><div class="line">	<span class="comment">// 如果子节点已满，则分裂子节点</span></div><div class="line">	<span class="keyword">if</span> c.isFull() &#123;</div><div class="line">		s.splitChild(c, i)</div><div class="line"></div><div class="line">		<span class="comment">// 如果提升上来的key等于k则不插入</span></div><div class="line">		<span class="keyword">if</span> s.keys[i] == k &#123;</div><div class="line">			<span class="keyword">return</span></div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="comment">// 如果提升上来的新的key小于k则插入到它的右孩子</span></div><div class="line">		<span class="keyword">if</span> s.keys[i] &lt; k &#123;</div><div class="line">			c = s.children[i+<span class="number">1</span>]</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	c.insertNonFull(k)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// c 为要分裂的子节点</span></div><div class="line"><span class="comment">// i 为父节点保存要提升的子节点key的位置</span></div><div class="line"><span class="comment">// 关键步骤：</span></div><div class="line"><span class="comment">// 	1. 生成新的结点将分裂结点后t个key和child复制过去</span></div><div class="line"><span class="comment">//  2. 父节点key和child数组右移</span></div><div class="line"><span class="comment">// 	3. 新节点和上升的key复制到父节点</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">splitChild</span><span class="params">(c *BTreeNode, i <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="comment">// 生成新的结点</span></div><div class="line">	z := NewBTreeNode(s.t, c.leaf)</div><div class="line"></div><div class="line">	z.n, c.n = c.t<span class="number">-1</span>, c.t<span class="number">-1</span></div><div class="line"></div><div class="line">	<span class="comment">// 将c的后t-1个key复制到新的结点</span></div><div class="line">	<span class="comment">// c中keys索引: 0..t-2, t-1, t..2t-2</span></div><div class="line">	<span class="keyword">for</span> j := c.t; j &lt; <span class="number">2</span>*c.t<span class="number">-1</span>; j++ &#123;</div><div class="line">		z.keys[j-c.t] = c.keys[j]</div><div class="line">		c.keys[j] = <span class="number">0</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 将s的keys里i位之后的元素右移</span></div><div class="line">	<span class="keyword">for</span> j := s.n - <span class="number">1</span>; j &gt;= i; j-- &#123;</div><div class="line">		s.keys[j+<span class="number">1</span>] = s.keys[j]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 将中间的key复制到s的keys列表的位置i</span></div><div class="line">	s.keys[i] = c.keys[c.t<span class="number">-1</span>]</div><div class="line">	c.keys[c.t<span class="number">-1</span>] = <span class="number">0</span></div><div class="line"></div><div class="line">	<span class="comment">// 将c的后t个孩子指针复制到新的结点</span></div><div class="line">	<span class="comment">// c中children索引: 0..t-1, t..2t-1</span></div><div class="line">	<span class="keyword">if</span> !c.leaf &#123;</div><div class="line">		<span class="keyword">for</span> j := c.t; j &lt; <span class="number">2</span>*c.t; j++ &#123;</div><div class="line">			z.children[j-c.t] = c.children[j]</div><div class="line">			c.children[j] = <span class="literal">nil</span></div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 将s的i+1之后的孩子指针在列表中后移</span></div><div class="line">	<span class="keyword">for</span> j := s.n; j &gt;= i+<span class="number">1</span>; j-- &#123;</div><div class="line">		s.children[j+<span class="number">1</span>] = s.children[j]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 将新的结点指针放到s的孩子列表位置i</span></div><div class="line">	s.children[i+<span class="number">1</span>] = z</div><div class="line"></div><div class="line">	s.n++</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 找到第一个大于key的关键字的位置</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">findKey</span><span class="params">(k <span class="keyword">int</span>)</span> <span class="params">(idx <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="keyword">for</span> idx = <span class="number">0</span>; idx &lt; s.n &amp;&amp; s.keys[idx] &lt; k; idx++ &#123;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 1. 如果key在节点中，并且该结点是leaf，则直接删除</span></div><div class="line"><span class="comment">// 2. 如果key在节点中，并且该结点是内结点，分如下情况</span></div><div class="line"><span class="comment">// 	2.1 若key所在的位置的左子树是满足最少t个关键字，则将其子树下最接近key的关键字key1复制到key然后在左子树递归删掉key1，否则</span></div><div class="line"><span class="comment">// 	2.2 若key所在的位置的右子树是满足最少t个关键字，则将其子树下最接近key的关键字key1复制到key然后在左子树递归删掉key1，否则</span></div><div class="line"><span class="comment">// 	2.3 若key的左右子树都少于t个关键字，则合并两子树合并并删掉key</span></div><div class="line"><span class="comment">// 3. 若key不在结点中，找到key最有可能在的子结点，并删除，删除之前判断如果子结点的key个数为t-1个</span></div><div class="line"><span class="comment">// 	3.1 如果其左兄弟有t个key则借一个key，如果右兄弟有t个key则从其借一个key</span></div><div class="line"><span class="comment">//  3.2 如果左或右兄弟都只有t-1个key，则从合并左或右兄弟</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">delete</span><span class="params">(k <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	idx := s.findKey(k)</div><div class="line"></div><div class="line">	<span class="comment">// key 在本结点内</span></div><div class="line">	<span class="keyword">if</span> idx &lt; s.n &amp;&amp; s.keys[idx] == k &#123;</div><div class="line">		<span class="keyword">switch</span> &#123;</div><div class="line">		<span class="keyword">case</span> s.leaf: <span class="comment">// 情况1</span></div><div class="line">			s.deleteFromLeaf(idx)</div><div class="line">		<span class="keyword">case</span> s.children[idx].n &gt;= s.t: <span class="comment">// 情况2.1</span></div><div class="line">			pre := s.getPre(idx)</div><div class="line">			s.keys[idx] = pre</div><div class="line">			s.children[idx].<span class="built_in">delete</span>(pre)</div><div class="line">		<span class="keyword">case</span> s.children[idx+<span class="number">1</span>].n &gt;= s.t: <span class="comment">// 情况2.2</span></div><div class="line">			succ := s.getSucc(idx)</div><div class="line">			s.keys[idx] = succ</div><div class="line">			s.children[idx+<span class="number">1</span>].<span class="built_in">delete</span>(succ)</div><div class="line">		<span class="keyword">default</span>: <span class="comment">// 情况2.3</span></div><div class="line">			s.merge(idx)</div><div class="line">			s.children[idx].<span class="built_in">delete</span>(k)</div><div class="line">		&#125;</div><div class="line"></div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 未在本节点并是leaf</span></div><div class="line">	<span class="keyword">if</span> s.leaf &#123;</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// key在最后一个子节点子树中</span></div><div class="line">	flag := idx == s.n</div><div class="line"></div><div class="line">	<span class="comment">// 情况3</span></div><div class="line">	<span class="keyword">if</span> s.children[idx].n &lt; s.t &#123;</div><div class="line">		s.fill(idx)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// fill时如果有merge操作，关键词个数减少</span></div><div class="line">	<span class="comment">// 如果关键字在最后一个子节点，但其被merge</span></div><div class="line">	<span class="comment">// 则需要在前一个子节点删除</span></div><div class="line">	<span class="keyword">if</span> flag &amp;&amp; idx &gt; s.n &#123;</div><div class="line">		s.children[idx<span class="number">-1</span>].<span class="built_in">delete</span>(k)</div><div class="line">	&#125; <span class="keyword">else</span> &#123;</div><div class="line">		s.children[idx].<span class="built_in">delete</span>(k)</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 将第idx的子树从其兄弟中借一个key</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">fill</span><span class="params">(idx <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="keyword">switch</span> &#123;</div><div class="line">	<span class="comment">// 有左子树且其关键字个数&gt;=t</span></div><div class="line">	<span class="keyword">case</span> idx != <span class="number">0</span> &amp;&amp; s.children[idx<span class="number">-1</span>].n &gt;= s.t: <span class="comment">// 3.1</span></div><div class="line">		s.borrowFromPre(idx)</div><div class="line"></div><div class="line">		<span class="comment">// 有右子树且其关键字个数&gt;=t</span></div><div class="line">	<span class="keyword">case</span> idx != s.n &amp;&amp; s.children[idx+<span class="number">1</span>].n &gt;= s.t: <span class="comment">// 3.1</span></div><div class="line">		s.borrowFromSucc(idx)</div><div class="line"></div><div class="line">		<span class="comment">// idx在最后一个key位置</span></div><div class="line">	<span class="keyword">case</span> idx != s.n:</div><div class="line">		s.merge(idx)</div><div class="line"></div><div class="line">		<span class="comment">// idx为key的最后一个</span></div><div class="line">	<span class="keyword">default</span>:</div><div class="line">		s.merge(idx - <span class="number">1</span>)</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 从左兄弟借一个key</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">borrowFromPre</span><span class="params">(idx <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	cur := s.children[idx]</div><div class="line">	left := s.children[idx<span class="number">-1</span>]</div><div class="line"></div><div class="line">	<span class="comment">// 右移cur关键字为借的key留出空间</span></div><div class="line">	<span class="built_in">copy</span>(cur.keys[<span class="number">1</span>:], cur.keys[<span class="number">0</span>:cur.n])</div><div class="line"></div><div class="line">	<span class="comment">// s的关键字下移</span></div><div class="line">	cur.keys[<span class="number">0</span>] = s.keys[idx<span class="number">-1</span>]</div><div class="line"></div><div class="line">	<span class="comment">// 左兄弟的最后一个key上升</span></div><div class="line">	s.keys[idx<span class="number">-1</span>] = left.keys[left.n<span class="number">-1</span>]</div><div class="line"></div><div class="line">	<span class="comment">// 右移cur的子指针，为借的指针留出空间</span></div><div class="line">	<span class="keyword">if</span> !cur.leaf &#123;</div><div class="line">		<span class="built_in">copy</span>(cur.children[<span class="number">1</span>:], cur.children[<span class="number">0</span>:cur.n+<span class="number">1</span>])</div><div class="line"></div><div class="line">		<span class="comment">// 左兄弟最后一个child移到cur</span></div><div class="line">		cur.children[<span class="number">0</span>] = left.children[left.n]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	left.n--</div><div class="line">	cur.n++</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 从右兄弟借一个key</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">borrowFromSucc</span><span class="params">(idx <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	cur := s.children[idx]</div><div class="line">	right := s.children[idx+<span class="number">1</span>]</div><div class="line"></div><div class="line">	<span class="comment">// s的关键字下移到cur的关键字尾部</span></div><div class="line">	cur.keys[cur.n] = s.keys[idx]</div><div class="line"></div><div class="line">	<span class="comment">// 右兄弟的第一个关键词上移</span></div><div class="line">	s.keys[idx] = right.keys[<span class="number">0</span>]</div><div class="line"></div><div class="line">	<span class="comment">// 右兄弟的关键字列表左移</span></div><div class="line">	<span class="built_in">copy</span>(right.keys[<span class="number">0</span>:], right.keys[<span class="number">1</span>:right.n])</div><div class="line"></div><div class="line">	<span class="comment">// 右兄弟的第一个子指针借到cur的最后一个child</span></div><div class="line">	<span class="keyword">if</span> !cur.leaf &#123;</div><div class="line">		cur.children[cur.n+<span class="number">1</span>] = right.children[<span class="number">0</span>]</div><div class="line"></div><div class="line">		<span class="comment">// 有兄弟的子指针列表左移</span></div><div class="line">		<span class="built_in">copy</span>(right.children[:], right.children[<span class="number">1</span>:right.n+<span class="number">1</span>])</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	right.n--</div><div class="line">	cur.n++</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 合并key的左右子树</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">merge</span><span class="params">(idx <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	left := s.children[idx]</div><div class="line">	right := s.children[idx+<span class="number">1</span>]</div><div class="line"></div><div class="line">	<span class="comment">// s的关键字下降</span></div><div class="line">	left.keys[left.t<span class="number">-1</span>] = s.keys[idx]</div><div class="line"></div><div class="line">	<span class="comment">// 复制右子t-1个key</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; right.t<span class="number">-1</span>; i++ &#123;</div><div class="line">		left.keys[left.t+i] = right.keys[i]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">if</span> !left.leaf &#123;</div><div class="line">		<span class="comment">// 复制右子t个child</span></div><div class="line">		<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; right.t; i++ &#123;</div><div class="line">			left.children[left.n+i+<span class="number">1</span>] = right.children[i]</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	left.n += right.t</div><div class="line"></div><div class="line">	<span class="comment">// s的key复制</span></div><div class="line">	<span class="keyword">for</span> i := idx; i &lt; s.n<span class="number">-1</span>; i++ &#123;</div><div class="line">		s.keys[i] = s.keys[i+<span class="number">1</span>]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// s的child复制</span></div><div class="line">	<span class="keyword">for</span> i := idx + <span class="number">1</span>; i &lt; s.n; i++ &#123;</div><div class="line">		s.children[i] = s.children[i+<span class="number">1</span>]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	s.n--</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 从左子树取最大值</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">getPre</span><span class="params">(idx <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	cur := s.children[idx]</div><div class="line">	<span class="keyword">for</span> !cur.leaf &#123;</div><div class="line">		cur = cur.children[cur.n]</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> cur.keys[cur.n<span class="number">-1</span>]</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 从右子树取最小值</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">getSucc</span><span class="params">(idx <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	cur := s.children[idx+<span class="number">1</span>]</div><div class="line">	<span class="keyword">for</span> !cur.leaf &#123;</div><div class="line">		cur = cur.children[<span class="number">0</span>]</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">return</span> cur.keys[<span class="number">0</span>]</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">deleteFromLeaf</span><span class="params">(idx <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="built_in">copy</span>(s.keys[idx:], s.keys[idx+<span class="number">1</span>:s.n])</div><div class="line">	s.n--</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(s *BTreeNode)</span> <span class="title">isFull</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</div><div class="line">	<span class="keyword">return</span> s.n == <span class="number">2</span>*s.t<span class="number">-1</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">type</span> BTree <span class="keyword">struct</span> &#123;</div><div class="line">	root *BTreeNode</div><div class="line">	t    <span class="keyword">int</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBTree</span><span class="params">(t <span class="keyword">int</span>)</span> *<span class="title">BTree</span></span> &#123;</div><div class="line">	<span class="keyword">return</span> &amp;BTree&#123;t: t&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="comment">// 单程下行方式遍历树插入关键字。</span></div><div class="line"><span class="comment">// 关键方法是"主动分裂", 即，在遍历一个子节点前，如果子节点已满则对其进行分裂。</span></div><div class="line"><span class="comment">// 相反的"被动分裂"则是在要插入的时候遇满才分裂，会出现重复遍历的情况。</span></div><div class="line"><span class="comment">// 比如，从根节点到叶节点都是满的，当到达叶节点要发现其已满需进行分裂，</span></div><div class="line"><span class="comment">// 提升一个关键字到父节点，发现父节点也已满需要分裂父节点，重复下去一直到根节点。</span></div><div class="line"><span class="comment">// 这样就出现了从根节点到叶节点的重复遍历。而"主动分裂"则不出有出现这种情况，因为</span></div><div class="line"><span class="comment">// 在分裂一个子节点时候父节点是已经有足够空间容纳要提升的新的key了</span></div><div class="line"><span class="comment">//</span></div><div class="line"><span class="comment">// B数的增高依赖的是root结点分裂</span></div><div class="line"><span class="comment">// B数新增的关键字都增加到了叶节点上</span></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *BTree)</span> <span class="title">Insert</span><span class="params">(k <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="keyword">if</span> t.root == <span class="literal">nil</span> &#123;</div><div class="line">		t.root = NewBTreeNode(t.t, <span class="literal">true</span>)</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">var</span> r = t.root</div><div class="line">	<span class="comment">// root已满则分裂root</span></div><div class="line">	<span class="keyword">if</span> r.isFull() &#123;</div><div class="line">		<span class="comment">// 为新的root生成结点</span></div><div class="line">		s := NewBTreeNode(t.t, <span class="literal">false</span>)</div><div class="line"></div><div class="line">		<span class="comment">// 老的root称为新结点的孩子</span></div><div class="line">		s.children[<span class="number">0</span>] = r</div><div class="line"></div><div class="line">		<span class="comment">// 分裂老的root，并将一个key提升到新的root</span></div><div class="line">		s.splitChild(r, <span class="number">0</span>)</div><div class="line"></div><div class="line">		<span class="comment">// 新的root有两个孩子，决定将key插入到哪个孩子</span></div><div class="line">		<span class="keyword">var</span> i <span class="keyword">int</span></div><div class="line">		<span class="keyword">if</span> k &gt; s.keys[<span class="number">0</span>] &#123;</div><div class="line">			i++</div><div class="line">		&#125;</div><div class="line">		s.children[i].insertNonFull(k)</div><div class="line"></div><div class="line">		<span class="comment">// 更新root</span></div><div class="line">		t.root = s</div><div class="line"></div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	t.root.insertNonFull(k)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *BTree)</span> <span class="title">Delete</span><span class="params">(k <span class="keyword">int</span>)</span></span> &#123;</div><div class="line">	<span class="keyword">if</span> t.root == <span class="literal">nil</span> &#123;</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	t.root.<span class="built_in">delete</span>(k)</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *BTree)</span> <span class="title">Traverse</span><span class="params">()</span></span> &#123;</div><div class="line">	<span class="keyword">if</span> t.root == <span class="literal">nil</span> &#123;</div><div class="line">		<span class="keyword">return</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	t.root.Traverse()</div><div class="line">	<span class="built_in">println</span>(<span class="string">"\n"</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="b树-1">B+树</h4>
-<p>B+树是在B树基础上进行优化的树，与B树不同之处在：</p>
-<ol style="list-style-type: decimal">
+<h4 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h4><p>B+树是在B树基础上进行优化的树，与B树不同之处在：</p>
+<ol>
 <li>内结点不包含指向数据块的指针，其只存在于叶结点</li>
 <li>叶节点包含所有的关键字，即内结点上的关键字在叶节点上也有一份</li>
 <li>叶节点可以连接在一起形成一个有序链表</li>
 </ol>
 <p>这些性质使B+树具有如下优点：</p>
-<ol style="list-style-type: decimal">
+<ol>
 <li>内存中可以保存更多的内结点，因为内结点不需要保存指向数据的指针</li>
 <li>叶节点组成有序的链表对顺序遍历的操作会非常有利</li>
 <li>比B树更像多级索引，因为他的叶节点包含所有的关键字</li>
 </ol>
 <p>下面是一个t=2的B+树</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/b2tree.png" width="400"></p>
+<p>/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/bin/java “-javaagent:/Applications/IntelliJ IDEA.app/Contents/lib/idea_rt.jar=64207:/Applications/IntelliJ IDEA.app/Contents/bin” -Dfile.encoding=UTF-8 -classpath /Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/deploy.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/cldrdata.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/dnsns.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/jaccess.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/jfxrt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/localedata.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/nashorn.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/sunec.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/sunjce_provider.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/sunpkcs11.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/ext/zipfs.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/javaws.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/jfxswt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/management-agent.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/plugin.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/lib/ant-javafx.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/lib/dt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/lib/javafx-mx.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/lib/jconsole.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/lib/packager.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/lib/sa-jdi.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_101.jdk/Contents/Home/lib/tools.jar:/Users/Ben/Dev/streams.examples/target/classes:/Users/Ben/.m2/repository/org/apache/kafka/kafka-streams/1.1.1/kafka-streams-1.1.1.jar:/Users/Ben/.m2/repository/org/apache/kafka/kafka-clients/1.1.1/kafka-clients-1.1.1.jar:/Users/Ben/.m2/repository/org/lz4/lz4-java/1.4.1/lz4-java-1.4.1.jar:/Users/Ben/.m2/repository/org/xerial/snappy/snappy-java/1.1.7.1/snappy-java-1.1.7.1.jar:/Users/Ben/.m2/repository/org/apache/kafka/connect-json/1.1.1/connect-json-1.1.1.jar:/Users/Ben/.m2/repository/org/apache/kafka/connect-api/1.1.1/connect-api-1.1.1.jar:/Users/Ben/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.9.6/jackson-databind-2.9.6.jar:/Users/Ben/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar:/Users/Ben/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.9.6/jackson-core-2.9.6.jar:/Users/Ben/.m2/repository/org/slf4j/slf4j-api/1.7.25/slf4j-api-1.7.25.jar:/Users/Ben/.m2/repository/org/rocksdb/rocksdbjni/5.7.3/rocksdbjni-5.7.3.jar:/Users/Ben/.m2/repository/com/google/code/gson/gson/2.8.4/gson-2.8.4.jar:/Users/Ben/.m2/repository/org/slf4j/slf4j-simple/1.7.25/slf4j-simple-1.7.25.jar:/Users/Ben/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar stream.Downsample</p>
 
       
     </div>
@@ -546,6 +545,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/24/kafka-consumer/" rel="prev" title="Kafka Consumer基本概念和参数">
+                Kafka Consumer基本概念和参数 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -621,7 +624,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -643,7 +646,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -678,7 +681,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#存储设备"><span class="nav-number">1.</span> <span class="nav-text">存储设备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据结构"><span class="nav-number">2.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引"><span class="nav-number">3.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#b树"><span class="nav-number">4.</span> <span class="nav-text">B树</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#搜索"><span class="nav-number">4.1.</span> <span class="nav-text">搜索</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#插入"><span class="nav-number">4.2.</span> <span class="nav-text">插入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#删除"><span class="nav-number">4.3.</span> <span class="nav-text">删除</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#b树-1"><span class="nav-number">5.</span> <span class="nav-text">B+树</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#存储设备"><span class="nav-number">1.</span> <span class="nav-text">存储设备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据结构"><span class="nav-number">2.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#索引"><span class="nav-number">3.</span> <span class="nav-text">索引</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B树"><span class="nav-number">4.</span> <span class="nav-text">B树</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#搜索"><span class="nav-number">4.1.</span> <span class="nav-text">搜索</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#插入"><span class="nav-number">4.2.</span> <span class="nav-text">插入</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#删除"><span class="nav-number">4.3.</span> <span class="nav-text">删除</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#B-树"><span class="nav-number">5.</span> <span class="nav-text">B+树</span></a></li></ol></div>
             
 
           </div>

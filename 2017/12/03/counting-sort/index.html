@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。 计数排序的基本思想是：假设输入有 \(n\) 个元素，每个元素\(p_i\)具有一个非负的最大值为\(k\)的整数键$x_i $，对第个元素 \(p_i\)">
+<meta name="description" content="计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。 计数排序的基本思想是：假设输入有 $n$ 个元素，每个元素$p_i$具有一个非负的最大值为$k$的整数键$x_i $，对第个元素 $p_i$ 计算键值小于">
 <meta name="keywords" content="排序,计数排序">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Counting Sort">
 <meta property="og:url" content="http://benx.io/2017/12/03/counting-sort/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。 计数排序的基本思想是：假设输入有 \(n\) 个元素，每个元素\(p_i\)具有一个非负的最大值为\(k\)的整数键$x_i $，对第个元素 \(p_i\)">
+<meta property="og:description" content="计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。 计数排序的基本思想是：假设输入有 $n$ 个元素，每个元素$p_i$具有一个非负的最大值为$k$的整数键$x_i $，对第个元素 $p_i$ 计算键值小于">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-12-03T15:11:58.062Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Counting Sort">
-<meta name="twitter:description" content="计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。 计数排序的基本思想是：假设输入有 \(n\) 个元素，每个元素\(p_i\)具有一个非负的最大值为\(k\)的整数键$x_i $，对第个元素 \(p_i\)">
+<meta name="twitter:description" content="计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。 计数排序的基本思想是：假设输入有 $n$ 个元素，每个元素$p_i$具有一个非负的最大值为$k$的整数键$x_i $，对第个元素 $p_i$ 计算键值小于">
 
 
 
@@ -320,11 +320,9 @@
 
       
         <p>计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。</p>
-<p>计数排序的基本思想是：假设输入有 <span class="math inline">\(n\)</span> 个元素，每个元素<span class="math inline">\(p_i\)</span>具有一个非负的最大值为<span class="math inline">\(k\)</span>的整数键$x_i $，对第个元素 <span class="math inline">\(p_i\)</span> 计算键值小于 <span class="math inline">\(x_i\)</span> 的元素的个数<span class="math inline">\(c_i\)</span>，然后利用 <span class="math inline">\(c_i\)</span> 直接将元素<span class="math inline">\(p_i\)</span>放到输出数组的位置上</p>
-<h5 id="实现">实现</h5>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">CountingSort</span><span class="params">(a []<span class="keyword">int</span>, k <span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</div><div class="line">	<span class="comment">// 数组的每一项保存键值小于或等于其索引的元素的个数</span></div><div class="line">	<span class="keyword">var</span> c = <span class="built_in">make</span>([]<span class="keyword">int</span>, k)</div><div class="line"></div><div class="line">	<span class="comment">// 将输入数组元素直接当做键值</span></div><div class="line">	<span class="comment">// 计算每个键值的出现次数</span></div><div class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</div><div class="line">		c[v]++</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 计算不大于每个键值的键值个数</span></div><div class="line">	<span class="comment">// 也就是键值对应元素在输出数组里的索引</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(c); i++ &#123;</div><div class="line">		c[i] += c[i<span class="number">-1</span>]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 按照c里计算的每个键值所在索引生成输出</span></div><div class="line">	b := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="built_in">len</span>(a))</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(a) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</div><div class="line">		b[c[a[i]]<span class="number">-1</span>] = a[i]</div><div class="line">		c[a[i]]--</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> b</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h5 id="总结">总结</h5>
-<p>计数排序的时间复杂度为 <span class="math inline">\(O(k+n)\)</span>, 适用于当输入元素具有小整数的键值，小的意思是键值的大小范围不能远大于元素的个数</p>
+<p>计数排序的基本思想是：假设输入有 $n$ 个元素，每个元素$p_i$具有一个非负的最大值为$k$的整数键$x_i $，对第个元素 $p_i$ 计算键值小于 $x_i$ 的元素的个数$c_i$，然后利用 $c_i$ 直接将元素$p_i$放到输出数组的位置上</p>
+<h5 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h5><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">CountingSort</span><span class="params">(a []<span class="keyword">int</span>, k <span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</div><div class="line">	<span class="comment">// 数组的每一项保存键值小于或等于其索引的元素的个数</span></div><div class="line">	<span class="keyword">var</span> c = <span class="built_in">make</span>([]<span class="keyword">int</span>, k)</div><div class="line"></div><div class="line">	<span class="comment">// 将输入数组元素直接当做键值</span></div><div class="line">	<span class="comment">// 计算每个键值的出现次数</span></div><div class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</div><div class="line">		c[v]++</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 计算不大于每个键值的键值个数</span></div><div class="line">	<span class="comment">// 也就是键值对应元素在输出数组里的索引</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(c); i++ &#123;</div><div class="line">		c[i] += c[i<span class="number">-1</span>]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 按照c里计算的每个键值所在索引生成输出</span></div><div class="line">	b := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="built_in">len</span>(a))</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(a) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</div><div class="line">		b[c[a[i]]<span class="number">-1</span>] = a[i]</div><div class="line">		c[a[i]]--</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> b</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>计数排序的时间复杂度为 $O(k+n)$, 适用于当输入元素具有小整数的键值，小的意思是键值的大小范围不能远大于元素的个数</p>
 <p>另外还有一个重要的特性是它是稳定的，也就是对于两个键值相同的元素，在输出数组中的顺序和在输入数组中是相同的</p>
 
       
@@ -446,7 +444,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-count">31</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -468,7 +466,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">79</span>
+                <span class="site-state-item-count">80</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
