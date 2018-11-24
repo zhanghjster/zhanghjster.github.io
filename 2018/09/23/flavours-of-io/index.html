@@ -335,36 +335,44 @@
 <p>内存映射IO：open，mmap，msync，munmap</p>
 <p>我们先来讨论标准IO以及用户态优化，因为程序开发人员最终使用的最多</p>
 <a id="more"></a>
-<h4 id="Buffered-IO"><a href="#Buffered-IO" class="headerlink" title="Buffered IO"></a>Buffered IO</h4><p>在谈论stdio.h函数时，在“缓冲”方面存在一些混淆。使用标准IO时，可以选择完全缓冲和行缓冲，也可以选择不用任何缓冲。这种“用户空间”缓冲与内核缓冲（页面缓存）无关，在本文后面将讨论。“缓冲”和“缓存”可以区分开来，这可能会明确区分这些概念</p>
-<h4 id="Sector-Block-Page"><a href="#Sector-Block-Page" class="headerlink" title="Sector/Block/Page"></a>Sector/Block/Page</h4><p>块设备(Block device)是一种特殊的文件类型，它提供对硬件设备(HDD, SSD)的缓冲访问(Buffered Access)。块设备工作于扇区(Sector)上，每个扇区由相邻字节组成，通常为512字节。块设备的最小传输单元是扇区，它不可能传输小于扇区大小的数据，更多情况下则是一次传输多个连续扇区。文件系统(File System)最小的可寻址单元是块(Block)，它由多个连续的扇区组成，典型的块大小是512、1024、2048、4096字节。通常，IO是通过虚拟内存(Virtual Memoty)完成，虚拟内存将请求的文件系统块缓存在内存并作为中间操作的缓冲区。虚拟内存与页面(Page)一起使用，这些页面被映射到文件系统的块，典型的页面大小是4096字节。</p>
+<h4 id="buffered-io">Buffered IO</h4>
+<p>在谈论stdio.h函数时，在“缓冲”方面存在一些混淆。使用标准IO时，可以选择完全缓冲和行缓冲，也可以选择不用任何缓冲。这种“用户空间”缓冲与内核缓冲（页面缓存）无关，在本文后面将讨论。“缓冲”和“缓存”可以区分开来，这可能会明确区分这些概念</p>
+<h4 id="sectorblockpage">Sector/Block/Page</h4>
+<p>块设备(Block device)是一种特殊的文件类型，它提供对硬件设备(HDD, SSD)的缓冲访问(Buffered Access)。块设备工作于扇区(Sector)上，每个扇区由相邻字节组成，通常为512字节。块设备的最小传输单元是扇区，它不可能传输小于扇区大小的数据，更多情况下则是一次传输多个连续扇区。文件系统(File System)最小的可寻址单元是块(Block)，它由多个连续的扇区组成，典型的块大小是512、1024、2048、4096字节。通常，IO是通过虚拟内存(Virtual Memoty)完成，虚拟内存将请求的文件系统块缓存在内存并作为中间操作的缓冲区。虚拟内存与页面(Page)一起使用，这些页面被映射到文件系统的块，典型的页面大小是4096字节。</p>
 <p>总的来说就是：虚拟内存页面映射到文件系统块，文件系统块映射到块设备的扇区</p>
-<h3 id="Standard-IO"><a href="#Standard-IO" class="headerlink" title="Standard IO"></a>Standard IO</h3><p>标准IO(Standard IO)使用系统调用$read()$ 和$write()$执行IO操作。当读取数据时，会首先寻址页缓存(Page Cache)，如果数据不存在，则会触发页面错误(Page Fault)来从块设备读取内容，这意味着对为映射区域执行读取操作会华为更长时间。</p>
+<h3 id="standard-io">Standard IO</h3>
+<p>标准IO(Standard IO)使用系统调用<span class="math inline">\(read()\)</span> 和<span class="math inline">\(write()\)</span>执行IO操作。当读取数据时，会首先寻址页缓存(Page Cache)，如果数据不存在，则会触发页面错误(Page Fault)来从块设备读取内容，这意味着对为映射区域执行读取操作会华为更长时间。</p>
 <p>当执行写入操作，内容会首先写入到页面缓存(Page Cache)，这意味着数据不是立即到达硬件设备。当内核决定‘脏数据回写’(writeback of dirty page)时才会被写入到硬件设备</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/1%2ABIhWPv9P-ePgQX5Ien1AQA.png" width="400"></p>
 <p>标准IO采用用户空间缓冲区(Byte Buffer)，然后将内容复制到页面缓存。使用O_DIRECT标志时缓冲区则直接写入块设备。</p>
-<h4 id="Page-Cache"><a href="#Page-Cache" class="headerlink" title="Page Cache"></a>Page Cache</h4><p>页面缓存(Page Cache)存储最近被访问的文件片段(fragment)，这些片段在最近的时间内更有可能被访问。当使用要使用磁盘文件时，$read()$和$write()$调用不会直接访问磁盘，而是通过页面缓存。</p>
+<h4 id="page-cache">Page Cache</h4>
+<p>页面缓存(Page Cache)存储最近被访问的文件片段(fragment)，这些片段在最近的时间内更有可能被访问。当使用要使用磁盘文件时，<span class="math inline">\(read()\)</span>和<span class="math inline">\(write()\)</span>调用不会直接访问磁盘，而是通过页面缓存。</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/1%2Ayl8Rdk17NtAtpYndh3XFQw.png" width="400"></p>
-<p>在执行$read$操作时，页面缓存会被首先查询，如果数据已经在页面缓存中，它则被直接复制给用户，不会有磁盘访问，完全是内存操作。否则，文件内容需要先从存储介质中读取并加载到页面缓存中，然后返回给用户。如果页面缓存已满，最少使用的页面会被刷写到磁盘并从从页面缓存中清除为新页面留出空间</p>
-<p>$write$调用只是将用户控件的缓冲区复制到内核的页面缓存并将写入的页面标记为‘dirty’。稍后，内核在称为‘刷新’(flush)或’回写’(writeback)进程中将修改写入到磁盘上。实际IO通常不会立即发生，页面缓存里的数据会同时被$read$调用读取。</p>
+<p>在执行<span class="math inline">\(read\)</span>操作时，页面缓存会被首先查询，如果数据已经在页面缓存中，它则被直接复制给用户，不会有磁盘访问，完全是内存操作。否则，文件内容需要先从存储介质中读取并加载到页面缓存中，然后返回给用户。如果页面缓存已满，最少使用的页面会被刷写到磁盘并从从页面缓存中清除为新页面留出空间</p>
+<p><span class="math inline">\(write\)</span>调用只是将用户控件的缓冲区复制到内核的页面缓存并将写入的页面标记为‘dirty’。稍后，内核在称为‘刷新’(flush)或’回写’(writeback)进程中将修改写入到磁盘上。实际IO通常不会立即发生，页面缓存里的数据会同时被<span class="math inline">\(read\)</span>调用读取。</p>
 <p>被标志位‘dirty’的页面缓存会被刷写到磁盘上，因为它们已经和磁盘上的内容不同。这个过程称为’回写’(writeback)。回写存在潜在的缺点，比如IO请求排队，所以了解用于回写的阈值和比率以及查看队列深度对于避免限制和高延迟有很大帮助，可以在Linux文档中找到有关调整虚拟内存的更多信息。</p>
 <p>页面缓存的背后逻辑由’时间局部性’(Temporal Locality)原理解释，该原理表明最近访问的页面将在最近的某个时间点再次被访问。</p>
 <p>另一个’空间局部性’(Spatial Locality)原理则表明一个数据被使用后，在空间上更接近的数据在最近也会被访问。这被用于被称为’预取’过程，该过程提前加载文件内容用于预期的访问，进而分摊一部分IO成本</p>
 <p>页面缓存还通过延迟写入和合并相邻读取来提高IO性能</p>
 <p>缓冲区缓存(Buffer Cache)和页面缓存(Page Cache)以前是完全独立的概念，在Linux内核2.4后统一。现在它主要被称为页面缓存，但有些人仍然使用数据缓冲区缓存，实际上它们是同一个意思。</p>
-<p>页面缓存保存最近被访问或将要访问的文件内容，因此所有的都通过它的IO操作可以为$read-write-read$的操作序列可以完全在内存上进行而不必有任何的磁盘操作。</p>
-<h4 id="Delaying-Errors"><a href="#Delaying-Errors" class="headerlink" title="Delaying Errors"></a>Delaying Errors</h4><p>当执行$write$操作时，确保数据真正的到达磁盘是很重要的，因为它很可能被写入到缓存中，而在后续的刷写过程中有可能报错。<a href="https://lwn.net/Articles/457667/" target="_blank" rel="external">这里</a>有更多的内容可以供参考</p>
-<h3 id="Direct-IO"><a href="#Direct-IO" class="headerlink" title="Direct IO"></a>Direct IO</h3><p>有些时候使用内核页面缓存来执行IO时不可取的，在打开文件时候使用O_DIRECT标志则指示操作系统绕过页面缓存直接对块设备直接进行IO操作。这意味着写数据时数据会直接刷写到磁盘上而不是先写到缓存页面再由内核回写。</p>
+<p>页面缓存保存最近被访问或将要访问的文件内容，因此所有的都通过它的IO操作可以为<span class="math inline">\(read-write-read\)</span>的操作序列可以完全在内存上进行而不必有任何的磁盘操作。</p>
+<h4 id="delaying-errors">Delaying Errors</h4>
+<p>当执行<span class="math inline">\(write\)</span>操作时，确保数据真正的到达磁盘是很重要的，因为它很可能被写入到缓存中，而在后续的刷写过程中有可能报错。<a href="https://lwn.net/Articles/457667/" target="_blank" rel="external">这里</a>有更多的内容可以供参考</p>
+<h3 id="direct-io">Direct IO</h3>
+<p>有些时候使用内核页面缓存来执行IO时不可取的，在打开文件时候使用O_DIRECT标志则指示操作系统绕过页面缓存直接对块设备直接进行IO操作。这意味着写数据时数据会直接刷写到磁盘上而不是先写到缓存页面再由内核回写。</p>
 <p>对于使用’Direct IO’的程序很可能导致性能下降，但可以更细粒度的控制IO操作并提高性能。通常，使用这种类型IO的程序会在应用程序里实现缓存层。</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/1%2AZj8_whEZm_AEaBXBtqdiBw.png" width="400"></p>
-<p>Direct IO在$PostgreSQL$和$MySQL$中被使用，开发人员更细粒度的控制数据访问操作，可能使用自定义的IO调度程序和缓存。例如，$PostgreSQL$在WAL中使用Direct IO来确保尽快的写入来保证持久性，因为他们确信数据不会被立即使用，因此绕过页面缓存写入不会导致性能下降。</p>
+<p>Direct IO在<span class="math inline">\(PostgreSQL\)</span>和<span class="math inline">\(MySQL\)</span>中被使用，开发人员更细粒度的控制数据访问操作，可能使用自定义的IO调度程序和缓存。例如，<span class="math inline">\(PostgreSQL\)</span>在WAL中使用Direct IO来确保尽快的写入来保证持久性，因为他们确信数据不会被立即使用，因此绕过页面缓存写入不会导致性能下降。</p>
 <p>不鼓励同时使用Direct IO和页面缓存打开相同的文件，因为即使数据位于页面缓存中，也会对磁盘设备执行直接操作，这可能会导致不希望的结果。</p>
-<h4 id="Block-Alignment"><a href="#Block-Alignment" class="headerlink" title="Block Alignment"></a>Block Alignment</h4><p>由于’Direct IO’是绕过缓存也直接操作底层存储，它要求所有操作都是与扇区边界对齐的。也就是每个操作的开始地址必须是扇区大小(通常为512)的倍数，并且缓存的大小也应该为扇区的倍数。当使用页面缓存时，因为写操作先是在没存上执行，对齐显得不是那么重要：当真正的写入操作执行时，内核会确保分割页面并且按照扇区对齐将数据写入磁盘</p>
+<h4 id="block-alignment">Block Alignment</h4>
+<p>由于’Direct IO’是绕过缓存也直接操作底层存储，它要求所有操作都是与扇区边界对齐的。也就是每个操作的开始地址必须是扇区大小(通常为512)的倍数，并且缓存的大小也应该为扇区的倍数。当使用页面缓存时，因为写操作先是在没存上执行，对齐显得不是那么重要：当真正的写入操作执行时，内核会确保分割页面并且按照扇区对齐将数据写入磁盘</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/1%2A7MM3iNFLcQnUc9wZ8aISRw.png" width="400" title="不对齐"></p>
-<p>​                                        不对齐</p>
+<p>​ 不对齐</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/1%2AZiSuwydbAZpuqcUW4puaHw-2.png" width="400"></p>
-<p>​                                           对齐</p>
+<p>​ 对齐</p>
 <p>不管是否使用O_DIRECT标识，写入数据时快对齐的读写都是好的想法，因为跨段边界会导致更多扇区需要加载和写入。</p>
-<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>IO不管是是否使用缓存，了解原理对实际操作中避免误用起到很大的作用。</p>
+<h3 id="summary">Summary</h3>
+<p>IO不管是是否使用缓存，了解原理对实际操作中避免误用起到很大的作用。</p>
 
       
     </div>
@@ -546,7 +554,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Buffered-IO"><span class="nav-number">1.</span> <span class="nav-text">Buffered IO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sector-Block-Page"><span class="nav-number">2.</span> <span class="nav-text">Sector/Block/Page</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Standard-IO"><span class="nav-number"></span> <span class="nav-text">Standard IO</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Page-Cache"><span class="nav-number">1.</span> <span class="nav-text">Page Cache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Delaying-Errors"><span class="nav-number">2.</span> <span class="nav-text">Delaying Errors</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Direct-IO"><span class="nav-number"></span> <span class="nav-text">Direct IO</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Block-Alignment"><span class="nav-number">1.</span> <span class="nav-text">Block Alignment</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary"><span class="nav-number"></span> <span class="nav-text">Summary</span></a></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#buffered-io"><span class="nav-number">1.</span> <span class="nav-text">Buffered IO</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sectorblockpage"><span class="nav-number">2.</span> <span class="nav-text">Sector/Block/Page</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#standard-io"><span class="nav-number"></span> <span class="nav-text">Standard IO</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#page-cache"><span class="nav-number">1.</span> <span class="nav-text">Page Cache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#delaying-errors"><span class="nav-number">2.</span> <span class="nav-text">Delaying Errors</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#direct-io"><span class="nav-number"></span> <span class="nav-text">Direct IO</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#block-alignment"><span class="nav-number">1.</span> <span class="nav-text">Block Alignment</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#summary"><span class="nav-number"></span> <span class="nav-text">Summary</span></a></div>
             
 
           </div>

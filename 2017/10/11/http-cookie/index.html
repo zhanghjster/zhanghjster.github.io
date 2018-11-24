@@ -345,40 +345,51 @@
 <p>HTTP的无状态特性在交互式WEB应用出现后遇到了问题，因为这些应用往往要求保存请求之间的状态，比如，用户在一个页面上登录后，之后所有的请求都要求是登录状态。于是用于HTTP协议保持状态的技术产生了，一个是用于服务器端的Session，另一个则是用户客户端的Cookie</p>
 <a id="more"></a>
 <p>Cookie是客户端保存服务器返回信息的小型纯文本，客户端按一定规则保存这些信息后，在接下来的请求中会将其返回给服务器，服务器利用这些信息来识别客户端的状态。比如，将用户登录的状态保存到cookie里，服务器就可以根据它来判定客户端的请求是否是登录状态</p>
-<h4 id="Cookie创建"><a href="#Cookie创建" class="headerlink" title="Cookie创建"></a>Cookie创建</h4><p>服务器通过在返回给客户端的HTTP header里的<strong>Set-Cookie</strong>字段来告诉客户端保存cookie信息，它的格式如下(中括号里为可选)</p>
+<h4 id="cookie创建">Cookie创建</h4>
+<p>服务器通过在返回给客户端的HTTP header里的<strong>Set-Cookie</strong>字段来告诉客户端保存cookie信息，它的格式如下(中括号里为可选)</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set-Cookie: NAME=VALUE[;expires=DATE][; path=PATH][; domain=DOMAIN_NAME][; secure]</div></pre></td></tr></table></figure>
-<h5 id="NAME-VALUE"><a href="#NAME-VALUE" class="headerlink" title="NAME=VALUE"></a><strong><em>NAME=VALUE</em></strong></h5><p>它由分号、逗号、空格之外的字符组成，表示cookie的名称和值。它为唯一的必选项，在之后的所有客户端发送给服务器的请求中都要包含到请求的Header中，而可选项则不会再发送给服务器</p>
+<h5 id="namevalue"><strong><em>NAME=VALUE</em></strong></h5>
+<p>它由分号、逗号、空格之外的字符组成，表示cookie的名称和值。它为唯一的必选项，在之后的所有客户端发送给服务器的请求中都要包含到请求的Header中，而可选项则不会再发送给服务器</p>
 <p>cookie的值一般情况下推荐要进行URL编码，但不是必须的，不过几乎所有实现都对cookie进行了编码。通常对<strong><em>NAME</em></strong> 和 <strong><em>VALUE</em></strong>分别进行编码，而 <strong><em>=</em></strong> 不编码</p>
 <p>由于cookie存在着数量的限制，开发者门使用subcookies的办法来增加cookie的存储量，方法就是在<strong><em>VALUE</em></strong>中存储一些 <strong><em>name-value</em></strong>对，如下格式</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">NAME1=foo=bar&amp;foo1=bar1&amp;foo2=bar2</div></pre></td></tr></table></figure>
 <p>不过这种格式需要开发者自定义解析方式</p>
-<h5 id="expires-DATE"><a href="#expires-DATE" class="headerlink" title="expires=DATE"></a><strong><em>expires=DATE</em></strong></h5><p>通过这个选项设置cookie的过期时间，一旦到达了这个时间，cookie就不在有效，应该删除，格式如下</p>
+<h5 id="expiresdate"><strong><em>expires=DATE</em></strong></h5>
+<p>通过这个选项设置cookie的过期时间，一旦到达了这个时间，cookie就不在有效，应该删除，格式如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Wdy, DD-Mon-YYYY HH:MM:SS GMT</div></pre></td></tr></table></figure>
 <p>格式基于 <a href="https://curl.haxx.se/rfc/rfc0822.txt" target="_blank" rel="external">RFC 822</a>, <a href="https://curl.haxx.se/rfc/rfc0850.txt" target="_blank" rel="external">RFC 850</a>, <a href="https://curl.haxx.se/rfc/rfc1036.txt" target="_blank" rel="external">RFC 1036</a>, 和 <a href="https://curl.haxx.se/rfc/rfc1123.txt" target="_blank" rel="external">RFC 1123</a> ,但做了一定修改，日期之间的空格换成了横线，时区必须为GMT</p>
 <p>它为可选项，当不设置时，用户的session结束(关闭浏览器)时候就失效</p>
-<h5 id="domain-DOMAIN-NAME"><a href="#domain-DOMAIN-NAME" class="headerlink" title="domain=DOMAIN_NAME"></a><strong><em>domain=DOMAIN_NAME</em></strong></h5><p>当客户端需要选择发送给服务器的cookie时，通过将这个字段与要访问的URL的域名做尾部匹配来做判断。尾部匹配是指 <strong><em>DOMAIN_NAME</em></strong>与URL的全域名尾部相同，比如 <strong><em>domain=benx.io</em></strong>的<strong><em>benx.io</em></strong>与 “<strong><em>www.benx.io</em></strong>“ “<strong><em>wap.benx.io</em></strong>“都匹配，那么在访问这些域名的URL时也有可能将cookie发送给服务器，说‘可能’是因为还需要进行<strong><em>PATH</em></strong>的匹配，两个都通过才会发送</p>
+<h5 id="domaindomain_name"><strong><em>domain=DOMAIN_NAME</em></strong></h5>
+<p>当客户端需要选择发送给服务器的cookie时，通过将这个字段与要访问的URL的域名做尾部匹配来做判断。尾部匹配是指 <strong><em>DOMAIN_NAME</em></strong>与URL的全域名尾部相同，比如 <strong><em>domain=benx.io</em></strong>的<strong><em>benx.io</em></strong>与 “<strong><em>www.benx.io</em></strong>” “<strong><em>wap.benx.io</em></strong>”都匹配，那么在访问这些域名的URL时也有可能将cookie发送给服务器，说‘可能’是因为还需要进行<strong><em>PATH</em></strong>的匹配，两个都通过才会发送</p>
 <p>如果不设置，默认被设置成返回这个cookie的服务器的域名</p>
-<h5 id="path-PATH"><a href="#path-PATH" class="headerlink" title="path=PATH"></a><strong><em>path=PATH</em></strong></h5><p>用于指定一个于cookie有效的path。如果cookie已经通过了<strong><em>domain</em></strong>的匹配，则进行path部分的匹配，采用的办法是前缀匹配，如果访问url里的path开头包含<strong><em>PATH</em></strong>, 则通过。比如 ‘/blog’ 与 ‘/blog/archive’匹配</p>
+<h5 id="pathpath"><strong><em>path=PATH</em></strong></h5>
+<p>用于指定一个于cookie有效的path。如果cookie已经通过了<strong><em>domain</em></strong>的匹配，则进行path部分的匹配，采用的办法是前缀匹配，如果访问url里的path开头包含<strong><em>PATH</em></strong>, 则通过。比如 ‘/blog’ 与 ‘/blog/archive’匹配</p>
 <p>如果不设置，默认被设置成header里对应URL的path部分</p>
-<h5 id="secure"><a href="#secure" class="headerlink" title="secure"></a><strong><em>secure</em></strong></h5><p>它只是一个标记，没有值，当请求通过SSL或HTTPS创建时，cookie才会被发送到服务器，默认情况下，HTTPS链接上传输的cookie都自动有这个选项</p>
-<h5 id="HttpOnly"><a href="#HttpOnly" class="headerlink" title="HttpOnly"></a><strong><em>HttpOnly</em></strong></h5><p>这个选项是微软在IE6 SP1里引入的，而原始的Cookie说明文档里并没有，后来被更多的浏览器所接受。这个选项的目的是控制 <strong><em>document.cookie</em></strong>的访问，防止javasciprt发起跨站攻击窃取cookie。同<strong><em>secure</em></strong>一样，它也只是一个标记，被设置后，<strong><em>document.cookie</em></strong>将不能防问该cookie</p>
-<h5 id="Max-Age"><a href="#Max-Age" class="headerlink" title="Max-Age"></a><strong><em>Max-Age</em></strong></h5><p>同expires一样用于设置cookie的过期时间，不同的是的它表示的是从cookie被设接收到过期那一刻的时间间隔。开始到过期</p>
+<h5 id="secure"><strong><em>secure</em></strong></h5>
+<p>它只是一个标记，没有值，当请求通过SSL或HTTPS创建时，cookie才会被发送到服务器，默认情况下，HTTPS链接上传输的cookie都自动有这个选项</p>
+<h5 id="httponly"><strong><em>HttpOnly</em></strong></h5>
+<p>这个选项是微软在IE6 SP1里引入的，而原始的Cookie说明文档里并没有，后来被更多的浏览器所接受。这个选项的目的是控制 <strong><em>document.cookie</em></strong>的访问，防止javasciprt发起跨站攻击窃取cookie。同<strong><em>secure</em></strong>一样，它也只是一个标记，被设置后，<strong><em>document.cookie</em></strong>将不能防问该cookie</p>
+<h5 id="max-age"><strong><em>Max-Age</em></strong></h5>
+<p>同expires一样用于设置cookie的过期时间，不同的是的它表示的是从cookie被设接收到过期那一刻的时间间隔。开始到过期</p>
 <p>为可选项</p>
-<h4 id="Cookie发送"><a href="#Cookie发送" class="headerlink" title="Cookie发送"></a>Cookie发送</h4><p>当客户端想服务器请求一个URL，需要对cookie进行<strong><em>domain</em></strong> <strong><em>path</em></strong>的匹配，符合条件的cookie的 <strong><em>name=value</em></strong>对会被包含进HTTP请求的中，格式如下：</p>
+<h4 id="cookie发送">Cookie发送</h4>
+<p>当客户端想服务器请求一个URL，需要对cookie进行<strong><em>domain</em></strong> <strong><em>path</em></strong>的匹配，符合条件的cookie的 <strong><em>name=value</em></strong>对会被包含进HTTP请求的中，格式如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Cookie: NAME1=OPAQUE_STRING1; NAME2=OPAQUE_STRING2 ...</div></pre></td></tr></table></figure>
 <p>发送的内容为set-cookie时的原始内容，不需要做任何处理</p>
-<h4 id="Cookie更新"><a href="#Cookie更新" class="headerlink" title="Cookie更新"></a>Cookie更新</h4><p>一个cookie的唯一性由 <strong><em>NAME-DOMAIN-PATH-secure</em></strong>共同决定，要想修改一个cookie，必须发送另一个这四个值相同的cookie，比如</p>
+<h4 id="cookie更新">Cookie更新</h4>
+<p>一个cookie的唯一性由 <strong><em>NAME-DOMAIN-PATH-secure</em></strong>共同决定，要想修改一个cookie，必须发送另一个这四个值相同的cookie，比如</p>
 <p>如果原cookie是通过如下设置的</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set-Cookie: NAME1=benx; domain=benx.io; path=/</div></pre></td></tr></table></figure>
 <p>则需要用如下方法来更新</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set-Cookie: NAME1=lee; domain=benx.io; path=/</div></pre></td></tr></table></figure>
 <p>由于过期时间是可选项，所以如果更新cookie时不带过期时间，则不会更新过期时间</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>cookie作为一种简单有效的手段弥补了HTTP协议的一些不足，虽然历经很多年的发展，依然在广泛应用。在日常IT工作中会经常与之打交道，还是需要对他进行深入理解</p>
+<h4 id="总结">总结</h4>
+<p>cookie作为一种简单有效的手段弥补了HTTP协议的一些不足，虽然历经很多年的发展，依然在广泛应用。在日常IT工作中会经常与之打交道，还是需要对他进行深入理解</p>
 <p>参考：</p>
-<p><a href="https://curl.haxx.se/rfc/cookie_spec.html" target="_blank" rel="external">https://curl.haxx.se/rfc/cookie_spec.html</a></p>
-<p><a href="https://www.nczonline.net/blog/2009/05/05/http-cookies-explained/" target="_blank" rel="external">https://www.nczonline.net/blog/2009/05/05/http-cookies-explained/</a></p>
-<p><a href="https://stackoverflow.com/questions/19899236/is-tcp-protocol-stateless-or-not" target="_blank" rel="external">https://stackoverflow.com/questions/19899236/is-tcp-protocol-stateless-or-not</a></p>
-<p><a href="https://en.wikipedia.org/wiki/Stateless_protocol" target="_blank" rel="external">https://en.wikipedia.org/wiki/Stateless_protocol</a></p>
+<p>https://curl.haxx.se/rfc/cookie_spec.html</p>
+<p>https://www.nczonline.net/blog/2009/05/05/http-cookies-explained/</p>
+<p>https://stackoverflow.com/questions/19899236/is-tcp-protocol-stateless-or-not</p>
+<p>https://en.wikipedia.org/wiki/Stateless_protocol</p>
 
       
     </div>
@@ -556,7 +567,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie创建"><span class="nav-number">1.</span> <span class="nav-text">Cookie创建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#NAME-VALUE"><span class="nav-number">1.1.</span> <span class="nav-text">NAME=VALUE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#expires-DATE"><span class="nav-number">1.2.</span> <span class="nav-text">expires=DATE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#domain-DOMAIN-NAME"><span class="nav-number">1.3.</span> <span class="nav-text">domain=DOMAIN_NAME</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#path-PATH"><span class="nav-number">1.4.</span> <span class="nav-text">path=PATH</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#secure"><span class="nav-number">1.5.</span> <span class="nav-text">secure</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#HttpOnly"><span class="nav-number">1.6.</span> <span class="nav-text">HttpOnly</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Max-Age"><span class="nav-number">1.7.</span> <span class="nav-text">Max-Age</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie发送"><span class="nav-number">2.</span> <span class="nav-text">Cookie发送</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Cookie更新"><span class="nav-number">3.</span> <span class="nav-text">Cookie更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#cookie创建"><span class="nav-number">1.</span> <span class="nav-text">Cookie创建</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#namevalue"><span class="nav-number">1.1.</span> <span class="nav-text">NAME=VALUE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#expiresdate"><span class="nav-number">1.2.</span> <span class="nav-text">expires=DATE</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#domaindomain_name"><span class="nav-number">1.3.</span> <span class="nav-text">domain=DOMAIN_NAME</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#pathpath"><span class="nav-number">1.4.</span> <span class="nav-text">path=PATH</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#secure"><span class="nav-number">1.5.</span> <span class="nav-text">secure</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#httponly"><span class="nav-number">1.6.</span> <span class="nav-text">HttpOnly</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#max-age"><span class="nav-number">1.7.</span> <span class="nav-text">Max-Age</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cookie发送"><span class="nav-number">2.</span> <span class="nav-text">Cookie发送</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cookie更新"><span class="nav-number">3.</span> <span class="nav-text">Cookie更新</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

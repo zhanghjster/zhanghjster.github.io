@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息 文件权限查看通过 ls命令查看，以下面结果为例 12345drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txtlrwxr-xr-x  1 Ben  staff     7">
+<meta name="description" content="通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息 文件权限 查看 通过 ls命令查看，以下面结果为例 12345drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txtlrwxr-xr-x  1 Ben  staff">
 <meta name="keywords" content="基础">
 <meta property="og:type" content="article">
 <meta property="og:title" content="权限">
 <meta property="og:url" content="http://benx.io/2017/11/30/permission/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息 文件权限查看通过 ls命令查看，以下面结果为例 12345drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txtlrwxr-xr-x  1 Ben  staff     7">
+<meta property="og:description" content="通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息 文件权限 查看 通过 ls命令查看，以下面结果为例 12345drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txtlrwxr-xr-x  1 Ben  staff">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-11-30T16:02:33.043Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="权限">
-<meta name="twitter:description" content="通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息 文件权限查看通过 ls命令查看，以下面结果为例 12345drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txtlrwxr-xr-x  1 Ben  staff     7">
+<meta name="twitter:description" content="通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息 文件权限 查看 通过 ls命令查看，以下面结果为例 12345drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txtlrwxr-xr-x  1 Ben  staff">
 
 
 
@@ -320,36 +320,38 @@
 
       
         <p>通过本文总结一下如何识别和设置文件和目录的权限，以及如何更改他们的所有权、群组等信息</p>
-<h4 id="文件权限"><a href="#文件权限" class="headerlink" title="文件权限"></a>文件权限</h4><h5 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h5><p>通过 ls命令查看，以下面结果为例</p>
+<h4 id="文件权限">文件权限</h4>
+<h5 id="查看">查看</h5>
+<p>通过 ls命令查看，以下面结果为例</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 bar</div><div class="line">-rw-r--r--  1 Ben  staff     0B 11 30 22:41 bar.txt</div><div class="line">lrwxr-xr-x  1 Ben  staff     7B 11 30 22:42 bar_link.txt -&gt; bar.txt</div><div class="line">drwxr-xr-x  2 Ben  staff    64B 11 30 22:41 foo</div><div class="line">-rw-r--r--  1 Ben  staff     0B 11 30 22:41 foo.txt</div></pre></td></tr></table></figure>
 <a id="more"></a>
 <p>第一列为表示权限，分为四部分，其中</p>
 <ul>
-<li>第一个字符为用于区分“目录”、“文件”、链接<ul>
+<li>第一个字符为用于区分“目录”、“文件”、链接</li>
 <li>’-‘ 表示文件</li>
 <li>’d’表示目录</li>
 <li>‘l’表示链接</li>
-</ul>
-</li>
-<li>第2-4字符用于表示文件所有者的权限分别用’r’’w’’x’表示读、写、执行的权限</li>
+<li>第2-4字符用于表示文件所有者的权限分别用’r’‘w’’x’表示读、写、执行的权限</li>
 <li>第5-7字符表示群组所拥有的权限，定义同上</li>
 <li>第8–10字符表示其他用户拥有的权限，定义同上</li>
 </ul>
-<h5 id="修改"><a href="#修改" class="headerlink" title="修改"></a>修改</h5><ul>
-<li><p>增加权限，使用chmod命令结合‘+’以及’r’(读)、’w’(写)、’x’(执行)组合来增加权限</p>
-<p>比如  ‘chmod +rw’ 增加读写权限</p>
-</li>
-<li><p>减少权限， 使用chmod命令结合‘-’以及’r’(读)、’w’(写)、’x’(执行)组合来减少权限</p>
-<p>比如‘chmod -rw’去掉执行权限</p>
-</li>
+<h5 id="修改">修改</h5>
+<ul>
+<li>增加权限，使用chmod命令结合‘+’以及’r’(读)、‘w’(写)、‘x’(执行)组合来增加权限</li>
 </ul>
+<p>比如 ‘chmod +rw’ 增加读写权限</p>
+<ul>
+<li>减少权限， 使用chmod命令结合‘-’以及’r’(读)、‘w’(写)、‘x’(执行)组合来减少权限</li>
+</ul>
+<p>比如‘chmod -rw’去掉执行权限</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ ll foo.txt </div><div class="line">-rw-r--r--  1 Ben  staff     0B 11 30 22:41 foo.txt</div><div class="line">localhost:test Ben$ chmod +x foo.txt </div><div class="line">localhost:test Ben$ ll foo.txt </div><div class="line">-rwxr-xr-x  1 Ben  staff     0B 11 30 22:41 foo.txt</div></pre></td></tr></table></figure>
 <p>上面演示了如何增加和减少可执行权限, 这个办法只更改了文件所有者的权限， 如果要更改’组’或者‘其他用户’的权限‘则需要结合’g’或者‘o’来更改， 如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ chmod g+w foo.txt </div><div class="line">localhost:test Ben$ ll foo.txt </div><div class="line">-rwxrwxr-x  1 Ben  staff     0B 11 30 22:41 foo.txt</div><div class="line">localhost:test Ben$ chmod g-w foo.txt</div><div class="line">localhost:test Ben$ ll foo.txt </div><div class="line">-rwxr-xr-x  1 Ben  staff     0B 11 30 22:41 foo.txt</div></pre></td></tr></table></figure>
 <p>上面增加和减少foo.txt的组的可执行权限</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ chmod o+w foo.txt </div><div class="line">localhost:test Ben$ ll foo.txt </div><div class="line">-rwxr-xrwx  1 Ben  staff     0B 11 30 22:41 foo.txt</div><div class="line">localhost:test Ben$ chmod o-w foo.txt </div><div class="line">localhost:test Ben$ ll foo.txt </div><div class="line">-rwxr-xr-x  1 Ben  staff     0B 11 30 22:41 foo.txt</div></pre></td></tr></table></figure>
 <p>上面演示了增加和减少foo.txt的其他用户的写权限</p>
-<h5 id="数字模式权限"><a href="#数字模式权限" class="headerlink" title="数字模式权限"></a>数字模式权限</h5><p>上面都是以 ‘w’ ‘r’ ‘x’ 定义权限，还可以用数字表示权限</p>
+<h5 id="数字模式权限">数字模式权限</h5>
+<p>上面都是以 ‘w’ ‘r’ ‘x’ 定义权限，还可以用数字表示权限</p>
 <ul>
 <li>0 - 没有权限</li>
 <li>1 - 执行权限</li>
@@ -367,25 +369,30 @@
 <li>6 = rw-</li>
 <li>7 = rwx</li>
 </ul>
-<h4 id="目录权限"><a href="#目录权限" class="headerlink" title="目录权限"></a>目录权限</h4><h5 id="查看-1"><a href="#查看-1" class="headerlink" title="查看"></a>查看</h5><p>通过ls命令查看，比如下面结果</p>
+<h4 id="目录权限">目录权限</h4>
+<h5 id="查看-1">查看</h5>
+<p>通过ls命令查看，比如下面结果</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">drwxr-xr-x  2 Ben  staff  64 11 30 22:41 foo</div></pre></td></tr></table></figure>
-<p>第一列结果为权限部分，同文件一样也分为四块，每块定义与文件也相同，但’w’,’r’,’x’的定义和文件的有所不同</p>
+<p>第一列结果为权限部分，同文件一样也分为四块，每块定义与文件也相同，但’w’,‘r’,’x’的定义和文件的有所不同</p>
 <ul>
-<li><p>‘w’, 用户可以重命名目录。在有’x’的权限下可以删除目录，还可以在增加、删除、更新、重命名目录里的文件,</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ ll</div><div class="line">total 0</div><div class="line">d-w-------  2 Ben  staff    64B 11 30 23:45 foo</div><div class="line">localhost:test Ben$ rm -fr foo/</div><div class="line">rm: foo/: Permission denied</div><div class="line">localhost:test Ben$ mv foo/ bar</div><div class="line">localhost:test Ben$ ll </div><div class="line">total 0</div><div class="line">d-w-------  2 Ben  staff    64B 11 30 23:45 bar</div></pre></td></tr></table></figure>
-<p>只有’w’权限可以mv但不能删除目录</p>
-</li>
-<li><p>‘x’, 用户可以进入目录，但需要有’w’权限才能在目录里增加、删除、更新文件或子目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ ll </div><div class="line">total 0</div><div class="line">d--x--x--x  2 Ben  staff    64B 11 30 23:45 bar</div><div class="line">localhost:test Ben$ cd bar/</div><div class="line">localhost:bar Ben$ touch a</div><div class="line">touch: a: Permission denied</div></pre></td></tr></table></figure>
-<p>只有’x’权限，只能进入目录，不能增加、删除、更改文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ ll</div><div class="line">total 0</div><div class="line">d-wx--x--x  2 Ben  staff    64B 11 30 23:45 bar</div><div class="line">localhost:test Ben$ touch bar/a</div><div class="line">localhost:test Ben$ rm bar/a</div></pre></td></tr></table></figure>
-<p>有’w’和’x’权限可以增加更改目录里的文件</p>
-</li>
-<li><p>‘r’, 用户可以查看目录的信息，比如子目录和文件</p>
-</li>
+<li>‘w’, 用户可以重命名目录。在有’x’的权限下可以删除目录，还可以在增加、删除、更新、重命名目录里的文件,</li>
 </ul>
-<h5 id="更改"><a href="#更改" class="headerlink" title="更改"></a>更改</h5><p>操作如同文件的</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>很基础的内容，需要系统总结才能记得牢</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ ll</div><div class="line">total 0</div><div class="line">d-w-------  2 Ben  staff    64B 11 30 23:45 foo</div><div class="line">localhost:test Ben$ rm -fr foo/</div><div class="line">rm: foo/: Permission denied</div><div class="line">localhost:test Ben$ mv foo/ bar</div><div class="line">localhost:test Ben$ ll </div><div class="line">total 0</div><div class="line">d-w-------  2 Ben  staff    64B 11 30 23:45 bar</div></pre></td></tr></table></figure></p>
+<p>只有’w’权限可以mv但不能删除目录</p>
+<ul>
+<li>‘x’, 用户可以进入目录，但需要有’w’权限才能在目录里增加、删除、更新文件或子目录</li>
+</ul>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ ll </div><div class="line">total 0</div><div class="line">d--x--x--x  2 Ben  staff    64B 11 30 23:45 bar</div><div class="line">localhost:test Ben$ cd bar/</div><div class="line">localhost:bar Ben$ touch a</div><div class="line">touch: a: Permission denied</div></pre></td></tr></table></figure></p>
+<p>只有’x’权限，只能进入目录，不能增加、删除、更改文件</p>
+<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">localhost:test Ben$ ll</div><div class="line">total 0</div><div class="line">d-wx--x--x  2 Ben  staff    64B 11 30 23:45 bar</div><div class="line">localhost:test Ben$ touch bar/a</div><div class="line">localhost:test Ben$ rm bar/a</div></pre></td></tr></table></figure></p>
+<p>有’w’和’x’权限可以增加更改目录里的文件</p>
+<ul>
+<li>‘r’, 用户可以查看目录的信息，比如子目录和文件</li>
+</ul>
+<h5 id="更改">更改</h5>
+<p>操作如同文件的</p>
+<h4 id="总结">总结</h4>
+<p>很基础的内容，需要系统总结才能记得牢</p>
 
       
     </div>
