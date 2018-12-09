@@ -248,6 +248,139 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://benx.io/2018/12/09/kafka-stream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Benx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="笨哥小抄">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/12/09/kafka-stream/" itemprop="url">kafka stream概念和架构总结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-09T22:39:24+08:00">
+                2018-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><h4 id="Kafka-Stream"><a href="#Kafka-Stream" class="headerlink" title="Kafka Stream"></a>Kafka Stream</h4><p>kafka Stream是用户处理和分析存储在kafka中的数据的客户端库。它建立在诸如窗口、事件时间与处理时间区分、中间状态管理等重要的流处理概念之上。入门门槛底，可以很方便的嵌入到应用系统中，从小规模的验证程序到大型运算集群。kafka stream利用kafka的并行模型透明的处理一个应用程序多个示例的负载均衡。</p>
+<p>kafka stream的特点：</p>
+<ol>
+<li>被设计为轻量级的类库，可以方便的嵌入到任何java程序</li>
+<li>除了kafka外没有任何其他依赖</li>
+<li>支持本地状态容错，可以实现快速高效的进行诸如窗口Join和聚合的操作</li>
+<li>支持Exactly-Once的精确处理</li>
+<li>采用一次处理一个数据的策略达到毫秒的处理延迟。支持基于事件时间窗的操作以及对延迟数据的处理</li>
+<li>提供流处理原语以及DSL</li>
+</ol>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/12/09/kafka-stream/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://benx.io/2018/11/24/kafka-consumer/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -444,7 +577,7 @@
 
       
         
-          <p>B树、B+树是对辅助存储设备设计的一种平衡查找树，在磁盘读取是能有效的控制IO次数，为多数数据库系统作为索引数据结构。</p>
+          <p> B树、B+树是对辅助存储设备设计的一种平衡查找树，在磁盘读取是能有效的控制IO次数，为多数数据库系统作为索引数据结构。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/10/27/btree/#more" rel="contents">
@@ -569,8 +702,7 @@
       
         
           <p>本文是<a href="https://github.com/golang/go/wiki/CodeReviewComments" target="_blank" rel="external">Golang CodeReviewComment</a>读后总结翻译</p>
-<h4 id="gofmt">Gofmt</h4>
-<p>使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import</p>
+<h4 id="Gofmt"><a href="#Gofmt" class="headerlink" title="Gofmt"></a>Gofmt</h4><p>使用gofmt自动修复大多数代码排版问题，使用goimports增加或移除import</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/09/24/go-code-review-comment/#more" rel="contents">
@@ -695,9 +827,8 @@
       
         
           <p>本文是读后翻译，原文在此<a href="https://medium.com/databasss/on-disk-io-part-3-lsm-trees-8b2da218496f" target="_blank" rel="external">On Disk IO, Part 3: LSM Trees</a></p>
-<p>现如今数据库所使用的存储类型有很多种，它们各有优缺点，具体使用哪一种需要做出权衡。本文介绍其中一种经常被使用的类型，LSM(Log Structured Merge tree)。</p>
-<h3 id="lsm-trees">LSM Trees</h3>
-<p>Log Structured Merge Trees开始于LSM的<a href="http://paperhub.s3.amazonaws.com/18e91eb4db2114a06ea614f0384f2784.pdf" target="_blank" rel="external">开创论文</a>，它建议实现类似于B树的磁盘驻留树，不同之处是针对顺序磁盘访问做了优化，节点(Node)可以被完全占用。虽然LSM经常被与B树做对比，但他们最明显的区别是LSM树允许不可变的可合并的文件。</p>
+<p>现如今数据库所使用的存储类型有很多种，它们各有优缺点，具体使用哪一种需要做出权衡。本文介绍其中一种经常被使用的类型，LSM(Log Structured Merge tree)。 </p>
+<h3 id="LSM-Trees"><a href="#LSM-Trees" class="headerlink" title="LSM Trees"></a>LSM Trees</h3><p>Log Structured Merge Trees开始于LSM的<a href="http://paperhub.s3.amazonaws.com/18e91eb4db2114a06ea614f0384f2784.pdf" target="_blank" rel="external">开创论文</a>，它建议实现类似于B树的磁盘驻留树，不同之处是针对顺序磁盘访问做了优化，节点(Node)可以被完全占用。虽然LSM经常被与B树做对比，但他们最明显的区别是LSM树允许不可变的可合并的文件。</p>
 <p>尽管LSM树有各种的不同实现方式，但他们都可能一个共同之处，使用了Sorted String Tables</p>
           <!--noindex-->
           <div class="post-button text-center">
@@ -823,16 +954,15 @@
       
         
           <p>本文是读后翻译，原文在此<a href="https://medium.com/databasss/on-disk-io-part-2-more-flavours-of-io-c945db3edb13" target="_blank" rel="external">On Disk IO, Part 2: More Flavours of IO</a></p>
-<h4 id="memory-mapping">Memory Mapping</h4>
-<p>内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。</p>
+<h4 id="Memory-Mapping"><a href="#Memory-Mapping" class="headerlink" title="Memory Mapping"></a>Memory Mapping</h4><p>内存映射(Memory Mapping)允许你就像文件被完全加载到内存一样访问文件。它简化了文件访问，经常被应用于数据库技术以及应用程序。</p>
 <p><img src="http://owo5nif4b.bkt.clouddn.com/1%2AxvxPz9VhYoJx2AOFPbaSWw.png" width="400"></p>
 <p>内存映射将进程虚拟页面直接映射到内核页面缓存，避免了标准IO对用户空间缓存和页面缓存之间的数据复制操作。</p>
-<p>使用<span class="math inline">\(mmap\)</span>，文件可以以私有或共享的模式映射到内存段。私有映射允许从文件读取，但写入会触发相关页面缓存的写时复制(copy-on-write)，以使原始页面保持原样并保持更改为私有，因此所有更改都不会反映到文件本身上。在共享模式下，文件映射与其他进程共享，以便他们可以查看映射的内存段的更新。此外，更改将传递到底层文件。</p>
+<p>使用$mmap$，文件可以以私有或共享的模式映射到内存段。私有映射允许从文件读取，但写入会触发相关页面缓存的写时复制(copy-on-write)，以使原始页面保持原样并保持更改为私有，因此所有更改都不会反映到文件本身上。在共享模式下，文件映射与其他进程共享，以便他们可以查看映射的内存段的更新。此外，更改将传递到底层文件。</p>
 <p>除非特殊指定，否则文件内容不会立即加载到内存，而是以惰性方式加载。内存映射所需的空间是保留的，但不会立即分配。第一次读写操作会导致页面错误从而触发相应页面的内存分配。从国MAP_POPULATE可以预先映射区域并强制文件预读取。</p>
 <p>内存映射通过页面缓存完成，与标准IO相同，使用按需分页(Damand paging)方法管理这些缓存页面。当第一次访问内存，会发出一个缺页中断(Page Fault)，它会向内核发出请求页面未加载到内存的信号。内核识别出要加载的数据的位置。缺页中断对开发人员来说是透明的，程序会继续进行，就像什么也没发生，不过有时它可能会影响程序性能</p>
 <p>也可以使用保护标志将文件映射到内存，比如只读模式。如果一个对映射内存的操作违反了条件，则会触发段错误。</p>
-<p><span class="math inline">\(mmap\)</span>是一个非常有用的IO工具：它避免了内存创建缓冲区无关的副本，页避免了触发实际IO操作的系统调用开销。从开发人员角度，对使用<span class="math inline">\(mmapp\)</span>的文件发出随机去读看起来就像普通的指针操作，不涉及到lseek调用。</p>
-<p><span class="math inline">\(mmap\)</span>存在一些缺点，但对于现代硬件来说不太重要了：</p>
+<p>$mmap$是一个非常有用的IO工具：它避免了内存创建缓冲区无关的副本，页避免了触发实际IO操作的系统调用开销。从开发人员角度，对使用$mmapp$的文件发出随机去读看起来就像普通的指针操作，不涉及到lseek调用。</p>
+<p>$mmap$存在一些缺点，但对于现代硬件来说不太重要了：</p>
 <ul>
 <li>mmap是内核使用更多的数据结果来管理内存映射</li>
 <li>内存映射的文件大小限制：大多数时间没和代码应该内存友好。不过对于64位的系统，已经可以映射更大的文件</li>
@@ -1093,15 +1223,16 @@
 
       
         
-          <ol style="list-style-type: decimal">
-<li><p>安装docker, https://store.docker.com/editions/community/docker-ce-desktop-mac</p></li>
-<li><p>下载 elk 的 docker-compose 配置文件</p></li>
+          <ol>
+<li><p>安装docker, <a href="https://store.docker.com/editions/community/docker-ce-desktop-mac" target="_blank" rel="external">https://store.docker.com/editions/community/docker-ce-desktop-mac</a></p>
+</li>
+<li><p>下载 elk 的 docker-compose 配置文件 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/deviantony/docker-elk.git</div></pre></td></tr></table></figure>
+</li>
+<li><p>启动elk三个container</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd docker-elk</div><div class="line">docker-compose up</div></pre></td></tr></table></figure>
+</li>
 </ol>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">git clone https://github.com/deviantony/docker-elk.git</div></pre></td></tr></table></figure></p>
-<ol start="3" style="list-style-type: decimal">
-<li>启动elk三个container</li>
-</ol>
-<p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cd docker-elk</div><div class="line">docker-compose up</div></pre></td></tr></table></figure></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/05/27/elk-mb/#more" rel="contents">
@@ -1392,132 +1523,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://benx.io/2017/12/03/counting-sort/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Benx">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="笨哥小抄">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/12/03/counting-sort/" itemprop="url">Counting Sort</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-03T20:34:50+08:00">
-                2017-12-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>计数排序是一种根据小整数键对一组对象进行排序的算法，它通过计算具有不同整数键的对象的数量来操作，用这些计数来确定输出序列中每个键值对应的对象的位置。它的运行时间在对象总数和键值的最大最小之间是线性的，只试用键值的变化不明显大于对象数量的情况。</p>
-<p>计数排序的基本思想是：假设输入有 <span class="math inline">\(n\)</span> 个元素，每个元素<span class="math inline">\(p_i\)</span>具有一个非负的最大值为<span class="math inline">\(k\)</span>的整数键$x_i $，对第个元素 <span class="math inline">\(p_i\)</span> 计算键值小于 <span class="math inline">\(x_i\)</span> 的元素的个数<span class="math inline">\(c_i\)</span>，然后利用 <span class="math inline">\(c_i\)</span> 直接将元素<span class="math inline">\(p_i\)</span>放到输出数组的位置上</p>
-<h5 id="实现">实现</h5>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">CountingSort</span><span class="params">(a []<span class="keyword">int</span>, k <span class="keyword">int</span>)</span> []<span class="title">int</span></span> &#123;</div><div class="line">	<span class="comment">// 数组的每一项保存键值小于或等于其索引的元素的个数</span></div><div class="line">	<span class="keyword">var</span> c = <span class="built_in">make</span>([]<span class="keyword">int</span>, k)</div><div class="line"></div><div class="line">	<span class="comment">// 将输入数组元素直接当做键值</span></div><div class="line">	<span class="comment">// 计算每个键值的出现次数</span></div><div class="line">	<span class="keyword">for</span> _, v := <span class="keyword">range</span> a &#123;</div><div class="line">		c[v]++</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 计算不大于每个键值的键值个数</span></div><div class="line">	<span class="comment">// 也就是键值对应元素在输出数组里的索引</span></div><div class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(c); i++ &#123;</div><div class="line">		c[i] += c[i<span class="number">-1</span>]</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// 按照c里计算的每个键值所在索引生成输出</span></div><div class="line">	b := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="built_in">len</span>(a))</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(a) - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i-- &#123;</div><div class="line">		b[c[a[i]]<span class="number">-1</span>] = a[i]</div><div class="line">		c[a[i]]--</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="keyword">return</span> b</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h5 id="总结">总结</h5>
-<p>计数排序的时间复杂度为 <span class="math inline">\(O(k+n)\)</span>, 适用于当输入元素具有小整数的键值，小的意思是键值的大小范围不能远大于元素的个数</p>
-<p>另外还有一个重要的特性是它是稳定的，也就是对于两个键值相同的元素，在输出数组中的顺序和在输入数组中是相同的</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1567,7 +1572,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -1589,7 +1594,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">80</span>
+                <span class="site-state-item-count">81</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>

@@ -69,18 +69,18 @@
 
 
 
-<meta name="description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 \(n^m\) 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt;">
+<meta name="description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 $n^m$ 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt; 0">
 <meta name="keywords" content="exponetiation">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Power">
 <meta property="og:url" content="http://benx.io/2017/09/20/pow/index.html">
 <meta property="og:site_name" content="笨哥小抄">
-<meta property="og:description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 \(n^m\) 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt;">
+<meta property="og:description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 $n^m$ 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt; 0">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:updated_time" content="2017-09-28T13:39:15.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Power">
-<meta name="twitter:description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 \(n^m\) 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt;">
+<meta name="twitter:description" content="在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 $n^m$ 的方法。代码如下： 1234567891011func hashStr(sep string) (uint32, uint32) &amp;#123;	....	var pow, sq uint32 = 1, primeRK	for i := len(sep); i &amp;gt; 0">
 
 
 
@@ -319,26 +319,23 @@
       
 
       
-        <p>在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 <span class="math inline">\(n^m\)</span> 的方法。代码如下：</p>
+        <p>在看Golang的strings库的strings.Index(s, sep string)函数时时发现了一个计算 $n^m$ 的方法。代码如下：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">hashStr</span><span class="params">(sep <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">uint32</span>, <span class="keyword">uint32</span>)</span></span> &#123;</div><div class="line">	....</div><div class="line">	<span class="keyword">var</span> pow, sq <span class="keyword">uint32</span> = <span class="number">1</span>, primeRK</div><div class="line">	<span class="keyword">for</span> i := <span class="built_in">len</span>(sep); i &gt; <span class="number">0</span>; i &gt;&gt;= <span class="number">1</span> &#123;</div><div class="line">		<span class="keyword">if</span> i&amp;<span class="number">1</span> != <span class="number">0</span> &#123;</div><div class="line">			pow *= sq</div><div class="line">		&#125;</div><div class="line">		sq *= sq</div><div class="line">	&#125;</div><div class="line">	....</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>发现它并不是简单的m次n的乘积得到，其中必有一些技巧的存在。</p>
 <a id="more"></a>
-<h4 id="left-to-right-exponentiation">Left-to-Right Exponentiation</h4>
-<p>这是一个很古老的办法，具体逻辑是这样，比如：要计算$x^{25} $:</p>
-<pre><code>  1. 首先将25用二进制表示 11001.
-  2. 去掉最高位的1， 变为 1001.
-  3. 用D(double)代表0， D1（double and +1）代表1。得到计算的指令 D1DDD1
-  4. 从左到右，按照上面得到的指令进行计算。顺序得到$x^2$,$x^3$,$x^6$,$x^{12}$,$x^{24}$,$x^{25}$. 共执行了6次。</code></pre>
-<p>这个办法存在一个问题就是需要先计算出从左到右的指令集，并需要一定的空间保存。程序上实现有一定的复杂度。 这个办法也叫 Addition Chain Exponetiation</p>
-<h4 id="right-to-left-exponetiation">Right-to-Left Exponetiation</h4>
-<p>这个算法也比较古老，实现方法如下,</p>
+<h4 id="Left-to-Right-Exponentiation"><a href="#Left-to-Right-Exponentiation" class="headerlink" title="Left-to-Right Exponentiation"></a>Left-to-Right Exponentiation</h4><p>这是一个很古老的办法，具体逻辑是这样，比如：要计算$x^{25} $:</p>
+<pre><code>1. 首先将25用二进制表示 11001.
+2. 去掉最高位的1， 变为 1001.
+3. 用D(double)代表0， D1（double and +1）代表1。得到计算的指令 D1DDD1
+4. 从左到右，按照上面得到的指令进行计算。顺序得到$x^2$,$x^3$,$x^6$,$x^{12}$,$x^{24}$,$x^{25}$. 共执行了6次。
+</code></pre><p>这个办法存在一个问题就是需要先计算出从左到右的指令集，并需要一定的空间保存。程序上实现有一定的复杂度。 这个办法也叫 Addition Chain Exponetiation</p>
+<h4 id="Right-to-Left-Exponetiation"><a href="#Right-to-Left-Exponetiation" class="headerlink" title="Right-to-Left Exponetiation"></a>Right-to-Left Exponetiation</h4><p>这个算法也比较古老，实现方法如下,</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">Power(x,n) &#123;</div><div class="line">  r := 1</div><div class="line">  y := x</div><div class="line">  while (n &gt; 1) &#123; </div><div class="line">    if odd(n) then r := r*y</div><div class="line">    n := floor(n/2)</div><div class="line">    y := y*y</div><div class="line">  &#125;</div><div class="line">  r := r*y</div><div class="line">  return(r)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>开头的golang代码就是这个算法的实现,与left-to-right比较实现起来很容易,不需要额外的空间存储指令。</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">func</span> <span class="title">pow</span><span class="params">(m, n <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</div><div class="line">	<span class="keyword">var</span> ret <span class="keyword">int</span> = <span class="number">1</span></div><div class="line">	<span class="keyword">for</span> n &gt; <span class="number">0</span> &#123;</div><div class="line">		<span class="keyword">if</span> n&amp;<span class="number">1</span> != <span class="number">0</span> &#123;</div><div class="line">			ret *= m</div><div class="line">		&#125;</div><div class="line">		</div><div class="line">		m *= m</div><div class="line">		n &gt;&gt;= <span class="number">1</span></div><div class="line">	&#125;</div><div class="line">	</div><div class="line">	<span class="keyword">return</span> ret</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h4 id="参考">参考：</h4>
-<p>https://en.wikipedia.org/wiki/Addition-chain_exponentiation</p>
-<p>http://primes.utm.edu/glossary/xpage/BinaryExponentiation.html</p>
-<p>https://www.quora.com/What-are-some-fast-algorithms-for-computing-the-nth-power-of-a-number</p>
+<h4 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h4><p><a href="https://en.wikipedia.org/wiki/Addition-chain_exponentiation" target="_blank" rel="external">https://en.wikipedia.org/wiki/Addition-chain_exponentiation</a></p>
+<p><a href="http://primes.utm.edu/glossary/xpage/BinaryExponentiation.html" target="_blank" rel="external">http://primes.utm.edu/glossary/xpage/BinaryExponentiation.html</a></p>
+<p><a href="https://www.quora.com/What-are-some-fast-algorithms-for-computing-the-nth-power-of-a-number" target="_blank" rel="external">https://www.quora.com/What-are-some-fast-algorithms-for-computing-the-nth-power-of-a-number</a></p>
 
       
     </div>
@@ -457,7 +454,7 @@
             
               <a href="/archives/">
             
-                <span class="site-state-item-count">31</span>
+                <span class="site-state-item-count">32</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -479,7 +476,7 @@
             
             <div class="site-state-item site-state-tags">
               <a href="/tags/index.html">
-                <span class="site-state-item-count">80</span>
+                <span class="site-state-item-count">81</span>
                 <span class="site-state-item-name">标签</span>
               </a>
             </div>
@@ -514,7 +511,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#left-to-right-exponentiation"><span class="nav-number">1.</span> <span class="nav-text">Left-to-Right Exponentiation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#right-to-left-exponetiation"><span class="nav-number">2.</span> <span class="nav-text">Right-to-Left Exponetiation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Left-to-Right-Exponentiation"><span class="nav-number">1.</span> <span class="nav-text">Left-to-Right Exponentiation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Right-to-Left-Exponetiation"><span class="nav-number">2.</span> <span class="nav-text">Right-to-Left Exponetiation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考："><span class="nav-number">3.</span> <span class="nav-text">参考：</span></a></li></ol></div>
             
 
           </div>
